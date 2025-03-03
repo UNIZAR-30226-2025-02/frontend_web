@@ -1,0 +1,81 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #333;
+  }
+  
+  .logoContainer {
+    margin-bottom: 5px;
+  }
+  
+  .formContainer {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 420px;
+    text-align: center;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease; /* Animación suave */
+  }
+
+  .button:hover {
+    background-color: #4A90E2; /* Cambia a azul cuando pasas el cursor */
+  }
+  
+  .links {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .link {
+    color: #4A90E2;
+    text-decoration: none;
+    display: block;
+    margin-top: 5px;
+  }
+
+  .link:hover {
+    text-decoration: underline;
+  }
+  
+  .logoImage {
+    width: 200px;  /* Ajusta el tamaño de la imagen */
+    height: auto;  /* Mantén las proporciones */
+    margin-bottom: 5px;  /* Mantén el espacio debajo del logo */
+  }
