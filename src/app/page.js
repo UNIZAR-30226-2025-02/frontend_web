@@ -1,8 +1,23 @@
+"use client";
+import { motion } from "framer-motion";
 import styles from "./page.module.css";
 
 export default function HomePage() {
   return (
     <div className={styles.page}>
+      {/* Fondo Animado */}
+      <motion.div
+        className={styles.animatedBackground}
+        animate={{
+          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
       {/* Sección de Título */}
       <div className={styles.textSection}>
         <h1>Bienvenido a CheckMateX</h1>
