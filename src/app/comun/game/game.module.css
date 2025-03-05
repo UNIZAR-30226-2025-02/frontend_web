@@ -1,0 +1,110 @@
+.gameContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #333;
+    height: 100vh;
+    color: white;
+  }
+  
+  .gameBody {
+    display: grid;
+    grid-template-columns: 20% 60% 20%; /* Define tres columnas: izquierda, centro, derecha */
+    width: 95%;
+    max-width: 1400px;
+    justify-content: center;
+    align-items: center;
+    gap: 30px; /* Añade espacio entre los elementos */
+    padding: 20px;
+    background-color: #555;
+    border-radius: 8px;
+  }
+  
+  .movesPanel {
+    background-color: #444;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 550px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-self: start; /* Hace que no se estire verticalmente */
+  }
+
+  .chatPanel {
+    background-color: #444;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 550px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-self: start;
+  }
+  
+  .boardContainer {
+    background-color: #222;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+  }
+  
+  .playerName {
+    margin: 10px 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .greenDot {
+    width: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .orangeDot {
+    width: 10px;
+    height: 10px;
+    background-color: orange;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .chatMessages {
+    flex-grow: 1;
+    overflow-y: auto;
+    text-align: left;
+  }
+  
+  .chatInputContainer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .chatInput {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .sendButton {
+    padding: 8px 12px;
+    background-color: #4A90E2;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  

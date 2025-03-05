@@ -1,0 +1,35 @@
+.header {
+    background-color: #1e1e1e; /* Color oscuro de fondo */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Esto mantiene el logo izquierdo y el perfil derecho en sus lugares */
+    padding: 30px 20px;
+    height: 80px; /* Altura fija del header */
+    position: relative; /* Necesario para el posicionamiento absoluto del logo central */
+  }
+  
+  .logoNom {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logoImage2 {
+    height: 46px;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    position: absolute; /* Esto coloca el logo central fuera del flujo normal */
+    left: 50%; /* Lo mueve hacia el 50% del ancho disponible */
+    transform: translateX(-50%); /* Ajuste para centrarlo perfectamente */
+  }
+  
+  .logoImage {
+    height: 150px; /* Ajusta el tamaño del logo central */
+  }
+
+  .custom-icon {
+    height: 100px;
+  }
