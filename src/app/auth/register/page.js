@@ -1,18 +1,23 @@
 "use client"; // Necesario para usar eventos y estados
 import "../layout.css"; // Importa los estilos globales
 import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importa los iconos de FontAwesome
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
-    nombre: "",
-    apellidos: "",
     username: "",
+    email: "",
     password: "",
-    edad: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = (e) => {
@@ -24,31 +29,7 @@ export default function RegisterPage() {
   return (
     <form onSubmit={handleSubmit} className="form">
       <div>
-        <label className="label">Nombre</label>
-        <input
-          type="text"
-          name="nombre"
-          value={form.nombre}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="label">Apellidos</label>
-        <input
-          type="text"
-          name="apellidos"
-          value={form.apellidos}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="label">Nombre de usuario</label>
+        <label className="label">Username</label>
         <input
           type="text"
           name="username"
@@ -60,27 +41,32 @@ export default function RegisterPage() {
       </div>
 
       <div>
-        <label className="label">Contraseña</label>
+        <label className="label">Email</label>
         <input
-          type="password"
-          name="password"
-          value={form.password}
+          type="email"
+          name="email"
+          value={form.email}
           onChange={handleChange}
           className="input"
           required
         />
       </div>
 
-      <div>
-        <label className="label">Edad</label>
-        <input
-          type="number"
-          name="edad"
-          value={form.edad}
-          onChange={handleChange}
-          className="input"
-          required
-        />
+      <div className="password-container">
+        <label className="label">Password</label>
+        <div className="password-wrapper">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            className="input"
+            required
+          />
+          <span className="eye-icon" onClick={togglePasswordVisibility}>
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
       </div>
 
       <button type="submit" className="button">Register</button>

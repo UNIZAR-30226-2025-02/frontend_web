@@ -1,0 +1,60 @@
+/* Estilos generales del perfil */
+.profileContainer {
+    padding: 20px;
+    background: #222;
+    color: #fff;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+/* Título del perfil */
+.profileTitle {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #00aaff;
+}
+
+/* Tarjeta con los datos del usuario */
+.profileCard {
+    background: #333;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Texto dentro de la tarjeta */
+.profileCard p {
+    font-size: 16px;
+    margin: 8px 0;
+    padding: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Botón de cerrar sesión */
+.logoutButton {
+    background: red;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s ease-in-out;
+}
+
+.logoutButton:hover {
+    background: darkred;
+}
+
+/* Estilos para los textos de carga y redirección */
+.loadingText, .redirectText {
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+}

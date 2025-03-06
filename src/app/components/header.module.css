@@ -1,0 +1,50 @@
+.header {
+  background-color: #1e1e1e; /* Color oscuro de fondo */
+  position: fixed;  /* Fija el header en la pantalla */
+  top: 0; /* Lo posiciona en la parte superior */
+  left: 0; /* Alineado a la izquierda */
+  width: 100%; /* Ocupa todo el ancho */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Esto mantiene el logo izquierdo y el perfil derecho en sus lugares */
+  padding: 30px 20px;
+  height: 80px; /* Altura fija del header */
+  z-index: 1000; /* Para que esté por encima del resto */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional */
+}
+
+  .logoNom {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+  }
+  
+  .logoImage2 {
+    height: 46px;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    position: absolute; /* Esto coloca el logo central fuera del flujo normal */
+    left: 50%; /* Lo mueve hacia el 50% del ancho disponible */
+    transform: translateX(-50%); /* Ajuste para centrarlo perfectamente */
+  }
+  
+  .logoImage {
+    height: 150px; /* Ajusta el tamaño del logo central */
+  }
+
+  .custom-icon {
+    height: 100px;
+  }
+
+  .profile {
+    margin-right: 40px
+  }
+  
+  .profile:hover .iconProfile {
+    color: #007bff;
+  }
+  
