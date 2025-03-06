@@ -1,16 +1,28 @@
-
 /* Estilos Generales */
 .page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Ajustado para centrar mejor */
-  min-height: 100%;
-  background-color: #1e1e1e; /* Negro/gris oscuro */
+  justify-content: center;
+  min-height: 100vh;
   color: white;
   text-align: center;
   padding: 0px 20px;
-  gap: 5px; /* Reduce el espacio entre elementos */
+  gap: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 🎨 Fondo Animado */
+.animatedBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Para que esté detrás del contenido */
+  background: linear-gradient(-45deg, #1e1e1e, #3d3d3d, #1a1a1a, #000);
+  background-size: 300% 300%;
 }
 
 /* Sección de Texto */
@@ -22,26 +34,25 @@
 
 .textSection p {
   font-size: 1.2rem;
-  color: #cccccc; /* Gris claro */
+  color: #cccccc;
 }
 
 /* Sección de Imagen */
 .imageSection img {
-  width: 300px; /* Tamaño intermedio */
-  height: auto; /* Mantiene proporción */
+  width: 300px;
+  height: auto;
   max-width: 100%;
   margin: 5px 0;
 }
 
-
 /* Contenedor de Botones */
 .ctas {
   display: flex;
-  flex-direction: row; /* Cambia de columna a fila */
-  gap: 12px; /* Espacio entre botones */
+  flex-direction: row;
+  gap: 12px;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap; /* Evita que se desborden en pantallas pequeñas */
+  flex-wrap: wrap;
   width: 100%;
 }
 
@@ -49,11 +60,10 @@
 .guestContainer {
   display: flex;
   justify-content: center;
-  margin-top: 12px; /* Espacio entre los botones superiores y el de invitado */
+  margin-top: 12px;
 }
 
-
-/* Estilos base para todos los botones */
+/* Botones */
 .button {
   text-decoration: none;
   padding: 12px 24px;
@@ -66,19 +76,17 @@
   width: 220px;
 }
 
-/* Botón "Iniciar Sesión" */
 .primary {
-  background-color: #ffffff; /* Blanco */
-  color: #1e1e1e; /* Negro/gris oscuro */
+  background-color: #ffffff;
+  color: #1e1e1e;
   border: 2px solid white;
 }
 
 .primary:hover {
-  background-color: #cccccc; /* Gris claro */
+  background-color: #cccccc;
   transform: scale(1.05);
 }
 
-/* Botón "Registrarse" */
 .secondary {
   background-color: transparent;
   color: white;
@@ -86,14 +94,13 @@
 }
 
 .secondary:hover {
-  background-color: #333333; /* Gris más oscuro */
+  background-color: #333333;
   transform: scale(1.05);
 }
 
-/* Botón "Entrar como invitado" */
 .guest {
   background-color: transparent;
-  color: #007bff; /* Azul siempre */
+  color: #007bff;
   border: none;
   font-size: 0.9rem;
   cursor: pointer;
@@ -105,8 +112,6 @@
   text-decoration: underline;
 }
 
-
-
 /* Responsive */
 @media (max-width: 500px) {
   .page {
@@ -114,8 +119,8 @@
   }
 
   .ctas {
-    flex-direction: column; /* En pantallas pequeñas, vuelve a ponerlos en columna */
-    gap: 8px; /* Menos espacio en móviles */
+    flex-direction: column;
+    gap: 8px;
   }
 
   .button {
