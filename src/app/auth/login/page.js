@@ -1,9 +1,11 @@
-"use client"; // Necesario para usar eventos y estados
+"use client";
 import "../layout.css";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importa los iconos de FontAwesome
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "../../components/AuthContext";
 
 export default function LoginPage() {
+  const { login } = useAuth();
   const [form, setForm] = useState({ 
     username: "", 
     password: "",
@@ -18,11 +20,10 @@ export default function LoginPage() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login info:", form);
-    // Aquí puedes agregar la lógica para enviar el formulario
+    login(form.username, form.password); // Enviar credenciales al contexto de autenticación
   };
 
   return (
@@ -57,7 +58,7 @@ export default function LoginPage() {
       </div>
 
       <div>
-        <a href="#" className="link">Forgot password?</a>
+        <a href="./forgotPassword" className="link">Forgot password?</a>
       </div>
 
       <button type="submit" className="button">Sign In</button>

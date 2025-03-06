@@ -10,7 +10,7 @@ export default function Menu() {
     <div className={styles.sidebar}>
       <ul className={styles.menu}>
         <li>
-          <Link href="/comun/whithMenu/initial" className={styles.menuItem}>
+          <Link href="/comun/withMenu/initial" className={styles.menuItem}>
             <FcHome  className={styles.icon} /> Inicio
           </Link>
         </li>

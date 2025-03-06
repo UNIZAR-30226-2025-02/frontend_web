@@ -30,17 +30,17 @@ export default function HomePage() {
       </div>
 
       <div className={styles.ctas}>
-        <a href="/loginregister/login" className={`${styles.button} ${styles.primary}`}>
+        <a href="/auth/login" className={`${styles.button} ${styles.primary}`}>
           Iniciar Sesión
         </a>
-        <a href="/loginregister/register" className={`${styles.button} ${styles.secondary}`}>
+        <a href="/auth/register" className={`${styles.button} ${styles.secondary}`}>
           Registrarse
         </a>
       </div>
 
       {/* Contenedor del botón "Entrar como invitado" */}
       <div className={styles.guestContainer}>
-        <a href="/comun/whithMenu/initial" className={styles.guest}>Entrar como invitado</a>
+        <a href="/comun/withMenu/initial" className={styles.guest}>Entrar como invitado</a>
       </div>
     </div>
   );

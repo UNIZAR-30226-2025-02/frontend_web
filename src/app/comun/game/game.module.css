@@ -3,10 +3,88 @@
   flex-direction: column;
   align-items: center;
   background-color: #333;
+  top:140px;
   height: calc(100vh - 140px); /* Ajusta la altura restando los 100px */
   width: 100%;
   color: white;
   overflow: hidden; /* Evita el scroll */
+  position: relative;
+}
+
+.legalMove {
+  background-color: rgba(0, 150, 255, 0.7);
+  border-radius: 50%;
+  width: 30%;
+  height: 30%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.winnerOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(255, 215, 0, 0.5);
+  color: white;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.trophy {
+  font-size: 50px;
+  color: gold;
+}
+
+.reviewButton, .newGameButton, .rematchButton {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reviewButton {
+  background-color: #4A90E2;
+  color: white;
+}
+
+.reviewButton:hover {
+  background-color: #357ABD;
+}
+
+.newGameButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.newGameButton:hover {
+  background-color: #218838;
+}
+
+.rematchButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.rematchButton:hover {
+  background-color: #c82333;
+}
+
+.winnerActions {
+  display: flex;
+  gap: 10px;
 }
 
 .gameBody {
