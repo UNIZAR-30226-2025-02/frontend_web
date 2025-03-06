@@ -1,40 +1,118 @@
-/* Estilos generales del perfil */
+/* 🔹 CONTENEDOR PRINCIPAL */
 .profileContainer {
     padding: 20px;
-    background: #222;
+    padding-left: 200px;
+    background: #6e6e6e;
     color: #fff;
     border-radius: 10px;
-    max-width: 500px;
-    margin: 50px auto;
+    max-width: 800px;
+    margin: 150px auto 0;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
-/* Título del perfil */
-.profileTitle {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #00aaff;
-}
-
-/* Tarjeta con los datos del usuario */
+/* 🔹 CONTENEDOR 1 - INFORMACIÓN DEL PERFIL */
 .profileCard {
-    background: #333;
-    padding: 15px;
+    background: #3a3a3a;
+    padding: 20px;
     border-radius: 10px;
     text-align: left;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative; /* Necesario para posicionar botones */
+    padding-bottom: 50px; /* 🔹 Espacio extra para que "Cerrar Sesión" no tape nada */
 }
 
-/* Texto dentro de la tarjeta */
-.profileCard p {
+/* 🔹 Botón Editar arriba a la derecha */
+.editButton {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.3s ease-in-out;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.editButton:hover {
+    background: #0056b3;
+}
+
+/* 🔹 Icono de lápiz en el botón Editar */
+.editIcon {
     font-size: 16px;
-    margin: 8px 0;
-    padding: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Botón de cerrar sesión */
+/* 🔹 Contenedor de foto y datos */
+.profileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    height: 180px;
+}
+
+/* 🔹 Foto del usuario */
+.profilePhoto {
+    width: 180px;
+    height: 100%;
+    background: #555;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px;
+}
+
+/* 🔹 Contenedor del nombre y la información */
+.profileDetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+/* 🔹 Nombre del usuario */
+.profileName {
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding-left: 40px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #00aaff;
+    margin-bottom: 10px;
+}
+
+/* 🔹 Información en columnas */
+.profileInfo {
+    display: flex;
+    justify-content: space-around;
+    flex-grow: 1;
+    font-weight: bold;
+}
+
+/* 🔹 Columnas para los datos */
+.infoColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* 🔹 Botón Cerrar Sesión abajo a la derecha */
 .logoutButton {
     background: red;
     color: white;
@@ -43,15 +121,59 @@
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    margin-top: 20px;
     transition: background 0.3s ease-in-out;
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
 }
 
 .logoutButton:hover {
     background: darkred;
 }
 
-/* Estilos para los textos de carga y redirección */
+/* 🔹 CONTENEDOR 2 - SCROLL HORIZONTAL PARA MODOS DE JUEGO */
+.scoresContainer {
+    display: flex;
+    overflow-x: auto; /* 🔹 Habilitar scroll horizontal */
+    gap: 10px;
+    padding: 10px 0;
+    white-space: nowrap; /* 🔹 Evita que los elementos se rompan en varias líneas */
+    scrollbar-width: thin; /* 🔹 Para navegadores modernos */
+    scrollbar-color: #888 #333;
+}
+
+/* 🔹 Estilo de las tarjetas de puntuación */
+.scoreBox {
+    flex: 0 0 auto; /* 🔹 Evita que se reduzcan */
+    width: 150px;
+    background: #3a3a3a;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 🔹 Hacer los iconos más grandes */
+.scoreIcon {
+    font-size: 50px; /* 🔹 Tamaño del icono */
+    margin-bottom: 5px;
+}
+
+/* 🔹 CONTENEDOR 3 - HISTORIAL DE PARTIDAS */
+.historyContainer {
+    background: #3a3a3a;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 🔹 ESTILOS PARA TEXTOS DE CARGA Y REDIRECCIÓN */
 .loadingText, .redirectText {
     font-size: 18px;
     color: white;
