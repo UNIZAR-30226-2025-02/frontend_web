@@ -1,42 +1,42 @@
 import Link from "next/link";
 import styles from "./menu.module.css"; // Importamos el módulo de estilos
-import { FaHome, FaUserAlt, FaCogs, FaInfoCircle, FaEnvelope, FaSignOutAlt } from 'react-icons/fa'; // Ejemplo de iconos
+import { FaHome, FaBookOpen, FaCogs, FaInfoCircle, FaEnvelope, FaSignOutAlt, FaUserFriends  } from 'react-icons/fa'; // Ejemplo de iconos
+import { IoMdTrophy } from "react-icons/io";
+import { FcRules, FcConferenceCall, FcHome , FcSettings ,FcPuzzle   } from "react-icons/fc";
+
 
 export default function Menu() {
   return (
     <div className={styles.sidebar}>
-      <div className={styles.logo}>
-        <h2>MiApp</h2> {/* Logo de la aplicación */}
-      </div>
       <ul className={styles.menu}>
         <li>
-          <Link href="/home" className={styles.menuItem}>
-            <FaHome className={styles.icon} /> Inicio
+          <Link href="/comun/whithMenu/initial" className={styles.menuItem}>
+            <FcHome  className={styles.icon} /> Inicio
           </Link>
         </li>
         <li>
           <Link href="/perfil" className={styles.menuItem}>
-            <FaUserAlt className={styles.icon} /> Perfil
+            <IoMdTrophy className={styles.icon} style={{ color: "gold" }} /> Ranking
           </Link>
         </li>
         <li>
           <Link href="/ajustes" className={styles.menuItem}>
-            <FaCogs className={styles.icon} /> Ajustes
+            <FcConferenceCall  className={styles.icon} /> Social
           </Link>
         </li>
         <li>
           <Link href="/acerca" className={styles.menuItem}>
-            <FaInfoCircle className={styles.icon} /> Acerca
+            <FcPuzzle  className={styles.icon} /> Reglas
           </Link>
         </li>
         <li>
           <Link href="/contacto" className={styles.menuItem}>
-            <FaEnvelope className={styles.icon} /> Contacto
+            <FcRules className={styles.icon} /> Aperturas
           </Link>
         </li>
         <li>
           <Link href="/logout" className={styles.menuItem}>
-            <FaSignOutAlt className={styles.icon} /> Salir
+            <FcSettings  className={styles.icon} /> Ajustes
           </Link>
         </li>
       </ul>

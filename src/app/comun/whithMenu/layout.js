@@ -1,11 +1,11 @@
-import Header from "../components/header"; // Asegúrate de la ruta correcta
+import Menu from "../../components/menu"; // Asegúrate de la ruta correcta
 
 export default function Layout({ children }) {
   return (
 
     <div>
       {/* Header arriba */}
-      <Header />
+      <Menu />
 
       {/* Contenido principal */}
       <main>{children}</main>

@@ -40,7 +40,7 @@ export default function HomePage() {
 
       {/* Contenedor del botón "Entrar como invitado" */}
       <div className={styles.guestContainer}>
-        <a href="/guest" className={styles.guest}>Entrar como invitado</a>
+        <a href="/comun/whithMenu/initial" className={styles.guest}>Entrar como invitado</a>
       </div>
     </div>
   );
