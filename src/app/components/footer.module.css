@@ -1,0 +1,51 @@
+.footer {
+    background-color: #1e1e1e;
+    color: white;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 16px;
+    margin-top:  16px;
+    font-size: 14px;
+    margin-left: 300px;
+    width: calc(100% - 300px); /* Corrige la expresión '100% - 300px' */
+  }
+  
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .links li {
+    display: inline;
+  }
+
+  .iconoTiktok, .iconoInsta, .iconoX{
+    transition: color 0.3s ease;
+    transition: transform 0.3s ease-in-out;
+    font-size: 30px;
+    color: #828282;
+  }
+
+  .iconoTiktok:hover{
+    color: #00ffe0;
+    transform: scale(1.2);
+  }
+
+  .iconoInsta:hover{
+    color: #ff008f;
+    transform: scale(1.2);
+  }
+
+  .iconoX:hover{
+    color: white;
+    transform: scale(1.2);
+  }
+  

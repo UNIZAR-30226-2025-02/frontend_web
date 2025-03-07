@@ -1,0 +1,197 @@
+.container {
+  padding-top: 140px;
+  margin-left: 300px;
+  width: calc(100% - 300px); /* Corrige la expresión '100% - 300px' */
+  height: calc(100vh - 140px);
+  background-color: #6e6e6e;
+  display: flex;
+  justify-content: center; /* Centra el contenido horizontalmente */
+  align-items: center; /* Centra el contenido verticalmente */
+  flex-direction: column; /* Asegura que los elementos se apilen verticalmente */
+}
+
+.containerPartidas {
+  background-color: #3a3a3a; 
+  width: 80%;
+  height: 400px;
+  margin: 50px 0 30px 0; /* Separación arriba (80px) y abajo (30px) */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around; /* Distribuye los elementos con espacio entre ellos */
+  align-items: center; /* Alinea los elementos centralmente */
+  padding: 20px; /* Añadir un poco de relleno interno */
+  overflow-y: auto;
+}
+
+/* Personalización de scroll para navegadores Webkit (Chrome, Safari, Edge)*/
+.containerPartidas::-webkit-scrollbar {
+  width: 14px;
+}
+
+.containerPartidas::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 10px;
+}
+
+.containerPartidas::-webkit-scrollbar-thumb {
+  background: #3E76DF;
+  border-radius: 5px;
+  border: 3px solid white;
+}
+
+.card, .cardRacha{
+  padding: 30px;
+  height: 30px;
+  width: 90%; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.card{
+  background-color: #e0e0e0;
+  border: 4px solid #3E76DF;
+  border-radius: 8px;
+}
+
+.cardRacha{
+  color: #e0e0e0;
+  background-color: #1e1e1e;
+  border: 4px solid #1e1e1e;
+}
+
+.racha {
+  display: flex;
+  align-items: center;
+}
+
+
+.rachaCount {
+  margin-left: 380px;
+  margin-right: 10px;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.checks {
+  display: flex;
+  font-size: 32px;
+  gap: 5px;
+}
+
+.mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.icon, .shield {
+  font-size: 60px;
+}
+
+.iconoInfo{
+  font-size: 30px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.text {
+  font-size: 26px;
+  font-weight: bold;
+  flex-grow: 1;
+  margin-left: 20px;
+}
+
+.time {
+  font-weight: bold;
+  font-size: 20px;
+  margin-right: 16px;
+}
+
+.playButton {
+  background-color: #3E76DF;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.searchButton {
+  background-color: #3E76DF;
+  color: white;
+  border: none;
+  padding: 15px 80px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 22px;
+  gap: 5px;
+}
+.iconSearch{ 
+  font-size: 38px;
+  margin-right: 20px;
+}
+
+.searchButton:hover, .playButton:hover{
+  background: #0056b3;
+}
+/* Estilos para la pestaña de información */
+.infoPopup {
+  background-color: rgba(0, 0, 0, 0.9); /* Fondo negro con opacidad */
+  padding: 10px;
+  border: 2px solid #3E76DF;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute; /* Esto asegura que el popup se posicione respecto al contenedor del icono */
+  z-index: 10;
+  width: 258px; /* El ancho será automático para adaptarse al contenido */
+  font-size: 14px;
+  color: white;
+  pointer-events: none; /* Para que el clic no interfiera con otros elementos */
+  transition: opacity 0.3s ease-in-out; /* Suaviza la transición de la opacidad */
+  opacity: 0; /* Inicia con opacidad 0 */
+}
+
+/* Mostrar la ventana emergente cuando el icono está en hover */
+.iconoInfo:hover + .infoPopup {
+  opacity: 1; /* Mostrar la ventana al pasar el ratón por encima */
+  pointer-events: all; /* Habilitar interacción cuando está visible */
+}
+
+/* Estilo del icono de información cuando se pasa el mouse */
+.iconoInfo {
+  position: relative; /* Esto es necesario para que el infoPopup se posicione correctamente */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.iconoInfo:hover {
+  color: #3E76DF;
+}
+
+/* Título con color diferente */
+.infoPopup .title {
+  color: #3E76DF;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+/* Descripción con color distinto */
+.infoPopup .description {
+  color: #fff;
+  font-size: 14px;
+  margin: 0;
+  word-wrap: break-word;
+}
+ 
