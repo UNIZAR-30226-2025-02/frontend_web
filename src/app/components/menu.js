@@ -1,16 +1,18 @@
+"use client";
 import Link from "next/link";
 import styles from "./menu.module.css"; // Importamos el módulo de estilos
-import { FaHome, FaBookOpen, FaCogs, FaInfoCircle, FaEnvelope, FaSignOutAlt, FaUserFriends  } from 'react-icons/fa'; // Ejemplo de iconos
+import { usePathname } from "next/navigation"; // Importar usePathname
 import { IoMdTrophy } from "react-icons/io";
 import { FcRules, FcConferenceCall, FcHome , FcSettings ,FcPuzzle   } from "react-icons/fc";
 
-
 export default function Menu() {
+  const pathname = usePathname(); // Obtiene la ruta actual
   return (
     <div className={styles.sidebar}>
       <ul className={styles.menu}>
         <li>
-          <Link href="/comun/withMenu/initial" className={styles.menuItem}>
+          <Link href="/comun/withMenu/initial"         
+          className={`${styles.menuItem} ${pathname === "/comun/withMenu/initial" ? styles.active : ""}`}>
             <FcHome  className={styles.icon} /> Inicio
           </Link>
         </li>

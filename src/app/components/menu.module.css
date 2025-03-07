@@ -16,6 +16,10 @@
     list-style-type: none;
     padding: 0;
   }
+
+  .active, .menuItem:hover {
+    background-color: #181717;
+  }
   
   .menuItem {
     display: flex;
@@ -25,10 +29,6 @@
     color: white;
     font-weight: bold;  
     font-size: 18px;
-  }
-  
-  .menuItem:hover {
-    background-color: #383838;
   }
   
   .icon, .iconTrophy {

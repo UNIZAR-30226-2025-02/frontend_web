@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
             };
             setUser(fakeUser);
             localStorage.setItem("user", JSON.stringify(fakeUser));
-            router.push("/comun/withMenu/profile");
+            router.push("/comun/withMenu/initial");
         } else {
             alert("Usuario o contraseña incorrectos");
         }
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         localStorage.removeItem("user");
-        router.push("/auth/login");
+        router.push("/comun/withMenu/initial");
     };
 
     useEffect(() => {

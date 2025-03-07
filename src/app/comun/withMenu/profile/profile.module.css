@@ -1,11 +1,11 @@
 /* 🔹 CONTENEDOR PRINCIPAL */
 .profileContainer {
-    padding: 20px;
-    padding-left: 200px;
+    padding-top: 40px;
+    padding-left: 300px;
     background: #6e6e6e;
     color: #fff;
     border-radius: 10px;
-    max-width: 800px;
+    max-width: 900px;
     margin: 150px auto 0;
     text-align: center;
     display: flex;
@@ -63,7 +63,8 @@
 /* 🔹 Foto del usuario */
 .profilePhoto {
     width: 180px;
-    height: 100%;
+    height: 180px;
+    margin-top: 30px;
     background: #555;
     color: white;
     display: flex;
@@ -89,7 +90,7 @@
     display: flex;
     justify-content: space-between;
     flex-grow: 1;
-    padding-left: 40px;
+    padding-left: 62px;
     font-size: 24px;
     font-weight: bold;
     color: #00aaff;
@@ -112,42 +113,59 @@
     gap: 10px;
 }
 
-/* 🔹 Botón Cerrar Sesión abajo a la derecha */
+/* 🔹 Icono de Cerrar Sesión */
 .logoutButton {
-    background: red;
-    color: white;
-    padding: 10px 15px;
+    background: none;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
-    transition: background 0.3s ease-in-out;
     position: absolute;
     bottom: 15px;
     right: 15px;
+    transition: transform 0.2s ease-in-out;
 }
 
 .logoutButton:hover {
-    background: darkred;
+    transform: scale(1.2);
 }
+
+/* 🔹 Tamaño y color del icono */
+.logoutIcon {
+    font-size: 28px; /* 🔹 Ajusta el tamaño */
+    color: rgb(255, 255, 255);
+}
+
 
 /* 🔹 CONTENEDOR 2 - SCROLL HORIZONTAL PARA MODOS DE JUEGO */
 .scoresContainer {
     display: flex;
-    overflow-x: auto; /* 🔹 Habilitar scroll horizontal */
+    overflow-x: auto;
     gap: 10px;
     padding: 10px 0;
-    white-space: nowrap; /* 🔹 Evita que los elementos se rompan en varias líneas */
-    scrollbar-width: thin; /* 🔹 Para navegadores modernos */
-    scrollbar-color: #888 #333;
+    white-space: nowrap;
 }
+
+/* Personalización de scroll para navegadores Webkit (Chrome, Safari, Edge)*/
+.scoresContainer::-webkit-scrollbar {
+    width: 14px;
+  }
+  
+  .scoresContainer::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 10px;
+  }
+  
+  .scoresContainer::-webkit-scrollbar-thumb {
+    background: #3E76DF;
+    border-radius: 5px;
+    border: 3px solid white;
+  }
 
 /* 🔹 Estilo de las tarjetas de puntuación */
 .scoreBox {
-    flex: 0 0 auto; /* 🔹 Evita que se reduzcan */
-    width: 150px;
+    flex: 0 0 auto;
+    width: 180px;
     background: #3a3a3a;
-    padding: 10px;
+    padding: 15px;
     border-radius: 5px;
     text-align: center;
     font-size: 16px;
@@ -157,21 +175,128 @@
     align-items: center;
 }
 
-/* 🔹 Hacer los iconos más grandes */
+/* 🔹 Contenedor del gráfico */
+.chartContainer {
+    width: 100%;
+    height: 100px;
+    min-height: 100px; /* 🔹 Asegura que siempre tenga altura */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🔹 Tamaño de los iconos */
 .scoreIcon {
-    font-size: 50px; /* 🔹 Tamaño del icono */
+    font-size: 35px;
     margin-bottom: 5px;
 }
+
+/* 🔹 Gráficos dentro de los contenedores */
+.scoreBox svg {
+    max-width: 100%;
+}
+
 
 /* 🔹 CONTENEDOR 3 - HISTORIAL DE PARTIDAS */
 .historyContainer {
     background: #3a3a3a;
-    padding: 10px;
-    margin-top: 10px;
+    padding: 20px;
     border-radius: 5px;
     font-size: 18px;
     font-weight: bold;
 }
+
+/* 🔹 Tabla del historial de partidas */
+.historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* 🔹 Encabezados de la tabla */
+.historyTable th {
+    background: #222;
+    padding: 10px;
+    color: white;
+    border-bottom: 2px solid #00aaff;
+}
+
+/* 🔹 Filas de la tabla */
+.historyTable td {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+/* 🔹 Contenedor de jugadores (uno encima del otro) */
+.playersContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+/* 🔹 Estilo para cada jugador en el historial */
+.playerRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 🔹 Indicador de color (blanco o negro) al lado de cada jugador */
+.colorIndicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+/* 🔹 Color blanco para los que jugaron con blancas */
+.whitePiece {
+    background-color: white;
+}
+
+/* 🔹 Color negro para los que jugaron con negras */
+.blackPiece {
+    background-color: black;
+}
+
+/* 🔹 Icono del modo de juego */
+.modeIcon {
+    font-size: 20px;
+    text-align: center;
+}
+
+/* 🔹 Resultado de la partida (victoria/derrota) */
+.win {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.lose {
+    color: #ff0000;
+    font-weight: bold;
+}
+
+/* 🔹 Botón para ver la partida */
+.watchButton {
+    background: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.watchButton:hover {
+    background: #0056b3;
+}
+
+
 
 /* 🔹 ESTILOS PARA TEXTOS DE CARGA Y REDIRECCIÓN */
 .loadingText, .redirectText {
