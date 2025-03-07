@@ -133,12 +133,12 @@
   display: flex;
   align-items: center;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 22px;
   gap: 5px;
 }
 .iconSearch{ 
-  font-size: 28px;
-  margin-right: 10px;
+  font-size: 38px;
+  margin-right: 20px;
 }
 
 .searchButton:hover, .playButton:hover{
@@ -153,7 +153,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: absolute; /* Esto asegura que el popup se posicione respecto al contenedor del icono */
   z-index: 10;
-  width: 260px; /* El ancho será automático para adaptarse al contenido */
+  width: 258px; /* El ancho será automático para adaptarse al contenido */
   font-size: 14px;
   color: white;
   pointer-events: none; /* Para que el clic no interfiera con otros elementos */
@@ -171,6 +171,7 @@
 .iconoInfo {
   position: relative; /* Esto es necesario para que el infoPopup se posicione correctamente */
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
 .iconoInfo:hover {

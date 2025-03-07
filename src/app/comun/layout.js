@@ -2,7 +2,6 @@ import Header from "../components/header"; // Asegúrate de la ruta correcta
 
 export default function Layout({ children }) {
   return (
-
     <div>
       {/* Header arriba */}
       <Header />
@@ -10,6 +9,5 @@ export default function Layout({ children }) {
       {/* Contenido principal */}
       <main>{children}</main>
     </div>
-
   );
 }
