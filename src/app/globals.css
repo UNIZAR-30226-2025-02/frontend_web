@@ -23,3 +23,18 @@ a {
   text-decoration: none;    /*Quita el subrayado de los enlaces*/
 }
 
+/* Estiliza la barra de desplazamiento para navegadores basados en WebKit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 10px; /* Ancho de la barra de desplazamiento */
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e; /* Color del fondo de la barra */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3E76DF; /* Color de la barra de desplazamiento */
+  border-radius: 10px;
+  border: 2px solid white;
+}

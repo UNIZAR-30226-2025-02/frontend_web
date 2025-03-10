@@ -39,6 +39,7 @@
     margin-top: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    box-sizing: border-box; /* Evita que el padding afecte el tamaño */
   }
   
   .button {
@@ -78,4 +79,41 @@
     width: 200px;  /* Ajusta el tamaño de la imagen */
     height: auto;  /* Mantén las proporciones */
     margin-bottom: 5px;  /* Mantén el espacio debajo del logo */
+  }
+
+  .short-input {
+    width: 80%;  /* Reduce el ancho de los inputs */
+  }
+  
+  .password-container {
+    position: relative;
+  }
+  
+  .password-wrapper {
+    position: relative;
+    width: 100%; /* Igual que los demás inputs */
+  }
+  
+  .password-input {
+    width: 100%;
+    padding: 10px;
+    padding-right: 40px; /* Espacio para el icono */
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  
+  .eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 65%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+  }
+  
+  .eye-icon:hover {
+    color: #000;
   }
