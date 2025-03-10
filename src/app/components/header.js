@@ -5,7 +5,7 @@ import { VscAccount } from "react-icons/vsc";
 import { useAuth } from "./AuthContext";
 
 
-export default function header() {
+export default function Header() {
   const { user } = useAuth(); // Obtenemos la info del usuario
   return (
     <header className={styles.header}>
