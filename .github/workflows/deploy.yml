@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request: 
     branches: [main]
+  workflow_dispatch:  # Agrega este evento para ejecutar el workflow manualmente
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
