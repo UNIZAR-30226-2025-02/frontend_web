@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import styles from "./header.module.css"; // Importamos el módulo de estilos
 import { VscAccount } from "react-icons/vsc";
-import { useAuth } from "./AuthContext";
 
 
 export default function Header() {
-  const { user } = useAuth(); // Obtenemos la info del usuario
+  const user = JSON.parse(localStorage.getItem("userData")); // Obtener usuario desde localStorage y parsearlo a objeto
+
   return (
     <header className={styles.header}>
       {/* Logo a la izquierda */}
@@ -32,7 +33,7 @@ export default function Header() {
                             alt="Avatar" 
                             className={styles.userAvatar} 
                         />
-                        <span className={styles.userName}>{user.name}</span>
+                        <span className={styles.userName}>{user.NombreUser}</span>
                     </Link>
                 ) : (
                     <Link href="/auth/login">

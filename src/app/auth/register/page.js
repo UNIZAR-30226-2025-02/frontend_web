@@ -1,16 +1,18 @@
-"use client"; // Necesario para usar eventos y estados
-import "../layout.css"; // Importa los estilos globales
+"use client";
+import "../layout.css";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importa los iconos de FontAwesome
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
+    NombreUser: "", 
+    Correo: "",     
+    Contrasena: "",  
   });
-
+  
   const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,20 +22,48 @@ export default function RegisterPage() {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register info:", form);
-    // Aquí puedes agregar la lógica para enviar el formulario
+    setMessage("");
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3000/register", { // Cambio de la URL
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          NombreUser: form.NombreUser, // Cambio "username" por "nombre"
+          Correo: form.Correo,
+          Contrasena: form.Contrasena,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMessage("¡Ya casi esa! Comprueba tu correo electronico y verificalo");
+        setForm({ NombreUser: "", Correo: "", Contrasena: "" });
+      } else {
+        setError(data.message || "Error en el registro.");
+      }
+    } catch (error) {
+      setError("Error en el servidor. Inténtalo de nuevo más tarde.");
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="form">
+      {message && <p className="success-message">{message}</p>}
+      {error && <p className="error-message">{error}</p>}
+
       <div>
         <label className="label">Username</label>
         <input
           type="text"
-          name="username"
-          value={form.username}
+          name="NombreUser"
+          value={form.NombreUser}
           onChange={handleChange}
           className="input"
           required
@@ -44,8 +74,8 @@ export default function RegisterPage() {
         <label className="label">Email</label>
         <input
           type="email"
-          name="email"
-          value={form.email}
+          name="Correo"
+          value={form.Correo}
           onChange={handleChange}
           className="input"
           required
@@ -57,8 +87,8 @@ export default function RegisterPage() {
         <div className="password-wrapper">
           <input
             type={showPassword ? "text" : "password"}
-            name="password"
-            value={form.password}
+            name="Contrasena"
+            value={form.Contrasena}
             onChange={handleChange}
             className="input"
             required

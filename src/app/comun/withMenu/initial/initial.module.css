@@ -10,17 +10,29 @@
   flex-direction: column; /* Asegura que los elementos se apilen verticalmente */
 }
 
+.welcomeMessage {
+  text-align: left; /* Alinea solo el texto de bienvenida a la izquierda */
+  width: 100%;/* Corrige la expresión '100% - 300px' */
+}
+
 .containerPartidas {
   background-color: #3a3a3a; 
   width: 80%;
   height: 400px;
-  margin: 50px 0 30px 0; /* Separación arriba (80px) y abajo (30px) */
+  margin: 20px 0 30px 0; /* Separación arriba (80px) y abajo (30px) */
   display: flex;
   flex-direction: column;
   justify-content: space-around; /* Distribuye los elementos con espacio entre ellos */
   align-items: center; /* Alinea los elementos centralmente */
   padding: 20px; /* Añadir un poco de relleno interno */
   overflow-y: auto;
+}
+
+.container h2{
+  color: white;
+  font-size: 34px;
+  margin-bottom: 10px;
+  margin-left: 80px;
 }
 
 /* Personalización de scroll para navegadores Webkit (Chrome, Safari, Edge)*/

@@ -1,5 +1,6 @@
 import Header from "../components/header"; // Asegúrate de la ruta correcta
 
+
 export default function Layout({ children }) {
   return (
     <div>
