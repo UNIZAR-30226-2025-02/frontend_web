@@ -2,14 +2,57 @@
 
 import styles from './initial.module.css';
 import Link from "next/link";
+import io from 'socket.io-client';  // Importar cliente de socket.io
+import { useState, useEffect} from "react"; // Importar useState para manejar estado 
 import { FcSearch, FcRating, FcFlashOn, FcAlarmClock, FcApproval, FcBullish } from "react-icons/fc";
 import { FaChessPawn, FaFire } from "react-icons/fa";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 
 export default function InitialPage() {
-    const user = JSON.parse(localStorage.getItem("userData")); // Obtener usuario desde localStorage y parsearlo a objeto
+    const [user, setUser] = useState(null);
+    const [searching, setSearching] = useState(false);
+    const [socket, setSocket] = useState(null);
 
+
+    // Cargar usuario desde localStorage solo una vez
+    useEffect(() => {
+        // Conectamos al servidor de sockets (ajusta la URL según tu configuración)
+        const socketConnection = io("http://localhost:3000"); // Ajusta según tu servidor
+        setSocket(socketConnection);
+
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        setUser(userData);
+
+        return () => {
+            socketConnection.close(); // Cerrar la conexión cuando el componente se desmonte
+        };
+    }, []);
     console.log("Usuario desde localStorage:", user);
+
+    // Función para buscar partida
+    const handleSearchGame = async () => {
+        if (!socket) return; // Asegurarse de que el socket esté conectado
+
+        setSearching(true);
+        console.log("Voy a lanzar evento");
+
+        // Emitir el evento 'find-game' con los datos del usuario
+        socket.emit('find-game', { username: user?.NombreUser || 'Invitado' });
+        console.log("Lo he lanzado");
+
+        // Escuchar la respuesta del servidor
+        socket.on('game-found', (data) => {
+            setSearching(false);
+            console.log("Estoy buscando partida", user.NombreUser);
+
+            if (data.partidaEncontrada) {
+                console.log("he encontrado partida", user.NombreUser);
+                window.location.href = "/comun/game"; // Redirigir a la partida
+            } else {
+                alert("Aún no se ha encontrado un oponente. Inténtalo en un momento.");
+            }
+        });
+    };
 
     // Descripciones de los modos de juego
     const descriptions = {
@@ -94,11 +137,9 @@ export default function InitialPage() {
             </div>
 
             {/* Buscar Partida */}
-            <Link href="/comun/game">
-                <button className={styles.searchButton}>
-                    <FcSearch className={styles.iconSearch} /> Buscar Partida
-                </button>
-            </Link>
+            <button className={styles.searchButton} onClick={handleSearchGame} disabled={searching}>
+                {searching ? "Buscando..." : <><FcSearch className={styles.iconSearch} /> Buscar Partida</>}
+            </button>
         </div>
     );
 }

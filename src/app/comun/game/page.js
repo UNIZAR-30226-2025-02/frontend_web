@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import styles from "./game.module.css";
+import socket from '../../utils/sockets';
+import useSocket from '../../hooks/useSocket';
 
 export default function Game() {
   const [game, setGame] = useState(new Chess());
@@ -16,6 +18,70 @@ export default function Game() {
   const [winner, setWinner] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
+  const [playerColor, setPlayerColor] = useState(null); // Color asignado al usuario
+
+  useEffect(() => {
+    // Recibir el color del jugador
+    socket.on("assignColor", (color) => {
+      setPlayerColor(color);
+    });
+
+    // Recibir movimientos del otro jugador
+    socket.on("move", ({ source, target, fen }) => {
+      const newGame = new Chess(fen);
+      setGame(newGame);
+      setFen(newGame.fen());
+      setTurn(newGame.turn());
+    });
+
+    // Recibir mensajes del chat
+    socket.on("chatMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    // Recibir actualización de tiempo
+    socket.on("updateTime", ({ white, black }) => {
+      setWhiteTime(white);
+      setBlackTime(black);
+    });
+
+    return () => {
+      socket.off("assignColor");
+      socket.off("move");
+      socket.off("chatMessage");
+      socket.off("updateTime");
+    };
+  }, []);
+
+  const handleMove = (sourceSquare, targetSquare) => {
+    if (winner || playerColor !== turn) return; // Bloquear si no es el turno
+
+    const gameCopy = new Chess(game.fen());
+    const move = gameCopy.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
+
+    if (move) {
+      setGame(gameCopy);
+      setFen(gameCopy.fen());
+      setTurn(gameCopy.turn());
+      setSelectedSquare(null);
+      setLegalMoves([]);
+
+      socket.emit("move", { source: sourceSquare, target: targetSquare, fen: gameCopy.fen() });
+
+      if (gameCopy.isCheckmate()) {
+        setWinner(move.color === "w" ? "Negro" : "Blanco");
+      }
+    }
+  };
+
+  const handleSendMessage = () => {
+    if (message.trim() !== "") {
+      const newMessage = { text: message, sender: playerColor === "w" ? "Blanco" : "Negro" };
+      setMessages([...messages, newMessage]);
+      socket.emit("chatMessage", newMessage);
+      setMessage("");
+    }
+  };
 
   // Función para formatear el tiempo en mm:ss
   const formatTime = (seconds) => {
@@ -58,47 +124,6 @@ export default function Game() {
   const handleMoveClick = (targetSquare) => {
     if (!selectedSquare || !legalMoves.includes(targetSquare)) return;
     handleMove(selectedSquare, targetSquare);
-  };
-
-  // Función para manejar el movimiento de las piezas
-  const handleMove = (sourceSquare, targetSquare) => {
-    if (winner) return; // Evita movimientos si ya hay un ganador
-
-    const gameCopy = new Chess(game.fen());
-    const move = gameCopy.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: "q", // Siempre promociona a reina (puedes cambiarlo)
-    });
-
-    if (move) {
-      setGame(gameCopy);
-      setFen(gameCopy.fen()); // Actualiza la posición del tablero
-      setTurn(gameCopy.turn()); // Cambia el turno del jugador
-      setSelectedSquare(null);
-      setLegalMoves([]);
-
-      // Verifica si hay jaque mate
-      if (gameCopy.isCheckmate()) {
-        setWinner(move.color === "w" ? "Negro" : "Blanco");
-      }
-    }
-  };
-
-  // Manejar el envío de mensajes en el chat
-  const handleSendMessage = () => {
-    if (message.trim() !== "") {
-      setMessages([...messages, { text: message, sender: turn === "w" ? "Blanco" : "Negro" }]);
-      setMessage("");
-    }
-  };
-
-   // Manejar el envío de mensaje con Enter
-   const handleKeyDown = (event) => {
-    if (event.key === "Enter" && message.trim() !== "") {
-      event.preventDefault();
-      handleSendMessage();
-    }
   };
 
   return (

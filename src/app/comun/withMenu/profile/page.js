@@ -11,6 +11,7 @@ const Profile = () => {
     const user = JSON.parse(localStorage.getItem("userData"));
     const router = useRouter();
     const [loading, setLoading] = useState(true);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     useEffect(() => {
         if (!user && router.pathname !== "/") {
@@ -20,7 +21,12 @@ const Profile = () => {
         }
     }, [user, router]);
 
+    const confirmLogout = () => {
+        setShowConfirm(true);
+    };
+
     const handleLogout = async () => {
+        setShowConfirm(false)
         console.log("Ejecutando handleLogout");
         if (!user) {
             console.log("No hay usuario para cerrar sesión");
@@ -111,10 +117,21 @@ const Profile = () => {
                     </div>
                 </div>
 
-                <button className={styles.logoutButton} onClick={handleLogout} title="Cerrar sesión">
+                <button className={styles.logoutButton} onClick={confirmLogout} title="Cerrar sesión">
                     <FiLogOut className={styles.logoutIcon} />
                 </button>
             </div>
+            {showConfirm && (
+                <div className={styles.confirmOverlay}>
+                    <div className={styles.confirmBox}>
+                        <p className={styles.confirmText}>¿Estás seguro de que quieres cerrar sesión?</p>
+                        <div className={styles.confirmButtons}>
+                            <button className={styles.confirmYes} onClick={handleLogout}>Sí</button>
+                            <button className={styles.confirmNo} onClick={() => setShowConfirm(false)}>No</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className={styles.scoresContainer}>
                 {gameModes.map((mode, index) => (
