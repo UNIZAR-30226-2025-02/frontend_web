@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import styles from "./game.module.css";
-import socket from '../../utils/sockets';
-import useSocket from '../../hooks/useSocket';
+import io from 'socket.io-client';  // Importar cliente de socket.
+import socket from "../../utils/sockets"; 
+
 
 export default function Game() {
   const [game, setGame] = useState(new Chess());
@@ -19,64 +20,89 @@ export default function Game() {
   const [winner, setWinner] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
-  const [playerColor, setPlayerColor] = useState(null); // Color asignado al usuario
+  const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // Recibir los datos del usuario desde localStorage y establecer el estado
+    console.log("🔄 Buscando usuario en localStorage...");
     const storedUserData = localStorage.getItem("userData");
+  
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
-      setUser(parsedUser);  // Actualizamos el estado con los datos del usuario
+      console.log("✅ Usuario encontrado:", parsedUser);
+      setUser(parsedUser);
     } else {
-      console.log("No se encontraron datos de usuario en localStorage.");
+      console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
-  }, []);  
+  }, []);
 
   useEffect(() => {
-      if (user) {
-        console.log(" se encontraron datos de usuario en localStorage.", user);
-        console.log("🟢 Conectado con ID:", socket.id);
-        socket.emit("getRooms"); // Pedimos las salas en las que está
-        socket.on('color', (data) => {
-          console.log('Solicito color');
-          const jugador = data.jugadores.find(jugador => jugador.id === user.id); // Suponiendo que user tiene un 'id'
-          if (!jugador) {
-            console.error('No se ha encontrado el jugador');
-            return;
-          }
-          const assignedColor = jugador ? jugador.color : null;
-          setColor(assignedColor);  // Actualizamos el estado de color
-          console.log('Color asignado:', assignedColor);
-        });
+    console.log("🔄 useEffect ejecutándose...");
+    if (!user) {
+      console.log("❌ No hay usuario aún. Esperando...");
+      return;
+    }
+    
+    
+    socket.on("connect", () => {
+      console.log("✅ Conectado con socket ID:", socket.id);
+      socket.emit("getRooms"); // Pedimos las salas en las que está
+    });
+
+    if (socket && socket.connected) {
+      console.log("✅ Socket ya conectado con ID:", socket.id);
+    }else{
+      console.log("🚀 Intentando conectar al socket...");
+      socket.connect(); 
+    }
+
+    console.log("🟢 Usuario conectado, esperando ID de socket...");
+
+    socket.on("color", (data) => {
+      console.log("🎨 Buscando colores para el usuario...");
+      const jugador = data.jugadores.find((jugador) => jugador.id === user.id);
+      if (!jugador) {
+        console.error("❌ No se ha encontrado el jugador en la lista.");
+        return;
       }
-
-
-    // Recibir movimientos del otro jugador
-    socket.on("move", ({ source, target, fen }) => {
-      const newGame = new Chess(fen);
-      setGame(newGame);
-      setFen(newGame.fen());
-      setTurn(newGame.turn());
+      setPlayerColor(jugador.color);
+      console.log("✅ Color asignado:", jugador.color);
     });
+  
+      // Recibir movimientos del otro jugador
+      /*socket.on("move", ({ source, target, fen }) => {
+        const newGame = new Chess(fen);
+        setGame(newGame);
+        setFen(newGame.fen());
+        setTurn(newGame.turn());
+      });
+  
+      // Recibir mensajes del chat
+      socket.on("chatMessage", (msg) => {
+        setMessages((prev) => [...prev, msg]);
+      });
+  
+      // Recibir actualización de tiempo
+      socket.on("updateTime", ({ white, black }) => {
+        setWhiteTime(white);
+        setBlackTime(black);
+      });*/
+  
+      /*return () => {
+        socket.off("assignColor");
+        socket.off("move");
+        socket.off("chatMessage");
+        socket.off("updateTime");
+      };*/
 
-    // Recibir mensajes del chat
-    socket.on("chatMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    // Recibir actualización de tiempo
-    socket.on("updateTime", ({ white, black }) => {
-      setWhiteTime(white);
-      setBlackTime(black);
-    });
-
-    return () => {
-      socket.off("assignColor");
-      socket.off("move");
-      socket.off("chatMessage");
-      socket.off("updateTime");
-    };
-  }, [user]);  // Este efecto depende de 'user' y se ejecutará cuando 'user' cambie
+      return () => {
+        console.log("🧹 Limpiando eventos de socket...");
+        socket.off("connect");
+        socket.off("color");
+      };
+    }, [user, socket]); // Este efecto depende de 'user' y se ejecutará cuando 'user' cambie
+    
+    // El resto del código perm
 
   const handleMove = (sourceSquare, targetSquare) => {
     if (winner || playerColor !== turn) return; // Bloquear si no es el turno

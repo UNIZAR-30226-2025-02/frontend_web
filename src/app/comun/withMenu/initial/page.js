@@ -8,6 +8,7 @@ import { FcSearch, FcRating, FcFlashOn, FcAlarmClock, FcApproval, FcBullish } fr
 import { FaChessPawn, FaFire } from "react-icons/fa";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 
+
 export default function InitialPage() {
     const [user, setUser] = useState(null);
     const [searching, setSearching] = useState(false);
