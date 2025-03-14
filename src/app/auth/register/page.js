@@ -41,12 +41,13 @@ export default function RegisterPage() {
       });
       
       const data = await response.json();
+      console.log("Respuesta del servidor:", data);
       
       if (response.ok) {
         setMessage("¡Ya casi esa! Comprueba tu correo electronico y verificalo");
         setForm({ NombreUser: "", Correo: "", Contrasena: "" });
       } else {
-        setError(data.message || "Error en el registro.");
+        setError(data.message || data.error || "Error en el registro.");
       }
     } catch (error) {
       setError("Error en el servidor. Inténtalo de nuevo más tarde.");

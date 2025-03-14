@@ -117,3 +117,8 @@
   .eye-icon:hover {
     color: #000;
   }
+
+  .error-message{
+    color: red;
+
+  }

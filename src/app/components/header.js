@@ -6,8 +6,19 @@ import { VscAccount } from "react-icons/vsc";
 
 
 export default function Header() {
-  const user = JSON.parse(localStorage.getItem("userData")); // Obtener usuario desde localStorage y parsearlo a objeto
+  const [user, setUser] = useState(null);
 
+  // Cargar usuario desde localStorage solo una vez
+  useEffect(() => {
+      // Verificamos si hay datos en localStorage antes de intentar parsearlos
+      const storedUserData = localStorage.getItem("userData");
+      if (storedUserData) {
+          const parsedUser = JSON.parse(storedUserData);
+          setUser(parsedUser);
+      } else {
+          console.log("No se encontraron datos de usuario en localStorage.");
+      }
+  }, []);
   return (
     <header className={styles.header}>
       {/* Logo a la izquierda */}

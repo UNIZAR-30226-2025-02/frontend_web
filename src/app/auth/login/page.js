@@ -24,7 +24,6 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    console.log("Enviando formulario con los datos:", form);  // Log de los datos del formulario
 
     try {
         const response = await fetch("http://localhost:3000/login", {
@@ -33,43 +32,39 @@ export default function LoginPage() {
             body: JSON.stringify(form),
         });
 
-        console.log("Respuesta del servidor:", response);  // Log de la respuesta del servidor
+        const data = await response.json();  // Parseamos la respuesta como JSON
+        console.log("Respuesta del servidor:", data); // Debug para ver la respuesta exacta
 
         if (!response.ok) {
-            const responseBody = await response.text();  // Usamos text() solo si la respuesta no es JSON
-            console.log("Cuerpo de la respuesta (error):", responseBody);  // Log de respuesta en caso de error
-            throw new Error(`Error en el login: ${responseBody || "Datos inválidos"}`);
+            console.log("Error en el login:", data);
+            throw new Error(data.message || data.error || "Error desconocido en el login");
         }
-
-        const data = await response.json();  // Parseamos la respuesta como JSON
-        console.log("Datos del servidor:", data);  // Log de los datos recibidos del servidor
 
         if (data.token) {
             // Guardar el token en localStorage
             localStorage.setItem("authToken", data.token);
-            localStorage.setItem("NombreUser", data.NombreUser);  // Guardamos el nombre de usuario
-            console.log("Token guardado en localStorage");
-
-            // Redirigir a la página común/withMenu/initial tras login exitoso
+            localStorage.setItem("NombreUser", data.NombreUser);
             router.push("/comun/withMenu/initial");
         } else if (data.id) {
-            // Si no hay token, pero el id está presente, podrías redirigir a una página de perfil o mostrar un mensaje
-            console.log("Usuario autenticado, pero no se encontró token.");
-            // Aquí puedes guardar los datos del usuario, si es necesario, o redirigir a otra página
-            localStorage.setItem("userData", JSON.stringify(data));  // Guardar datos del usuario si es necesario
-            router.push("/comun/withMenu/initial");  // O redirigir a otra página
-        } else {
+          // Si no hay token, pero el id está presente, podrías redirigir a una página de perfil o mostrar un mensaje
+          console.log("Usuario autenticado, pero no se encontró token.");
+          // Aquí puedes guardar los datos del usuario, si es necesario, o redirigir a otra página
+          localStorage.setItem("userData", JSON.stringify(data));  // Guardar datos del usuario si es necesario
+          router.push("/comun/withMenu/initial");  // O redirigir a otra página 
+        }else {
             throw new Error("⚠️ Respuesta inesperada del servidor");
         }
     } catch (error) {
-        console.error("Error durante el proceso de login:", error);  // Log del error en la captura
-        setError(error.message);
+        console.log("Error durante el proceso de login:", error.message);  // Mostramos solo el mensaje
+        setError(error.message); // Mostramos el mensaje exacto del error en la UI
     }
 };
+
   
 
   return (
     <form onSubmit={handleSubmit} className="form">
+      {error && <p className="error-message">{error}</p>}
       <div>
         <label className="label">Username</label>
         <input
@@ -98,8 +93,6 @@ export default function LoginPage() {
           </span>
         </div>
       </div>
-
-      {error && <p className="error-message">{error}</p>}
 
       <div>
         <a href="./forgotPassword" className="link">Forgot password?</a>

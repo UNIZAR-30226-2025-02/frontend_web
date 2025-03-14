@@ -20,8 +20,13 @@ export default function InitialPage() {
         const socketConnection = io("http://localhost:3000"); // Ajusta según tu servidor
         setSocket(socketConnection);
 
-        const userData = JSON.parse(localStorage.getItem("userData"));
-        setUser(userData);
+        const storedUserData = localStorage.getItem("userData");
+        if (storedUserData) {
+            const parsedUser = JSON.parse(storedUserData);
+            setUser(parsedUser);
+        } else {
+            console.log("No se encontraron datos de usuario en localStorage.");
+        }
 
         return () => {
             socketConnection.close(); // Cerrar la conexión cuando el componente se desmonte
@@ -34,23 +39,31 @@ export default function InitialPage() {
         if (!socket) return; // Asegurarse de que el socket esté conectado
 
         setSearching(true);
-        console.log("Voy a lanzar evento");
-
-        // Emitir el evento 'find-game' con los datos del usuario
-        socket.emit('find-game', { username: user?.NombreUser || 'Invitado' });
-        console.log("Lo he lanzado");
+        const dataToSend = { 
+            idJugador: user?.id, 
+            mode: "Punt_10" 
+        };
+        
+        console.log("🔍 Enviando datos:", dataToSend); // Verificar datos antes de enviar
+        
+        console.log("👤 Usuario antes de enviar:", user);
+        console.log("🔍 Enviando datos:", dataToSend);
+        socket.emit("find-game", dataToSend);
+        console.log("✅ Lo he lanzado");
 
         // Escuchar la respuesta del servidor
-        socket.on('game-found', (data) => {
+        socket.on('game-ready', (data) => {
             setSearching(false);
             console.log("Estoy buscando partida", user.NombreUser);
-
-            if (data.partidaEncontrada) {
-                console.log("he encontrado partida", user.NombreUser);
-                window.location.href = "/comun/game"; // Redirigir a la partida
-            } else {
-                alert("Aún no se ha encontrado un oponente. Inténtalo en un momento.");
-            }
+            console.log("he encontrado partida", user.NombreUser);
+            window.location.href = "/comun/game"; // Redirigir a la partida
+        });
+        
+        // Escuchar errores del backend
+        socket.on('error', (errorMessage) => {
+            setSearching(false);
+            console.error("❌ Error al unirse a la partida:", errorMessage);
+            alert(`Error: ${errorMessage}`); // Muestra un mensaje al usuario
         });
     };
 

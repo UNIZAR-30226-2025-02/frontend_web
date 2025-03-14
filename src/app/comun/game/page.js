@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import styles from "./game.module.css";
@@ -9,6 +9,7 @@ import useSocket from '../../hooks/useSocket';
 
 export default function Game() {
   const [game, setGame] = useState(new Chess());
+  const [user, setUser] = useState(null);
   const [fen, setFen] = useState(game.fen()); // Posición actual del tablero
   const [turn, setTurn] = useState("w"); // Controla el turno
   const [whiteTime, setWhiteTime] = useState(600); // Tiempo en segundos
@@ -21,10 +22,34 @@ export default function Game() {
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al usuario
 
   useEffect(() => {
-    // Recibir el color del jugador
-    socket.on("assignColor", (color) => {
-      setPlayerColor(color);
-    });
+    // Recibir los datos del usuario desde localStorage y establecer el estado
+    const storedUserData = localStorage.getItem("userData");
+    if (storedUserData) {
+      const parsedUser = JSON.parse(storedUserData);
+      setUser(parsedUser);  // Actualizamos el estado con los datos del usuario
+    } else {
+      console.log("No se encontraron datos de usuario en localStorage.");
+    }
+  }, []);  
+
+  useEffect(() => {
+      if (user) {
+        console.log(" se encontraron datos de usuario en localStorage.", user);
+        console.log("🟢 Conectado con ID:", socket.id);
+        socket.emit("getRooms"); // Pedimos las salas en las que está
+        socket.on('color', (data) => {
+          console.log('Solicito color');
+          const jugador = data.jugadores.find(jugador => jugador.id === user.id); // Suponiendo que user tiene un 'id'
+          if (!jugador) {
+            console.error('No se ha encontrado el jugador');
+            return;
+          }
+          const assignedColor = jugador ? jugador.color : null;
+          setColor(assignedColor);  // Actualizamos el estado de color
+          console.log('Color asignado:', assignedColor);
+        });
+      }
+
 
     // Recibir movimientos del otro jugador
     socket.on("move", ({ source, target, fen }) => {
@@ -51,7 +76,7 @@ export default function Game() {
       socket.off("chatMessage");
       socket.off("updateTime");
     };
-  }, []);
+  }, [user]);  // Este efecto depende de 'user' y se ejecutará cuando 'user' cambie
 
   const handleMove = (sourceSquare, targetSquare) => {
     if (winner || playerColor !== turn) return; // Bloquear si no es el turno
@@ -160,6 +185,7 @@ export default function Game() {
         <div className={styles.boardContainer}>
           <Chessboard
             position={fen}
+            boardOrientation={playerColor === "w" ? "white" : "black"}
             onSquareClick={(square) => {
               if (legalMoves.includes(square)) {
                 handleMoveClick(square);
