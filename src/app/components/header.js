@@ -40,7 +40,7 @@ export default function Header() {
       {user ? (
                     <Link href="/comun/withMenu/profile" className={styles.userProfile}>
                         <img 
-                            src={user.avatar || "/default-avatar.png"} 
+                            src={user.avatar} 
                             alt="Avatar" 
                             className={styles.userAvatar} 
                         />

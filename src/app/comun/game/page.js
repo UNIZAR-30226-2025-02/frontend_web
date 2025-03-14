@@ -6,6 +6,7 @@ import { Chessboard } from "react-chessboard";
 import styles from "./game.module.css";
 import io from 'socket.io-client';  // Importar cliente de socket.
 import socket from "../../utils/sockets"; 
+console.log("📡 Estado del socket al importar en Game.js:", socket);
 
 
 export default function Game() {
@@ -21,7 +22,6 @@ export default function Game() {
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
-  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
@@ -36,38 +36,59 @@ export default function Game() {
     }
   }, []);
 
+
   useEffect(() => {
-    console.log("🔄 useEffect ejecutándose...");
-    if (!user) {
-      console.log("❌ No hay usuario aún. Esperando...");
-      return;
-    }
-    
-    
-    socket.on("connect", () => {
-      console.log("✅ Conectado con socket ID:", socket.id);
-      socket.emit("getRooms"); // Pedimos las salas en las que está
-    });
-
-    if (socket && socket.connected) {
-      console.log("✅ Socket ya conectado con ID:", socket.id);
-    }else{
-      console.log("🚀 Intentando conectar al socket...");
-      socket.connect(); 
-    }
-
-    console.log("🟢 Usuario conectado, esperando ID de socket...");
-
-    socket.on("color", (data) => {
-      console.log("🎨 Buscando colores para el usuario...");
-      const jugador = data.jugadores.find((jugador) => jugador.id === user.id);
-      if (!jugador) {
-        console.error("❌ No se ha encontrado el jugador en la lista.");
-        return;
+      console.log("🔄 useEffect ejecutándose en pantalla de partida...");
+  
+      if (!user) {
+          console.log("❌ No hay usuario aún. Esperando...");
+          return;
       }
-      setPlayerColor(jugador.color);
-      console.log("✅ Color asignado:", jugador.color);
-    });
+  
+      console.log("🟢 Usuario detectado:", user);
+  
+      if (!socket) {
+          console.error("❌ ERROR: socket no está definido.");
+          return;
+      }
+  
+      console.log("🔎 Verificando conexión del socket...");
+
+      if (!socket.connected) {
+        console.log("🚀 Intentando conectar al socket en pantalla de partida...");
+        socket.connect();
+    } else {
+        console.log("✅ Socket ya estaba conectado con ID:", socket.id);
+    }
+
+    // 💡 Asegurar que el evento "color" se escuche DESPUÉS de que el socket se reconect
+        
+        console.log("🎧 Ahora escuchando evento 'color'...");
+        socket.on("color", (data) => {
+            console.log("🎨 Recibido evento 'color' con datos:", data);
+
+            if (!data || !data.jugadores) {
+                console.error("❌ No se recibió información válida de colores.");
+                return;
+            }
+
+            const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
+            
+            if (!jugadorActual) {
+                console.error("❌ No se encontró al usuario en la lista de jugadores.");
+                return;
+            }
+
+            setPlayerColor(jugadorActual.color);
+            console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
+        });
+  
+      return () => {
+          console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
+          //socket.off("color");
+      };
+  }, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
+  
   
       // Recibir movimientos del otro jugador
       /*socket.on("move", ({ source, target, fen }) => {
@@ -94,13 +115,6 @@ export default function Game() {
         socket.off("chatMessage");
         socket.off("updateTime");
       };*/
-
-      return () => {
-        console.log("🧹 Limpiando eventos de socket...");
-        socket.off("connect");
-        socket.off("color");
-      };
-    }, [user, socket]); // Este efecto depende de 'user' y se ejecutará cuando 'user' cambie
     
     // El resto del código perm
 

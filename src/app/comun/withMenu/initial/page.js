@@ -7,30 +7,27 @@ import { useState, useEffect} from "react"; // Importar useState para manejar es
 import { FcSearch, FcRating, FcFlashOn, FcAlarmClock, FcApproval, FcBullish } from "react-icons/fc";
 import { FaChessPawn, FaFire } from "react-icons/fa";
 import { IoIosInformationCircleOutline } from "react-icons/io";
-
+import socket from "../../../utils/sockets"; // Importamos el socket global
+import { useRouter } from "next/navigation";
 
 export default function InitialPage() {
     const [user, setUser] = useState(null);
     const [searching, setSearching] = useState(false);
-    const [socket, setSocket] = useState(null);
-
+    const router = useRouter();
 
     // Cargar usuario desde localStorage solo una vez
     useEffect(() => {
-        // Conectamos al servidor de sockets (ajusta la URL según tu configuración)
-        const socketConnection = io("http://localhost:3000"); // Ajusta según tu servidor
-        setSocket(socketConnection);
-
         const storedUserData = localStorage.getItem("userData");
         if (storedUserData) {
             const parsedUser = JSON.parse(storedUserData);
             setUser(parsedUser);
-        } else {
-            console.log("No se encontraron datos de usuario en localStorage.");
         }
-
+    
+        socket.connect(); // Conectar el socket solo si no está conectado
+    
         return () => {
-            socketConnection.close(); // Cerrar la conexión cuando el componente se desmonte
+            console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+            //socket.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
         };
     }, []);
     console.log("Usuario desde localStorage:", user);
@@ -57,7 +54,7 @@ export default function InitialPage() {
             setSearching(false);
             console.log("Estoy buscando partida", user.NombreUser);
             console.log("he encontrado partida", user.NombreUser);
-            window.location.href = "/comun/game"; // Redirigir a la partida
+            router.push("/comun/game");
         });
         
         // Escuchar errores del backend
