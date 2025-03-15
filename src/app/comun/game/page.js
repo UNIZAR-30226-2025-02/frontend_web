@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef} from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import styles from "./game.module.css";
 import io from 'socket.io-client';  // Importar cliente de socket.
 import socket from "../../utils/sockets"; 
+import { useSearchParams } from "next/navigation";
 console.log("📡 Estado del socket al importar en Game.js:", socket);
 
 
@@ -22,6 +23,18 @@ export default function Game() {
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
+  const searchParams = useSearchParams();
+  const idPartida = searchParams.get("id"); // Obtener el ID de la URL
+  const gameCopy = new Chess(game.fen());
+  const gameRef = useRef(game); // Referencia del estado de 'game'
+
+// Actualiza el valor de gameRef siempre que 'game' cambie
+useEffect(() => {
+  gameRef.current = game;
+  
+  console.log("Hago la copia de la partida");
+
+}, [game]);
 
   useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
@@ -82,22 +95,30 @@ export default function Game() {
             setPlayerColor(jugadorActual.color);
             console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
         });
+
+        // Recibir movimientos del otro jugador
+        socket.on('new-move', (data) => {
+          console.log("♟️ Movimiento recibido:", data.movimiento);
+          console.log("Voy a copiar el movimiento en mi partida");
+          //gameCopy = new Chess(game.fen());
+          gameCopy.move(data.movimiento);
+          
+          console.log("Hago la copia de la");
+          setGame(gameCopy);
+          setFen(gameCopy.fen());
+          setTurn(gameCopy.turn());
+        });
+
   
       return () => {
           console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
-          //socket.off("color");
+          socket.off("color");
       };
   }, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
   
   
-      // Recibir movimientos del otro jugador
-      /*socket.on("move", ({ source, target, fen }) => {
-        const newGame = new Chess(fen);
-        setGame(newGame);
-        setFen(newGame.fen());
-        setTurn(newGame.turn());
-      });
-  
+      
+  /*
       // Recibir mensajes del chat
       socket.on("chatMessage", (msg) => {
         setMessages((prev) => [...prev, msg]);
@@ -119,19 +140,31 @@ export default function Game() {
     // El resto del código perm
 
   const handleMove = (sourceSquare, targetSquare) => {
-    if (winner || playerColor !== turn) return; // Bloquear si no es el turno
-
-    const gameCopy = new Chess(game.fen());
+    let colorTurn;
+    console.log("Vamo a juga");
+    if (playerColor === "black"){
+      colorTurn = "b";
+    } else {
+      colorTurn = "w";
+    }
+    if (winner) return; // Bloquear si no es el turno
+    if (colorTurn !== turn) {
+      console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${turn}`);
+      return;
+  }
+  console.log("El id de la partida es:", idPartida);
+    //gameCopy = new Chess(game.fen());
     const move = gameCopy.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
 
     if (move) {
+      console.log("Estado actual del juego:", gameCopy.fen());
       setGame(gameCopy);
       setFen(gameCopy.fen());
       setTurn(gameCopy.turn());
       setSelectedSquare(null);
       setLegalMoves([]);
-
-      socket.emit("move", { source: sourceSquare, target: targetSquare, fen: gameCopy.fen() });
+      console.log("♟️ Movimiento enviado:", move.san, idPartida, user.id)
+      socket.emit("make-move", { movimiento: move.san, idPartida: idPartida, idJugador: user.id});
 
       if (gameCopy.isCheckmate()) {
         setWinner(move.color === "w" ? "Negro" : "Blanco");
@@ -225,7 +258,7 @@ export default function Game() {
         <div className={styles.boardContainer}>
           <Chessboard
             position={fen}
-            boardOrientation={playerColor === "w" ? "white" : "black"}
+            boardOrientation={playerColor === "white" ? "white" : "black"}
             onSquareClick={(square) => {
               if (legalMoves.includes(square)) {
                 handleMoveClick(square);

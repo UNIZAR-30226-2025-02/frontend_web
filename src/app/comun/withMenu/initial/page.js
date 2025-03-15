@@ -51,10 +51,11 @@ export default function InitialPage() {
 
         // Escuchar la respuesta del servidor
         socket.on('game-ready', (data) => {
+            console.log("🟢 Partida encontrada con ID:", data.idPartida);
             setSearching(false);
             console.log("Estoy buscando partida", user.NombreUser);
             console.log("he encontrado partida", user.NombreUser);
-            router.push("/comun/game");
+            router.push(`/comun/game?id=${data.idPartida}`);
         });
         
         // Escuchar errores del backend
