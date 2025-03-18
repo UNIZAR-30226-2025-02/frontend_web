@@ -26,7 +26,8 @@ export default function LoginPage() {
     setError("");
 
     try {
-        const response = await fetch("http://localhost:3000/login", {
+        //const response = await fetch("http://localhost:3000/", {
+        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),

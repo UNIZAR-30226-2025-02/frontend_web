@@ -35,7 +35,7 @@ const Profile = () => {
 
         try {
             console.log("Enviando solicitud de logout al backend");
-            const response = await fetch("http://localhost:3000/logout", {
+            const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/logout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ NombreUser: user.NombreUser }),

@@ -41,9 +41,14 @@
   gap: 15px;
 }
 
+.winnerOverlay h2{
+  margin-bottom: 0px;
+}
+
 .trophy {
-  font-size: 50px;
+  font-size: 70px;
   color: gold;
+  margin-bottom: 20px;
 }
 
 .reviewButton, .newGameButton, .rematchButton {

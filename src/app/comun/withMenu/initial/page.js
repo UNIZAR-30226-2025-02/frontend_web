@@ -14,6 +14,7 @@ export default function InitialPage() {
     const [user, setUser] = useState(null);
     const [searching, setSearching] = useState(false);
     const router = useRouter();
+    const [playerColor, setPlayerColor] = useState(null);
 
     // Cargar usuario desde localStorage solo una vez
     useEffect(() => {
@@ -48,14 +49,36 @@ export default function InitialPage() {
         console.log("🔍 Enviando datos:", dataToSend);
         socket.emit("find-game", dataToSend);
         console.log("✅ Lo he lanzado");
-
+        let idPartidaCopy;
         // Escuchar la respuesta del servidor
         socket.on('game-ready', (data) => {
             console.log("🟢 Partida encontrada con ID:", data.idPartida);
             setSearching(false);
             console.log("Estoy buscando partida", user.NombreUser);
-            console.log("he encontrado partida", user.NombreUser);
-            router.push(`/comun/game?id=${data.idPartida}`);
+            console.log("he encontrado partida", user.NombreUser); 
+            idPartidaCopy = data.idPartida; 
+          
+        });
+        console.log("🎧 Ahora escuchando evento 'color'...");
+        socket.on("color", (data) => {
+            console.log("🎨 Recibido evento 'color' con datos:", data);
+
+            if (!data || !data.jugadores) {
+                console.error("❌ No se recibió información válida de colores.");
+                return;
+            }
+
+            const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
+            
+            if (!jugadorActual) {
+                console.error("❌ No se encontró al usuario en la lista de jugadores.");
+                return;
+            }
+
+            setPlayerColor(jugadorActual.color);
+            console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
+            localStorage.setItem("colorJug",jugadorActual.color);
+            router.push(`/comun/game?id=${idPartidaCopy}`);
         });
         
         // Escuchar errores del backend

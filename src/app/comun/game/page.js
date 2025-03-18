@@ -20,6 +20,7 @@ export default function Game() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [winner, setWinner] = useState(null);
+  const [loser, setLoser] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
@@ -39,11 +40,14 @@ useEffect(() => {
   useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
     const storedUserData = localStorage.getItem("userData");
-  
+    const color = localStorage.getItem("colorJug");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
       console.log("✅ Usuario encontrado:", parsedUser);
       setUser(parsedUser);
+      setPlayerColor(color);
+      console.log("Asigno el color:", color);
+      console.log("Y mi color es: ", playerColor);
     } else {
       console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
@@ -76,7 +80,7 @@ useEffect(() => {
 
     // 💡 Asegurar que el evento "color" se escuche DESPUÉS de que el socket se reconect
         
-        console.log("🎧 Ahora escuchando evento 'color'...");
+       /* console.log("🎧 Ahora escuchando evento 'color'...");
         socket.on("color", (data) => {
             console.log("🎨 Recibido evento 'color' con datos:", data);
 
@@ -94,25 +98,33 @@ useEffect(() => {
 
             setPlayerColor(jugadorActual.color);
             console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
-        });
+        });*/
 
         // Recibir movimientos del otro jugador
         socket.on('new-move', (data) => {
           console.log("♟️ Movimiento recibido:", data.movimiento);
-          console.log("Voy a copiar el movimiento en mi partida");
-          //gameCopy = new Chess(game.fen());
-          gameCopy.move(data.movimiento);
-          
-          console.log("Hago la copia de la");
-          setGame(gameCopy);
-          setFen(gameCopy.fen());
-          setTurn(gameCopy.turn());
+        
+          setGame((prevGame) => {
+            const newGame = new Chess(prevGame.fen());
+            newGame.move(data.movimiento);
+            setFen(newGame.fen());
+            setTurn(newGame.turn());
+            if (newGame.isCheckmate()) {
+              setLoser(playerColor === "white" ? "Blanco" : "Negro");
+            }
+            return newGame;
+          });
         });
+
+        socket.on('new-message', (data)=>{
+          console.log("♟️ Mensaje recibido:", data.message);
+        })
 
   
       return () => {
           console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
-          socket.off("color");
+          //socket.off("color");
+          socket.off("new-move");
       };
   }, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
   
@@ -154,29 +166,33 @@ useEffect(() => {
   }
   console.log("El id de la partida es:", idPartida);
     //gameCopy = new Chess(game.fen());
-    const move = gameCopy.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
-
-    if (move) {
-      console.log("Estado actual del juego:", gameCopy.fen());
-      setGame(gameCopy);
-      setFen(gameCopy.fen());
-      setTurn(gameCopy.turn());
-      setSelectedSquare(null);
-      setLegalMoves([]);
-      console.log("♟️ Movimiento enviado:", move.san, idPartida, user.id)
-      socket.emit("make-move", { movimiento: move.san, idPartida: idPartida, idJugador: user.id});
-
-      if (gameCopy.isCheckmate()) {
-        setWinner(move.color === "w" ? "Negro" : "Blanco");
+    setGame((prevGame) => {
+      const newGame = new Chess(prevGame.fen());
+      const move = newGame.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
+  
+      if (move) {
+        console.log("Estado actual del juego:", newGame.fen());
+        setFen(newGame.fen());
+        setTurn(newGame.turn());
+        setSelectedSquare(null);
+        setLegalMoves([]);
+        socket.emit("make-move", { movimiento: move.san, idPartida, idJugador: user.id });
+  
+        if (newGame.isCheckmate()) {
+          setWinner(move.color === "w" ? "Negro" : "Blanco");
+        }
+        return newGame;
       }
-    }
+      return prevGame; // No se hizo un movimiento válido, retorna el juego sin cambios
+    });
   };
 
   const handleSendMessage = () => {
     if (message.trim() !== "") {
-      const newMessage = { text: message, sender: playerColor === "w" ? "Blanco" : "Negro" };
+      const newMessage = { Id_partida:idPartida, Id_usuario: user.id,  Mensaje: message};
       setMessages([...messages, newMessage]);
-      socket.emit("chatMessage", newMessage);
+      console.log("♟️ Mensaje enviado:", newMessage);
+      socket.emit("send-message", newMessage);
       setMessage("");
     }
   };
@@ -214,6 +230,7 @@ useEffect(() => {
     setWhiteTime(600);
     setBlackTime(600);
     setWinner(null);
+    setLoser(null);
     setMessages([]);
     setMessage("");
   };
@@ -230,16 +247,27 @@ useEffect(() => {
         <div className={styles.winnerOverlay}>
           <h2>¡Has ganado!</h2>
           <span className={styles.trophy}>🏆</span>
-          <button className={styles.reviewButton} onClick={resetGame}>
-            Revisar Partida
-          </button>
           <div className={styles.winnerActions}>
             <button className={styles.newGameButton} onClick={resetGame}>
               Buscar otra partida
             </button>
-            <button className={styles.rematchButton} onClick={resetGame}>
-              Pedir Revancha
+            <button className={styles.reviewButton} onClick={resetGame}>
+              Revisar Partida
             </button>
+          </div>
+        </div>
+      )}
+      {loser && (
+        <div className={styles.winnerOverlay}>
+          <h2>¡Has perdido!</h2>
+          <span className={styles.trophy}>❌</span>
+          <div className={styles.winnerActions}>
+            <button className={styles.newGameButton} onClick={resetGame}>
+              Buscar otra partida
+            </button>
+            <button className={styles.reviewButton} onClick={resetGame}>
+              Revisar Partida
+          </button>
           </div>
         </div>
       )}
