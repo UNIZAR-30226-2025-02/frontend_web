@@ -11,10 +11,10 @@ console.log("📡 Estado del socket al importar en Game.js:", socket);
 
 
 export default function Game() {
-  const [game, setGame] = useState(new Chess());
+  const [game, setGame] = useState("");
   const [user, setUser] = useState(null);
-  const [fen, setFen] = useState(game.fen()); // Posición actual del tablero
-  const [turn, setTurn] = useState("w"); // Controla el turno
+  const [fen, setFen] = useState(""); // Posición actual del tablero
+  let [turn, setTurn] = useState("w"); // Controla el turno
   const [whiteTime, setWhiteTime] = useState(600); // Tiempo en segundos
   const [blackTime, setBlackTime] = useState(600);
   const [messages, setMessages] = useState([]);
@@ -26,16 +26,15 @@ export default function Game() {
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
   const searchParams = useSearchParams();
   const idPartida = searchParams.get("id"); // Obtener el ID de la URL
-  const gameCopy = new Chess(game.fen());
-  const gameRef = useRef(game); // Referencia del estado de 'game'
+  //const gameCopy = new Chess(game.fen());
+  //const gameRef = useRef(game); // Referencia del estado de 'game'
+  const gameCopy = useRef(new Chess()); // Referencia única del juego
 
-// Actualiza el valor de gameRef siempre que 'game' cambie
+  // Actualiza el valor de gameRef siempre que 'game' cambie
 useEffect(() => {
-  gameRef.current = game;
-  
-  console.log("Hago la copia de la partida");
-
-}, [game]);
+  setFen(gameCopy.current.fen()); // Iniciar con el FEN correcto
+  setTurn(gameCopy.current.turn());
+}, []);
 
   useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
@@ -77,48 +76,32 @@ useEffect(() => {
     } else {
         console.log("✅ Socket ya estaba conectado con ID:", socket.id);
     }
+    //socket.off("new-move");
+    // Recibir movimientos del otro jugador
+    socket.on('new-move', (data) => {
+      console.log("♟️ Movimiento recibido:", data.movimiento);
+      console.log("Turno en gameCopy: ", gameCopy.current.turn());   
+      console.log("Turno de: ", turn); 
+      //setGame((prevGame) => {
+        //const newGame = new Chess(prevGame.fen());
+        gameCopy.current.move(data.movimiento);
+        setFen(gameCopy.current.fen());
+        setTurn(gameCopy.current.turn());
+        console.log("Esta es la partida:", gameCopy);
+        console.log("Turno en gameCopy: ", gameCopy.current.turn());   
+        console.log("Turno de: ", turn); 
+        //turn = gameCopy.turn();
+        console.log("Turno despues de tal: ", turn); 
+        if (gameCopy.current.isCheckmate()) {
+          setLoser(playerColor === "white" ? "Blanco" : "Negro");
+        } 
+        //return gameCopy;
+      //});
+    });
 
-    // 💡 Asegurar que el evento "color" se escuche DESPUÉS de que el socket se reconect
-        
-       /* console.log("🎧 Ahora escuchando evento 'color'...");
-        socket.on("color", (data) => {
-            console.log("🎨 Recibido evento 'color' con datos:", data);
-
-            if (!data || !data.jugadores) {
-                console.error("❌ No se recibió información válida de colores.");
-                return;
-            }
-
-            const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
-            
-            if (!jugadorActual) {
-                console.error("❌ No se encontró al usuario en la lista de jugadores.");
-                return;
-            }
-
-            setPlayerColor(jugadorActual.color);
-            console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
-        });*/
-
-        // Recibir movimientos del otro jugador
-        socket.on('new-move', (data) => {
-          console.log("♟️ Movimiento recibido:", data.movimiento);
-        
-          setGame((prevGame) => {
-            const newGame = new Chess(prevGame.fen());
-            newGame.move(data.movimiento);
-            setFen(newGame.fen());
-            setTurn(newGame.turn());
-            if (newGame.isCheckmate()) {
-              setLoser(playerColor === "white" ? "Blanco" : "Negro");
-            }
-            return newGame;
-          });
-        });
-
-        socket.on('new-message', (data)=>{
+        /*socket.on('new-message', (data)=>{
           console.log("♟️ Mensaje recibido:", data.message);
-        })
+        })*/
 
   
       return () => {
@@ -160,31 +143,45 @@ useEffect(() => {
       colorTurn = "w";
     }
     if (winner) return; // Bloquear si no es el turno
-    if (colorTurn !== turn) {
-      console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${turn}`);
+    console.log("Es el turno de: ", turn);
+    console.log("Deberia de ser el de gameCopy: ", gameCopy.current.turn());
+    if (colorTurn !== gameCopy.current.turn()) {
+      console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.turn()}`);
       return;
-  }
-  console.log("El id de la partida es:", idPartida);
+    }
+    console.log("El id de la partida es:", idPartida);
     //gameCopy = new Chess(game.fen());
-    setGame((prevGame) => {
-      const newGame = new Chess(prevGame.fen());
-      const move = newGame.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
-  
+    //setGame((prevGame) => {
+      //const newGame = new Chess(prevGame.fen());
+    try{
+      const move = gameCopy.current.move({ from: sourceSquare, to: targetSquare});
+      //console.log("Doy error");
+
       if (move) {
-        console.log("Estado actual del juego:", newGame.fen());
-        setFen(newGame.fen());
-        setTurn(newGame.turn());
+        console.log("Estado actual del juego:",gameCopy.current.fen());
+          // Si se ha realizado un enroque, actualizar la posición correctamente
+        if (move.san.includes("O-O")) {
+          console.log("♜ Enroque realizado!");
+        }
+        setFen(gameCopy.current.fen());
+        setTurn(gameCopy.current.turn());
+        console.log("Esta es la partida:", gameCopy);
         setSelectedSquare(null);
         setLegalMoves([]);
         socket.emit("make-move", { movimiento: move.san, idPartida, idJugador: user.id });
   
-        if (newGame.isCheckmate()) {
+        if (gameCopy.current.isCheckmate()) {
           setWinner(move.color === "w" ? "Negro" : "Blanco");
         }
-        return newGame;
+
+        //return gameCopy;
       }
-      return prevGame; // No se hizo un movimiento válido, retorna el juego sin cambios
-    });
+    } catch (error){
+      console.log("⚠️ Error al intentar mover: Movimiento inválido.", error);
+      //return prevGame; // No hacer nada si hay error
+    }
+      
+//});
   };
 
   const handleSendMessage = () => {
@@ -208,14 +205,22 @@ useEffect(() => {
   const handleSquareClick = (square) => {
     if (winner) return; // No permitir selección si el juego terminó
 
-    const gameCopy = new Chess(game.fen());
-    if (selectedSquare === square) {
+    //const gameCopy = new Chess(game.fen());
+    const piece = gameCopy.current.get(square); // Obtener la pieza en la casilla seleccionada
+    
+     // Verificar si hay una pieza en la casilla y si pertenece al jugador actual
+    /*if (!piece || piece.color !== (playerColor === "white" ? "w" : "b")) {
+      console.log("❌ No puedes seleccionar una pieza rival.");
+      return;
+    }*/
+
+    if (selectedSquare === square ) {
       setSelectedSquare(null);
       setLegalMoves([]);
       return;
     }
     
-    const moves = gameCopy.moves({ square, verbose: true });
+    const moves = gameCopy.current.moves({ square, verbose: true });
     if (moves.length > 0) {
       setSelectedSquare(square);
       setLegalMoves(moves.map(move => move.to));
@@ -274,12 +279,12 @@ useEffect(() => {
       <div className={styles.gameBody}>
         {/* Panel de Jugadas */}
         <div className={styles.movesPanel}>
-          <h3>JUGADAS</h3>
+          {/*<h3>JUGADAS</h3>
           <ul>
             {game.history().map((move, index) => (
               <li key={index}>{move}</li>
             ))}
-          </ul>
+          </ul>*/}
         </div>
 
         {/* Tablero de Ajedrez */}

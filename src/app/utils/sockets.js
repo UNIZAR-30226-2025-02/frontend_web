@@ -4,8 +4,8 @@ console.log("🚀 Intentando conectar al socket...");
 
 const userId = localStorage.getItem("userData") ? JSON.parse(localStorage.getItem("userData")).id : null;
 
-//const socket = io("http://localhost:3000/", {
-const socket = io("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/", {
+const socket = io("http://localhost:3000/", {
+//const socket = io("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/", {
   transports: ["websocket"], // ⚡ Usar WebSocket en lugar de polling
   reconnection: true, // 🔄 Habilitar reconexión automática
   reconnectionAttempts: 10, // 🔄 Intentar reconectar hasta 10 veces
