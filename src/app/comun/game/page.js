@@ -154,7 +154,7 @@ useEffect(() => {
     //setGame((prevGame) => {
       //const newGame = new Chess(prevGame.fen());
     try{
-      const move = gameCopy.current.move({ from: sourceSquare, to: targetSquare});
+      const move = gameCopy.current.move({ from: sourceSquare, to: targetSquare},promot);
       //console.log("Doy error");
 
       if (move) {
