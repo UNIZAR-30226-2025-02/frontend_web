@@ -3,9 +3,9 @@ import { io } from "socket.io-client";
 console.log("🚀 Intentando conectar al socket...");
 
 const userId = localStorage.getItem("userData") ? JSON.parse(localStorage.getItem("userData")).id : null;
-
-const socket = io("http://localhost:3000/", {
-//const socket = io("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/", {
+const inGame = localStorage.getItem("estadoJuego");
+//const socket = io("http://localhost:3000/", {
+const socket = io("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/", {
   transports: ["websocket"], // ⚡ Usar WebSocket en lugar de polling
   reconnection: true, // 🔄 Habilitar reconexión automática
   reconnectionAttempts: 10, // 🔄 Intentar reconectar hasta 10 veces
@@ -18,6 +18,10 @@ const socket = io("http://localhost:3000/", {
 
 socket.on("connect", () => {
   console.log("✅ Socket conectado con ID:", socket.id);
+});
+
+socket.emit("new-connection", (userId, socket, inGame) =>{
+  console.log("Mando userId a backend", userId, socket, inGame);
 });
 
 socket.on("disconnect", (reason) => {

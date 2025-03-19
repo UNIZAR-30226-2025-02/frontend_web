@@ -26,8 +26,8 @@ export default function LoginPage() {
     setError("");
 
     try {
-       const response = await fetch("http://localhost:3000/login", {
-        //const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/login", {
+       //const response = await fetch("http://localhost:3000/login", {
+        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -45,12 +45,14 @@ export default function LoginPage() {
             // Guardar el token en localStorage
             localStorage.setItem("authToken", data.token);
             localStorage.setItem("NombreUser", data.NombreUser);
+            localStorage.setItem("estadoJuego", data.EstadoPartida);
             router.push("/comun/withMenu/initial");
         } else if (data.id) {
           // Si no hay token, pero el id está presente, podrías redirigir a una página de perfil o mostrar un mensaje
           console.log("Usuario autenticado, pero no se encontró token.");
           // Aquí puedes guardar los datos del usuario, si es necesario, o redirigir a otra página
           localStorage.setItem("userData", JSON.stringify(data));  // Guardar datos del usuario si es necesario
+          localStorage.setItem("estadoJuego", data.EstadoPartida);
           router.push("/comun/withMenu/initial");  // O redirigir a otra página 
         }else {
             throw new Error("⚠️ Respuesta inesperada del servidor");

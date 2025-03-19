@@ -132,7 +132,7 @@ export default function InitialPage() {
                             <span className={styles.text}>Tu racha</span>
                             <span className={styles.rachaCount}>{user.maxStreak || 0}</span>
                             <div className={styles.checks}>
-                                ✅ ✅ ✅ ✅ ❌
+                                
                             </div>
                         </div>
                     </div>

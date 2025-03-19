@@ -21,6 +21,7 @@ export default function Game() {
   const [message, setMessage] = useState("");
   const [winner, setWinner] = useState(null);
   const [loser, setLoser] = useState(null);
+  const [tablas, setTablas] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
@@ -45,8 +46,6 @@ useEffect(() => {
       console.log("✅ Usuario encontrado:", parsedUser);
       setUser(parsedUser);
       setPlayerColor(color);
-      console.log("Asigno el color:", color);
-      console.log("Y mi color es: ", playerColor);
     } else {
       console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
@@ -76,27 +75,31 @@ useEffect(() => {
     } else {
         console.log("✅ Socket ya estaba conectado con ID:", socket.id);
     }
-    //socket.off("new-move");
+  
     // Recibir movimientos del otro jugador
     socket.on('new-move', (data) => {
       console.log("♟️ Movimiento recibido:", data.movimiento);
-      console.log("Turno en gameCopy: ", gameCopy.current.turn());   
-      console.log("Turno de: ", turn); 
-      //setGame((prevGame) => {
-        //const newGame = new Chess(prevGame.fen());
         gameCopy.current.move(data.movimiento);
         setFen(gameCopy.current.fen());
-        setTurn(gameCopy.current.turn());
-        console.log("Esta es la partida:", gameCopy);
-        console.log("Turno en gameCopy: ", gameCopy.current.turn());   
-        console.log("Turno de: ", turn); 
-        //turn = gameCopy.turn();
-        console.log("Turno despues de tal: ", turn); 
-        if (gameCopy.current.isCheckmate()) {
+        setTurn(gameCopy.current.turn()); 
+       /* if (gameCopy.current.isCheckmate()) {
           setLoser(playerColor === "white" ? "Blanco" : "Negro");
-        } 
-        //return gameCopy;
-      //});
+        } */
+    });
+
+    socket.on('gameOver', (data) => {
+      console.log("Llega final de partida", data);
+      if(data.result === "draw"){
+        console.log("Tablas");
+        setTablas(true)
+      }else if(data.winner === user.id){
+        setWinner(true)
+      } else{
+        console.log("Mi id es: ", user.id);
+        console.log("Y el data es: ", data);
+        setLoser(true);
+      }
+
     });
 
         /*socket.on('new-message', (data)=>{
@@ -132,8 +135,8 @@ useEffect(() => {
         socket.off("updateTime");
       };*/
     
-    // El resto del código perm
-
+    
+  // El jugador intenta realizar un movimiento
   const handleMove = (sourceSquare, targetSquare) => {
     let colorTurn;
     console.log("Vamo a juga");
@@ -143,19 +146,26 @@ useEffect(() => {
       colorTurn = "w";
     }
     if (winner) return; // Bloquear si no es el turno
-    console.log("Es el turno de: ", turn);
-    console.log("Deberia de ser el de gameCopy: ", gameCopy.current.turn());
     if (colorTurn !== gameCopy.current.turn()) {
-      console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.turn()}`);
+      console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.current.turn()}`);
       return;
     }
     console.log("El id de la partida es:", idPartida);
-    //gameCopy = new Chess(game.fen());
-    //setGame((prevGame) => {
-      //const newGame = new Chess(prevGame.fen());
     try{
-      const move = gameCopy.current.move({ from: sourceSquare, to: targetSquare},promot);
-      //console.log("Doy error");
+      const piece = gameCopy.current.get(sourceSquare);
+      const isPawnPromotion =
+        piece && piece.type === "p" &&
+        ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
+
+      const promotion = isPawnPromotion ? "q" : undefined; // Por defecto, promover a reina
+
+      const move = gameCopy.current.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion,
+      });
+
+       // Si es una promoción, react-chessboard maneja la selección
 
       if (move) {
         console.log("Estado actual del juego:",gameCopy.current.fen());
@@ -168,11 +178,16 @@ useEffect(() => {
         console.log("Esta es la partida:", gameCopy);
         setSelectedSquare(null);
         setLegalMoves([]);
-        socket.emit("make-move", { movimiento: move.san, idPartida, idJugador: user.id });
+        console.log("Mando movimiento asi", move.from + move.to);
+        socket.emit("make-move", { 
+            movimiento: move.from + move.to,// (isPawnPromotion ? move.promotion : ""),
+            idPartida, 
+            idJugador: user.id 
+        });
   
-        if (gameCopy.current.isCheckmate()) {
+        /*if (gameCopy.current.isCheckmate()) {
           setWinner(move.color === "w" ? "Negro" : "Blanco");
-        }
+        }*/
 
         //return gameCopy;
       }
@@ -276,6 +291,20 @@ useEffect(() => {
           </div>
         </div>
       )}
+      {tablas && (
+        <div className={styles.winnerOverlay}>
+          <h2>¡Has llegado a tablas!</h2>
+          <span className={styles.trophy}>🚫</span>
+          <div className={styles.winnerActions}>
+            <button className={styles.newGameButton} onClick={resetGame}>
+              Buscar otra partida
+            </button>
+            <button className={styles.reviewButton} onClick={resetGame}>
+              Revisar Partida
+          </button>
+          </div>
+        </div>
+      )}
       <div className={styles.gameBody}>
         {/* Panel de Jugadas */}
         <div className={styles.movesPanel}>
@@ -320,6 +349,7 @@ useEffect(() => {
 
         {/* Panel de Chat */}
         <div className={styles.chatPanel}>
+          
           <h3>Chat 💬</h3>
           <div className={styles.chatMessages}>
             {messages.map((msg, index) => (
