@@ -152,17 +152,17 @@ useEffect(() => {
     }
     console.log("El id de la partida es:", idPartida);
     try{
-      const piece = gameCopy.current.get(sourceSquare);
+      /*const piece = gameCopy.current.get(sourceSquare);
       const isPawnPromotion =
         piece && piece.type === "p" &&
         ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
 
-      const promotion = isPawnPromotion ? "q" : undefined; // Por defecto, promover a reina
+      const promotion = isPawnPromotion ? "q" : undefined; // Por defecto, promover a reina*/
 
       const move = gameCopy.current.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion,
+        promotion: "q" ,
       });
 
        // Si es una promoción, react-chessboard maneja la selección
@@ -179,8 +179,9 @@ useEffect(() => {
         setSelectedSquare(null);
         setLegalMoves([]);
         console.log("Mando movimiento asi", move.from + move.to);
+        console.log("Mando movimiento asi", move.san);
         socket.emit("make-move", { 
-            movimiento: move.from + move.to,// (isPawnPromotion ? move.promotion : ""),
+            movimiento: move.from + move.to,
             idPartida, 
             idJugador: user.id 
         });
