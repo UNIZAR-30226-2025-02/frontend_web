@@ -24,6 +24,9 @@ export default function Game() {
   const [tablas, setTablas] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
+  const [pendingPromotion, setPendingPromotion] = useState(null);
+  let piezaLlega = null;
+  let piezaElejida = null;
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
   const searchParams = useSearchParams();
   const idPartida = searchParams.get("id"); // Obtener el ID de la URL
@@ -79,13 +82,29 @@ useEffect(() => {
     // Recibir movimientos del otro jugador
     socket.on('new-move', (data) => {
       console.log("♟️ Movimiento recibido:", data.movimiento);
-        gameCopy.current.move(data.movimiento);
+    
+      const moveStr = data.movimiento;
+      const isPromotionMove = moveStr.length === 5; // ej: "e7e8q"
+    
+      const moveConfig = {
+        from: moveStr.slice(0, 2), // "e7"
+        to: moveStr.slice(2, 4),   // "e8"
+      };
+    
+      if (isPromotionMove) {
+        moveConfig.promotion = moveStr[4]; // "q", "r", "n", "b"
+      }
+    
+      const moveResult = gameCopy.current.move(moveConfig);
+    
+      if (moveResult) {
         setFen(gameCopy.current.fen());
-        setTurn(gameCopy.current.turn()); 
-       /* if (gameCopy.current.isCheckmate()) {
-          setLoser(playerColor === "white" ? "Blanco" : "Negro");
-        } */
+        setTurn(gameCopy.current.turn());
+      } else {
+        console.error("Movimiento no válido:", moveStr);
+      }
     });
+    
 
     socket.on('gameOver', (data) => {
       console.log("Llega final de partida", data);
@@ -151,6 +170,22 @@ useEffect(() => {
       return;
     }
     console.log("El id de la partida es:", idPartida);
+    
+    if(piezaLlega){
+      console.log(" Pieza elejida por el jugador: ", piezaLlega);
+      if(piezaLlega==="wR" || piezaLlega==="bR"){
+        piezaElejida = "r";
+      } else if(piezaLlega==="wQ" || piezaLlega==="bQ"){
+        piezaElejida = "q";
+      } else if(piezaLlega==="wB" || piezaLlega==="bB"){
+        piezaElejida = "b";
+      } else if(piezaLlega==="wN" || piezaLlega==="bN"){
+        piezaElejida = "n";
+      }
+      console.log("Vamos a realizar una promocion con esta pieza:", piezaElejida)
+      setPendingPromotion(null);
+      piezaLlega = null;
+    }
     try{
       /*const piece = gameCopy.current.get(sourceSquare);
       const isPawnPromotion =
@@ -162,7 +197,7 @@ useEffect(() => {
       const move = gameCopy.current.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: "q" ,
+        promotion: piezaElejida ,
       });
 
        // Si es una promoción, react-chessboard maneja la selección
@@ -178,13 +213,39 @@ useEffect(() => {
         console.log("Esta es la partida:", gameCopy);
         setSelectedSquare(null);
         setLegalMoves([]);
-        console.log("Mando movimiento asi", move.from + move.to);
-        console.log("Mando movimiento asi", move.san);
-        socket.emit("make-move", { 
-            movimiento: move.from + move.to,
-            idPartida, 
-            idJugador: user.id 
-        });
+        if (move.piece === 'p' && (move.to[1] === '8' || move.to[1] === '1')) {
+            console.log("👑 Promoción detectada: ", move.from + move.to+"r");
+            console.log("La pieza aceptada es:", piezaLlega);
+           /* if(piezaLlega){
+              console.log(" Pieza elejida por el jugador: ", piezaLlega);
+              if(piezaLlega==="wR" || piezaLlega==="bR"){
+                piezaElejida = "r";
+              } else if(piezaLlega==="wQ" || piezaLlega==="bQ"){
+                piezaElejida = "q";
+              } else if(piezaLlega==="wB" || piezaLlega==="bB"){
+                piezaElejida = "b";
+              } else if(piezaLlega==="wN" || piezaLlega==="bN"){
+                piezaElejida = "n";
+              }
+              setPendingPromotion(null);
+              piezaLlega = null;
+            }*/
+            console.log("La pieza que vamos a pasar es: ", piezaElejida);
+
+
+           socket.emit("make-move", { 
+              movimiento: move.from + move.to+piezaElejida,
+              idPartida, 
+              idJugador: user.id 
+            });
+        }else{
+          console.log("Mando movimiento sin promocion asi", move.from + move.to);
+          socket.emit("make-move", { 
+              movimiento: move.from + move.to,
+              idPartida, 
+              idJugador: user.id 
+          });
+        }
   
         /*if (gameCopy.current.isCheckmate()) {
           setWinner(move.color === "w" ? "Negro" : "Blanco");
@@ -198,6 +259,14 @@ useEffect(() => {
     }
       
 //});
+  };
+
+  const handlePromotion = (promotionPiece) => {
+    console.log("Entramos a promocion", promotionPiece);
+    setPendingPromotion({promotionPiece});
+    piezaLlega = promotionPiece;
+    console.log("El movimiento pendiente es: ",pendingPromotion);
+    return true;
   };
 
   const handleSendMessage = () => {
@@ -331,6 +400,7 @@ useEffect(() => {
             }}
             onPieceClick={handleSquareClick} // Permite seleccionar la pieza al hacer clic en ella
             onPieceDrop={(sourceSquare, targetSquare) => handleMove(sourceSquare, targetSquare)}
+            onPromotionPieceSelect={(piece) => handlePromotion(piece)}
             customSquareStyles={
               legalMoves.reduce((acc, square) => {
                 acc[square] = {
