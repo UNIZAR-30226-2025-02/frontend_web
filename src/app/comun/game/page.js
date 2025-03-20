@@ -25,6 +25,7 @@ export default function Game() {
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [pendingPromotion, setPendingPromotion] = useState(null);
+  const [showPromotionPopup, setShowPromotionPopup] = useState(false)
   let piezaLlega = null;
   let piezaElejida = null;
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
@@ -155,119 +156,88 @@ useEffect(() => {
       };*/
     
     
-  // El jugador intenta realizar un movimiento
-  const handleMove = (sourceSquare, targetSquare) => {
-    let colorTurn;
-    console.log("Vamo a juga");
-    if (playerColor === "black"){
-      colorTurn = "b";
-    } else {
-      colorTurn = "w";
-    }
-    if (winner) return; // Bloquear si no es el turno
-    if (colorTurn !== gameCopy.current.turn()) {
-      console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.current.turn()}`);
-      return;
-    }
-    console.log("El id de la partida es:", idPartida);
-    
-    if(piezaLlega){
-      console.log(" Pieza elejida por el jugador: ", piezaLlega);
-      if(piezaLlega==="wR" || piezaLlega==="bR"){
-        piezaElejida = "r";
-      } else if(piezaLlega==="wQ" || piezaLlega==="bQ"){
-        piezaElejida = "q";
-      } else if(piezaLlega==="wB" || piezaLlega==="bB"){
-        piezaElejida = "b";
-      } else if(piezaLlega==="wN" || piezaLlega==="bN"){
-        piezaElejida = "n";
-      }
-      console.log("Vamos a realizar una promocion con esta pieza:", piezaElejida)
-      setPendingPromotion(null);
-      piezaLlega = null;
-    }
-    try{
-      /*const piece = gameCopy.current.get(sourceSquare);
-      const isPawnPromotion =
-        piece && piece.type === "p" &&
-        ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
-
-      const promotion = isPawnPromotion ? "q" : undefined; // Por defecto, promover a reina*/
-
-      const move = gameCopy.current.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: piezaElejida ,
-      });
-
-       // Si es una promoción, react-chessboard maneja la selección
-
-      if (move) {
-        console.log("Estado actual del juego:",gameCopy.current.fen());
-          // Si se ha realizado un enroque, actualizar la posición correctamente
-        if (move.san.includes("O-O")) {
-          console.log("♜ Enroque realizado!");
+      const handleMove = (sourceSquare, targetSquare) => {
+        let colorTurn = playerColor === "black" ? "b" : "w";
+        if (winner) return;
+        if (colorTurn !== gameCopy.current.turn()) {
+          console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.current.turn()}`);
+          return;
         }
-        setFen(gameCopy.current.fen());
-        setTurn(gameCopy.current.turn());
-        console.log("Esta es la partida:", gameCopy);
-        setSelectedSquare(null);
-        setLegalMoves([]);
-        if (move.piece === 'p' && (move.to[1] === '8' || move.to[1] === '1')) {
-            console.log("👑 Promoción detectada: ", move.from + move.to+"r");
-            console.log("La pieza aceptada es:", piezaLlega);
-           /* if(piezaLlega){
-              console.log(" Pieza elejida por el jugador: ", piezaLlega);
-              if(piezaLlega==="wR" || piezaLlega==="bR"){
-                piezaElejida = "r";
-              } else if(piezaLlega==="wQ" || piezaLlega==="bQ"){
-                piezaElejida = "q";
-              } else if(piezaLlega==="wB" || piezaLlega==="bB"){
-                piezaElejida = "b";
-              } else if(piezaLlega==="wN" || piezaLlega==="bN"){
-                piezaElejida = "n";
-              }
-              setPendingPromotion(null);
-              piezaLlega = null;
-            }*/
-            console.log("La pieza que vamos a pasar es: ", piezaElejida);
+    
+        const piece = gameCopy.current.get(sourceSquare);
+        // Obtener movimientos legales para la casilla de origen
+    const legalMoves = gameCopy.current.moves({ square: sourceSquare, verbose: true });
 
+    // Verificar si el targetSquare está en los movimientos legales
+    const isValidMove = legalMoves.some(move => move.to === targetSquare);
+    if (!isValidMove) {
+        console.log("⚠️ Movimiento no permitido.");
+        return;
+    }
 
-           socket.emit("make-move", { 
-              movimiento: move.from + move.to+piezaElejida,
+        const isPawnPromotion = 
+            piece && piece.type === "p" &&
+            ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
+    
+        if (isPawnPromotion && !piezaLlega) {
+          // Mostrar popup de promoción manualmente (tu modal personalizado)
+          //setShowPromotionPopup(true);
+          //setPendingPromotion({ from: sourceSquare, to: targetSquare, color: piece.color });
+          return;
+        }
+    
+        try {
+          const move = gameCopy.current.move({
+            from: sourceSquare,
+            to: targetSquare,
+            promotion: piezaElejida || undefined,
+          });
+    
+          if (move) {
+            console.log("✔️ Movimiento exitoso:", move);
+            setFen(gameCopy.current.fen());
+            setTurn(gameCopy.current.turn());
+            setSelectedSquare(null);
+            setLegalMoves([]);
+           // setPendingPromotion(null);
+            //setShowPromotionPopup(false);
+    
+            const movimiento = move.from + move.to + (move.promotion || "");
+            socket.emit("make-move", { 
+              movimiento,
               idPartida, 
               idJugador: user.id 
             });
-        }else{
-          console.log("Mando movimiento sin promocion asi", move.from + move.to);
-          socket.emit("make-move", { 
-              movimiento: move.from + move.to,
-              idPartida, 
-              idJugador: user.id 
-          });
+          }
+        } catch (error) {
+          console.log("⚠️ Movimiento inválido", error);
         }
-  
-        /*if (gameCopy.current.isCheckmate()) {
-          setWinner(move.color === "w" ? "Negro" : "Blanco");
-        }*/
-
-        //return gameCopy;
-      }
-    } catch (error){
-      console.log("⚠️ Error al intentar mover: Movimiento inválido.", error);
-      //return prevGame; // No hacer nada si hay error
-    }
-      
-//});
-  };
-
-  const handlePromotion = (promotionPiece) => {
-    console.log("Entramos a promocion", promotionPiece);
-    setPendingPromotion({promotionPiece});
-    piezaLlega = promotionPiece;
-    console.log("El movimiento pendiente es: ",pendingPromotion);
-    return true;
-  };
+    };
+    
+    const handlePromotion = (promotionPiece) => {
+        if (!promotionPiece) return;
+        console.log("➡️ Seleccionaste:", promotionPiece);
+    
+        // Normalizamos la pieza
+        let pieza = "";
+        if (promotionPiece.endsWith("R")) pieza = "r";
+        if (promotionPiece.endsWith("Q")) pieza = "q";
+        if (promotionPiece.endsWith("B")) pieza = "b";
+        if (promotionPiece.endsWith("N")) pieza = "n";
+    
+        piezaLlega = promotionPiece;
+        piezaElejida = pieza;
+        
+        // Hacemos la jugada pendiente
+        if (pendingPromotion) {
+          const { from, to } = pendingPromotion;
+          //setShowPromotionPopup(false);
+          //setPendingPromotion(null);
+          handleMove(from, to); // Aquí reintentas con la pieza seleccionada ya seteada
+        }
+        return true;
+    };
+    
 
   const handleSendMessage = () => {
     if (message.trim() !== "") {
@@ -294,10 +264,10 @@ useEffect(() => {
     const piece = gameCopy.current.get(square); // Obtener la pieza en la casilla seleccionada
     
      // Verificar si hay una pieza en la casilla y si pertenece al jugador actual
-    /*if (!piece || piece.color !== (playerColor === "white" ? "w" : "b")) {
+    if (!piece || piece.color !== (playerColor === "white" ? "w" : "b")) {
       console.log("❌ No puedes seleccionar una pieza rival.");
       return;
-    }*/
+    }
 
     if (selectedSquare === square ) {
       setSelectedSquare(null);
@@ -311,6 +281,8 @@ useEffect(() => {
       setLegalMoves(moves.map(move => move.to));
     }
   };
+
+  
   
   // Función para reiniciar la partida
   const resetGame = () => {
@@ -328,6 +300,22 @@ useEffect(() => {
   // Función para mover la pieza si se hace clic en una casilla permitida
   const handleMoveClick = (targetSquare) => {
     if (!selectedSquare || !legalMoves.includes(targetSquare)) return;
+    const piece = gameCopy.current.get(selectedSquare);
+    if (!piece) return;
+
+    // 🔍 Verificar si es promoción de peón
+    const isPawnPromotion =
+        piece.type === "p" &&
+        ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
+
+    if (isPawnPromotion) {
+        console.log("♟️ Se requiere promoción.");
+        // 🔹 Simular el comportamiento de `onPromotionPieceSelect`
+       // const fakePieceData = piece.color + "Q"; // Se usará la pieza correcta luego
+        //handlePromotion(fakePieceData);
+       // handleMove(selectedSquare, targetSquare); 
+        return true;
+    }
     handleMove(selectedSquare, targetSquare);
   };
 
@@ -375,6 +363,7 @@ useEffect(() => {
           </div>
         </div>
       )}
+      
       <div className={styles.gameBody}>
         {/* Panel de Jugadas */}
         <div className={styles.movesPanel}>
@@ -398,9 +387,12 @@ useEffect(() => {
                 handleSquareClick(square);
               }
             }}
+            customPromotionDialog={true} // <- Desactivas el popup nativo
             onPieceClick={handleSquareClick} // Permite seleccionar la pieza al hacer clic en ella
             onPieceDrop={(sourceSquare, targetSquare) => handleMove(sourceSquare, targetSquare)}
-            onPromotionPieceSelect={(piece) => handlePromotion(piece)}
+            //onPromotionPieceSelect={(piece) => handlePromotion(piece)}
+            //onPromotionPieceSelect={null}
+            onPromotionPieceSelect={(piece) =>handlePromotion(piece)} // Usar el popup de promoción de la librería
             customSquareStyles={
               legalMoves.reduce((acc, square) => {
                 acc[square] = {
@@ -416,6 +408,16 @@ useEffect(() => {
             arePiecesDraggable={true} // Mantiene la opción de arrastrar piezas
             animationDuration={200}
           />
+         {/*} {showPromotionPopup && (
+                <div className="promotion-modal">
+                    <p>Selecciona una pieza para promocionar:</p>
+                    {["Q", "R", "B", "N"].map((piece) => (
+                        <button key={piece} onClick={() => handlePromotion(piece)}>
+                            {piece}
+                        </button>
+                    ))}
+                </div>
+            )}*/}
         </div>
 
         {/* Panel de Chat */}
