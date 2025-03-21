@@ -9,6 +9,7 @@ export default function LoginPage() {
     NombreUser: "",
     Contrasena: "",
   });
+  const socketUrl = 'http://localhost:3000';  
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();  // Inicializar el router
@@ -27,7 +28,7 @@ export default function LoginPage() {
 
     try {
        //const response = await fetch("http://localhost:3000/login", {
-        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/login", {
+       const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -35,26 +36,30 @@ export default function LoginPage() {
 
         const data = await response.json();  // Parseamos la respuesta como JSON
         console.log("Respuesta del servidor:", data); // Debug para ver la respuesta exacta
-
+        // Obtiene el token de la respuesta
+      const token = data.accessToken;
+     // const user = data.publicUser.NombreUser;
+    
         if (!response.ok) {
             console.log("Error en el login:", data);
             throw new Error(data.message || data.error || "Error desconocido en el login");
         }
 
-        if (data.token) {
+        if (token) {
+          //console.log("Usuario: ",user);
+          console.log('Login exitoso. Token recibido:', token);
             // Guardar el token en localStorage
-            localStorage.setItem("authToken", data.token);
-            localStorage.setItem("NombreUser", data.NombreUser);
-            localStorage.setItem("estadoJuego", data.EstadoPartida);
+            localStorage.setItem("authToken", token);
+            localStorage.setItem("userData", JSON.stringify(data));
             router.push("/comun/withMenu/initial");
-        } else if (data.id) {
+        } /*else if (data.id) {
           // Si no hay token, pero el id está presente, podrías redirigir a una página de perfil o mostrar un mensaje
           console.log("Usuario autenticado, pero no se encontró token.");
           // Aquí puedes guardar los datos del usuario, si es necesario, o redirigir a otra página
           localStorage.setItem("userData", JSON.stringify(data));  // Guardar datos del usuario si es necesario
-          localStorage.setItem("estadoJuego", data.EstadoPartida);
+          //localStorage.setItem("estadoJuego", data.EstadoPartida);
           router.push("/comun/withMenu/initial");  // O redirigir a otra página 
-        }else {
+        }*/else {
             throw new Error("⚠️ Respuesta inesperada del servidor");
         }
     } catch (error) {

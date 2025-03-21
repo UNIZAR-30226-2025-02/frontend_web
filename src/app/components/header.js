@@ -14,7 +14,7 @@ export default function Header() {
       const storedUserData = localStorage.getItem("userData");
       if (storedUserData) {
           const parsedUser = JSON.parse(storedUserData);
-          setUser(parsedUser);
+          setUser(parsedUser.publicUser);
       } else {
           console.log("No se encontraron datos de usuario en localStorage.");
       }

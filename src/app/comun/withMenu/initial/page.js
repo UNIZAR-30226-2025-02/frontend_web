@@ -21,7 +21,7 @@ export default function InitialPage() {
         const storedUserData = localStorage.getItem("userData");
         if (storedUserData) {
             const parsedUser = JSON.parse(storedUserData);
-            setUser(parsedUser);
+            setUser(parsedUser.publicUser);
         }
     
         socket.connect(); // Conectar el socket solo si no está conectado
@@ -69,7 +69,9 @@ export default function InitialPage() {
             }
 
             const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
-            
+            console.log("Mi ide es: ",user.id, "y jugador.id es: ", jugadorActual.id);
+            const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
+            console.log("Mi ide es: ",user.id, "y mi rival es: ", jugadorRival);
             if (!jugadorActual) {
                 console.error("❌ No se encontró al usuario en la lista de jugadores.");
                 return;
@@ -78,6 +80,8 @@ export default function InitialPage() {
             setPlayerColor(jugadorActual.color);
             console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
             localStorage.setItem("colorJug",jugadorActual.color);
+            console.log("Guardo id rival: ", jugadorRival.id);
+            localStorage.setItem("idRival", jugadorRival.id);
             router.push(`/comun/game?id=${idPartidaCopy}`);
         });
         

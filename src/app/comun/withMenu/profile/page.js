@@ -6,9 +6,13 @@ import { FaEdit, FaChessPawn } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { FcApproval, FcAlarmClock, FcFlashOn, FcBullish, FcRating } from "react-icons/fc";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import socket from "../../../utils/sockets"; 
 
 const Profile = () => {
-    const user = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const user = userData ? userData.publicUser : null;
+
+console.log("Nombre de usuario:", user?.NombreUser);
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -35,7 +39,9 @@ const Profile = () => {
 
         try {
             console.log("Enviando solicitud de logout al backend");
-            const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/logout", {
+            console.log("El user es", user.NombreUser);
+           // const response = await fetch("http://localhost:3000/logout", {
+           const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/logout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ NombreUser: user.NombreUser }),
@@ -44,11 +50,13 @@ const Profile = () => {
             console.log("Respuesta del servidor recibida:", response);
             
             localStorage.removeItem("userData");
+            localStorage.removeItem("authToken");
             console.log("Datos del usuario eliminados de localStorage");
-
+            
             if (!response.ok) {
                 console.error("Error al cerrar sesión en el backend");
             } else {
+                socket.disconnect();
                 router.replace("/");
                 console.log("Redirigiendo a la página inicial");
             }

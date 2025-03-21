@@ -13,8 +13,10 @@ console.log("📡 Estado del socket al importar en Game.js:", socket);
 export default function Game() {
   const [game, setGame] = useState("");
   const [user, setUser] = useState(null);
+  const [rival, setRival] = useState(null);
   const [fen, setFen] = useState(""); // Posición actual del tablero
   let [turn, setTurn] = useState("w"); // Controla el turno
+  let colorTurn;
   const [whiteTime, setWhiteTime] = useState(600); // Tiempo en segundos
   const [blackTime, setBlackTime] = useState(600);
   const [messages, setMessages] = useState([]);
@@ -25,7 +27,7 @@ export default function Game() {
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [pendingPromotion, setPendingPromotion] = useState(null);
-  const [showPromotionPopup, setShowPromotionPopup] = useState(false)
+  const [showPromotionPopup, setShowPromotionPopup] = useState(false);
   let piezaLlega = null;
   let piezaElejida = null;
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
@@ -45,17 +47,34 @@ useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
     const storedUserData = localStorage.getItem("userData");
     const color = localStorage.getItem("colorJug");
+    const idRival = localStorage.getItem("idRival");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
       console.log("✅ Usuario encontrado:", parsedUser);
-      setUser(parsedUser);
+      setUser(parsedUser.publicUser);
       setPlayerColor(color);
+      setRival(idRival);
     } else {
       console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
   }, []);
 
+  useEffect(() => {
+    // Definir el intervalo de restar tiempo
+    const interval = setInterval(() => {
+      console.log("es el turno de", gameCopy.current.turn(), "Y mi color es: ",colorTurn )
+      if (gameCopy.current.turn()==="w") {
+        setWhiteTime((prevTime) => prevTime - 1);
+      } else {
+        setBlackTime((prevTime) => prevTime - 1);
+      }
+    }, 1000);
 
+    return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
+  }, [gameCopy.current.turn()]); // Solo se vuelve a ejecutar cuando el turno o el color del jugador cambia
+
+
+  colorTurn = playerColor === "black" ? "b" : "w";
   useEffect(() => {
       console.log("🔄 useEffect ejecutándose en pantalla de partida...");
   
@@ -104,6 +123,7 @@ useEffect(() => {
       } else {
         console.error("Movimiento no válido:", moveStr);
       }
+      console.log ("Es el turno de", gameCopy.current.turn(), " y yo soy", playerColor);
     });
     
 
@@ -157,7 +177,8 @@ useEffect(() => {
     
     
       const handleMove = (sourceSquare, targetSquare) => {
-        let colorTurn = playerColor === "black" ? "b" : "w";
+        
+        console.log("colorTurn es ", colorTurn);
         if (winner) return;
         if (colorTurn !== gameCopy.current.turn()) {
           console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.current.turn()}`);
@@ -377,6 +398,12 @@ useEffect(() => {
 
         {/* Tablero de Ajedrez */}
         <div className={styles.boardContainer}>
+           <div className={`${styles.playerInfoTop} ${gameCopy.current.turn() !== colorTurn ? styles.activePlayer : styles.inactivePlayer}`}>
+             <div className={styles.playerName}>
+               <span className={styles.greenDot}></span> {rival ? rival : "NuevoJugador"}
+             </div>
+             <div className={styles.playerTime}>{"b" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
+           </div>
           <Chessboard
             position={fen}
             boardOrientation={playerColor === "white" ? "white" : "black"}
@@ -408,6 +435,12 @@ useEffect(() => {
             arePiecesDraggable={true} // Mantiene la opción de arrastrar piezas
             animationDuration={200}
           />
+          <div className={`${styles.playerInfoBottom} ${gameCopy.current.turn() === colorTurn ? styles.activePlayer : styles.inactivePlayer}`}>
+             <div className={styles.playerName}>
+               <span className={styles.orangeDot}></span> {user ? user.NombreUser : "NuevoJugador"}
+             </div>
+             <div className={styles.playerTime}>{"w" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
+           </div>
          {/*} {showPromotionPopup && (
                 <div className="promotion-modal">
                     <p>Selecciona una pieza para promocionar:</p>
@@ -418,6 +451,7 @@ useEffect(() => {
                     ))}
                 </div>
             )}*/}
+        
         </div>
 
         {/* Panel de Chat */}
