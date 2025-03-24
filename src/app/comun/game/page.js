@@ -30,6 +30,7 @@ export default function Game() {
   let piezaLlega = null;
   let piezaElejida = null;
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
+  const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al 
   const searchParams = useSearchParams();
   const idPartida = searchParams.get("id"); // Obtener el ID de la URL
   //const gameCopy = new Chess(game.fen());
@@ -62,6 +63,7 @@ useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
     const storedUserData = localStorage.getItem("userData");
     const color = localStorage.getItem("colorJug");
+    const tipoPartida = localStorage.getItem("tipoPartida");
     const idRival = localStorage.getItem("idRival");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
@@ -69,10 +71,27 @@ useEffect(() => {
       setUser(parsedUser.publicUser);
       setPlayerColor(color);
       setRival(idRival);
+      if (tipoPartida === "Punt_10"){
+        setTiempoPartida(10);
+      } else if(tipoPartida === "Punt_30"){
+        setTiempoPartida(30);
+      } else if(tipoPartida === "Punt_5"){
+        setTiempoPartida(5);
+      } else if(tipoPartida === "Punt_3"){
+        setTiempoPartida(3);
+      }
     } else {
       console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
   }, []);
+
+  useEffect(() => {
+    if (tiempoPartida !== null) {
+      console.log("⌚La partida que vamos a hacer es de: ", tiempoPartida);
+      setBlackTime(60 * tiempoPartida);
+      setWhiteTime(60 * tiempoPartida);
+    }
+  }, [tiempoPartida]); // Este useEffect se ejecuta cada vez que 'tiempoPartida' cambie
 
   useEffect(() => {
     // Definir el intervalo de restar tiempo

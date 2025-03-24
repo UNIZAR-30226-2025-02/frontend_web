@@ -114,7 +114,7 @@ console.log("Nombre de usuario:", user?.NombreUser);
                     </div>
 
                     <div className={styles.profileDetails}>
-                        <h2 className={styles.profileName}>{user.name || "No disponible"}</h2>
+                        <h2 className={styles.profileName}>{user.NombreUser || "No disponible"}</h2>
                         <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
                                 <p><strong>Amigos:</strong> {user.friends || 0}</p>

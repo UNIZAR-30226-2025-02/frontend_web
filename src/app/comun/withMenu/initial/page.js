@@ -15,37 +15,52 @@ export default function InitialPage() {
     const [searching, setSearching] = useState(false);
     const router = useRouter();
     const [playerColor, setPlayerColor] = useState(null);
-    const token = localStorage.getItem("authToken");
-    const socket = getSocket(token);
+    const [token, setToken] = useState(null);
+    const [socket, setSocket] = useState(null);
     // Cargar usuario desde localStorage solo una vez
     useEffect(() => {
-        const storedUserData = localStorage.getItem("userData");
-        if (storedUserData) {
+        if (typeof window !== 'undefined') {
+          // Asegurarse de que estamos en el navegador
+          const storedToken = localStorage.getItem("authToken");
+          setToken(storedToken);
+          
+          // Crear la conexión del socket solo cuando el token esté disponible
+          const socketInstance = getSocket(storedToken);
+          setSocket(socketInstance);
+    
+          // Conectar el socket solo si no está conectado
+          socketInstance.connect();
+    
+          return () => {
+            console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+            //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
+          };
+        }
+      }, []);
+    
+      // Cargar usuario desde localStorage solo una vez
+      useEffect(() => {
+        if (typeof window !== 'undefined') {
+          const storedUserData = localStorage.getItem("userData");
+          if (storedUserData) {
             const parsedUser = JSON.parse(storedUserData);
             setUser(parsedUser.publicUser);
+          }
         }
-    
-        socket.connect(); // Conectar el socket solo si no está conectado
-    
-        return () => {
-            console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
-            //socket.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
-        };
-    }, []);
+      }, []);
     console.log("Usuario desde localStorage:", user);
 
     // Función para buscar partida
-    const handleSearchGame = async () => {
+    const handleSearchGame = async (tipoPartida) => {
         if (!socket) return; // Asegurarse de que el socket esté conectado
-
         setSearching(true);
         const dataToSend = { 
             idJugador: user?.id, 
-            mode: "Punt_10" 
+            mode: tipoPartida
         };
         
         console.log("🔍 Enviando datos:", dataToSend); // Verificar datos antes de enviar
-        
+        console.log("Voy a buscar partida del tipo: ", tipoPartida);
         console.log("👤 Usuario antes de enviar:", user);
         console.log("🔍 Enviando datos:", dataToSend);
         socket.emit("find-game", dataToSend);
@@ -57,6 +72,7 @@ export default function InitialPage() {
             setSearching(false);
             console.log("Estoy buscando partida", user.NombreUser);
             console.log("he encontrado partida", user.NombreUser); 
+            localStorage.setItem("tipoPartida",tipoPartida);
             idPartidaCopy = data.idPartida; 
           
         });
@@ -100,7 +116,7 @@ export default function InitialPage() {
         "Principiante": "Ideal para quienes están aprendiendo. Cada jugador consta de 30 min para realizar sus movimientos.",
         "Avanzado": "Para jugadores experimentados. Cada jugador consta de 5 min para realizar sus movimientos.",
         "Relámpago": "Modo para expertos. El tiempo es muy limitado, cada jugador cuenta con 3 minutos.",
-        "Incremento": "El tiempo aumenta 10 seg con cada jugada, partiendo de 15 min iniciales.",
+        "Incremento": "El tiempo aumenta 5 seg con cada jugada, partiendo de 10 min iniciales.",
         "Incremento exprés": "Versión rápida del incremento. Partiendo de 3 + 2 seg por jugada."
     };
 
@@ -136,8 +152,7 @@ export default function InitialPage() {
                             <FaFire className={styles.shield} style={{ color: '#ff8000' }} />
                             <span className={styles.text}>Tu racha</span>
                             <span className={styles.rachaCount}>{user.maxStreak || 0}</span>
-                            <div className={styles.checks}>
-                                
+                            <div className={styles.checks}>  
                             </div>
                         </div>
                     </div>
@@ -168,16 +183,28 @@ export default function InitialPage() {
                             </div>
 
                             <span className={styles.time}>
-                                {index === 0 ? '10 min' : index === 1 ? '30 min' : index === 2 ? '5 min' : index === 3 ? '3 min' : index === 4 ? '15min + 10seg' : '3min + 2seg'}
+                                {index === 0 ? '10 min' : index === 1 ? '30 min' : index === 2 ? '5 min' : index === 3 ? '3 min' : index === 4 ? '10min + 5seg' : '3min + 2seg'}
                             </span>
-                            <button className={styles.playButton}>Jugar</button>
+                            <button
+                                className={styles.playButton}
+                                onClick={() => handleSearchGame(
+                                    index === 0 ? 'Punt_10' :
+                                    index === 1 ? 'Punt_30' :
+                                    index === 2 ? 'Punt_5' :
+                                    index === 3 ? 'Punt_3' :
+                                    index === 4 ? 'Punt_5_10' :
+                                    'Punt_3_2'
+                                )}
+                                >
+                                Jugar
+                            </button>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Buscar Partida */}
-            <button className={styles.searchButton} onClick={handleSearchGame} disabled={searching}>
+            <button className={styles.searchButton} onClick={() => handleSearchGame("Punt_10")} disabled={searching}>
                 {searching ? "Buscando..." : <><FcSearch className={styles.iconSearch} /> Buscar Partida</>}
             </button>
         </div>

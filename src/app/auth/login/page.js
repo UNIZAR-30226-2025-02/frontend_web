@@ -56,12 +56,12 @@ export default function LoginPage() {
             console.log("Error en el login:", data);
             throw new Error(data.message || data.error || "Error desconocido en el login");
         }
-        const socket = getSocket(token);
         if (token) {
           console.log('Login exitoso. Token recibido:', token);
             // Guardar el token en localStorage
           localStorage.setItem("authToken", token);
           localStorage.setItem("userData", JSON.stringify(data));
+          const socket = getSocket(token);
           socket.on('existing-game', (data) => {
             console.log('Este usuario estaba jugando una partida');
             localStorage.setItem("colorJug", data.color);
