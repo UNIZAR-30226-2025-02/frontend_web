@@ -1,8 +1,9 @@
 "use client";
 import "../layout.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from 'next/navigation';  // Importar useRouter
+import {getSocket} from "../../utils/sockets"; 
 
 export default function LoginPage() {
   const [form, setForm] = useState({
@@ -21,6 +22,17 @@ export default function LoginPage() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+
+  /*useEffect(() => {
+    socket.on('existing-game', (data) => {
+      console.log('Este usuario estaba jugando una partida');
+      localStorage.setItem("colorJug", data.color);
+      localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
+      router.push(`/comun/game?id=${data.gameID}`);
+    }) 
+  }, []);*/
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,14 +56,19 @@ export default function LoginPage() {
             console.log("Error en el login:", data);
             throw new Error(data.message || data.error || "Error desconocido en el login");
         }
-
+        const socket = getSocket(token);
         if (token) {
-          //console.log("Usuario: ",user);
           console.log('Login exitoso. Token recibido:', token);
             // Guardar el token en localStorage
-            localStorage.setItem("authToken", token);
-            localStorage.setItem("userData", JSON.stringify(data));
-            router.push("/comun/withMenu/initial");
+          localStorage.setItem("authToken", token);
+          localStorage.setItem("userData", JSON.stringify(data));
+          socket.on('existing-game', (data) => {
+            console.log('Este usuario estaba jugando una partida');
+            localStorage.setItem("colorJug", data.color);
+            localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
+            router.push(`/comun/game?id=${data.gameID}`);
+          }) 
+          router.push("/comun/withMenu/initial");
         } /*else if (data.id) {
           // Si no hay token, pero el id está presente, podrías redirigir a una página de perfil o mostrar un mensaje
           console.log("Usuario autenticado, pero no se encontró token.");

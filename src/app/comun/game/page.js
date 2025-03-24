@@ -5,9 +5,8 @@ import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import styles from "./game.module.css";
 import io from 'socket.io-client';  // Importar cliente de socket.
-import socket from "../../utils/sockets"; 
+import {getSocket} from "../../utils/sockets"; 
 import { useSearchParams } from "next/navigation";
-console.log("📡 Estado del socket al importar en Game.js:", socket);
 
 
 export default function Game() {
@@ -36,11 +35,27 @@ export default function Game() {
   //const gameCopy = new Chess(game.fen());
   //const gameRef = useRef(game); // Referencia del estado de 'game'
   const gameCopy = useRef(new Chess()); // Referencia única del juego
+  const token = localStorage.getItem("authToken");
+  const socket = getSocket(token);
 
   // Actualiza el valor de gameRef siempre que 'game' cambie
 useEffect(() => {
+  const pgn = localStorage.getItem("pgn");
+
+  if (pgn) {
+    const success = gameCopy.current.loadPgn(pgn);
+    if (success) {
+      console.log("♻️ PGN cargado correctamente:", gameCopy.current.fen());
+    } else {
+      console.warn("⚠️ No se pudo cargar el PGN. Usando posición inicial.");
+    }
+    localStorage.removeItem("pgn");
+  } else {
+    console.log("🔰 No hay PGN, usando juego nuevo.");
+  }
   setFen(gameCopy.current.fen()); // Iniciar con el FEN correcto
   setTurn(gameCopy.current.turn());
+  
 }, []);
 
   useEffect(() => {

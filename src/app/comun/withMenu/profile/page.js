@@ -6,7 +6,10 @@ import { FaEdit, FaChessPawn } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { FcApproval, FcAlarmClock, FcFlashOn, FcBullish, FcRating } from "react-icons/fc";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import socket from "../../../utils/sockets"; 
+import {getSocket} from "../../../utils/sockets"; 
+
+const token = localStorage.getItem("authToken");
+const socket = getSocket(token);
 
 const Profile = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));

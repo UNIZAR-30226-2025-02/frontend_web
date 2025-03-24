@@ -7,7 +7,7 @@ import { useState, useEffect} from "react"; // Importar useState para manejar es
 import { FcSearch, FcRating, FcFlashOn, FcAlarmClock, FcApproval, FcBullish } from "react-icons/fc";
 import { FaChessPawn, FaFire } from "react-icons/fa";
 import { IoIosInformationCircleOutline } from "react-icons/io";
-import socket from "../../../utils/sockets"; // Importamos el socket global
+import {getSocket} from "../../../utils/sockets"; // Importamos el socket global
 import { useRouter } from "next/navigation";
 
 export default function InitialPage() {
@@ -15,7 +15,8 @@ export default function InitialPage() {
     const [searching, setSearching] = useState(false);
     const router = useRouter();
     const [playerColor, setPlayerColor] = useState(null);
-
+    const token = localStorage.getItem("authToken");
+    const socket = getSocket(token);
     // Cargar usuario desde localStorage solo una vez
     useEffect(() => {
         const storedUserData = localStorage.getItem("userData");
