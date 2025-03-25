@@ -25,19 +25,42 @@ export default function Game() {
   const [tablas, setTablas] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
+  const [drawOfferReceived, setDrawOfferReceived] = useState(false);
+  const [confirmDraw, setConfirmDraw] = useState(false);
+  const [confirmResign, setConfirmResign] = useState(false);
   const [pendingPromotion, setPendingPromotion] = useState(null);
   const [showPromotionPopup, setShowPromotionPopup] = useState(false);
   let piezaLlega = null;
   let piezaElejida = null;
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
-  const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al 
+  const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al
+  const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
   const searchParams = useSearchParams();
   const idPartida = searchParams.get("id"); // Obtener el ID de la URL
-  //const gameCopy = new Chess(game.fen());
-  //const gameRef = useRef(game); // Referencia del estado de 'game'
+  
   const gameCopy = useRef(new Chess()); // Referencia única del juego
-  const token = localStorage.getItem("authToken");
-  const socket = getSocket(token);
+  const [token, setToken] = useState(null);
+  const [socket, setSocket] = useState(null);
+  // Cargar usuario desde localStorage solo una vez
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+        // Asegurarse de que estamos en el navegador
+        const storedToken = localStorage.getItem("authToken");
+        setToken(storedToken);
+        
+        // Crear la conexión del socket solo cuando el token esté disponible
+        const socketInstance = getSocket();
+        setSocket(socketInstance);
+  
+        // Conectar el socket solo si no está conectado
+        socketInstance.connect();
+  
+        return () => {
+          console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+          //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
+        };
+      }
+    }, []);
 
   // Actualiza el valor de gameRef siempre que 'game' cambie
 useEffect(() => {
@@ -63,7 +86,7 @@ useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
     const storedUserData = localStorage.getItem("userData");
     const color = localStorage.getItem("colorJug");
-    const tipoPartida = localStorage.getItem("tipoPartida");
+    const tipoPartidaLocal = localStorage.getItem("tipoPartida");
     const idRival = localStorage.getItem("idRival");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
@@ -71,13 +94,18 @@ useEffect(() => {
       setUser(parsedUser.publicUser);
       setPlayerColor(color);
       setRival(idRival);
-      if (tipoPartida === "Punt_10"){
+      setTipoPartida(tipoPartidaLocal);
+      if (tipoPartidaLocal === "Punt_10"){
         setTiempoPartida(10);
-      } else if(tipoPartida === "Punt_30"){
+      } else if(tipoPartidaLocal === "Punt_30"){
         setTiempoPartida(30);
-      } else if(tipoPartida === "Punt_5"){
+      } else if(tipoPartidaLocal === "Punt_5"){
         setTiempoPartida(5);
-      } else if(tipoPartida === "Punt_3"){
+      } else if(tipoPartidaLocal === "Punt_3"){
+        setTiempoPartida(3);
+      } else if(tipoPartidaLocal === "Punt_5_10"){
+        setTiempoPartida(10);
+      } else if(tipoPartidaLocal === "Punt_3_2"){
         setTiempoPartida(3);
       }
     } else {
@@ -150,8 +178,25 @@ useEffect(() => {
       }
     
       const moveResult = gameCopy.current.move(moveConfig);
-    
+      
       if (moveResult) {
+        if (tipoPartida === "Punt_3_2"){
+          if (colorTurn === "b"){
+            console.log("⬜Voy a actualizar el tiempo de blanco que recibo su movimiento", whiteTime);
+            setWhiteTime((prevTime) => prevTime + 2);
+          } else {
+            console.log("⬛Voy a actualizar el tiempo de blanco que recibo su movimiento", blackTime);
+            setBlackTime((prevTime) => prevTime + 2);
+          }
+        } else if (tipoPartida === "Punt_5_10"){
+          if (colorTurn === "b"){
+            console.log("⬜Voy a actualizar el tiempo de blanco que recibo su movimiento", whiteTime);
+            setWhiteTime((prevTime) => prevTime + 5);
+          } else {
+            console.log("⬛Voy a actualizar el tiempo de blanco que recibo su movimiento", blackTime);
+            setBlackTime((prevTime) => prevTime + 5);
+          }
+        }
         setFen(gameCopy.current.fen());
         setTurn(gameCopy.current.turn());
       } else {
@@ -160,10 +205,18 @@ useEffect(() => {
       console.log ("Es el turno de", gameCopy.current.turn(), " y yo soy", playerColor);
     });
     
+    socket.on('requestTie', (data) => {
+      console.log('📩 Petición de tablas recibida:', data);
+      setDrawOfferReceived(true); // Mostrar el modal al jugador
+    });
+
+    socket.on('player-surrendered', (data) => {
+      console.log('Rival se ha rendido:', data);
+  });
 
     socket.on('gameOver', (data) => {
       console.log("Llega final de partida", data);
-      if(data.result === "draw"){
+      if(data.winner === "draw"){
         console.log("Tablas");
         setTablas(true)
       }else if(data.winner === user.id){
@@ -185,6 +238,7 @@ useEffect(() => {
           console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
           //socket.off("color");
           socket.off("new-move");
+          socket.off("requestTie");
       };
   }, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
   
@@ -210,88 +264,102 @@ useEffect(() => {
       };*/
     
     
-      const handleMove = (sourceSquare, targetSquare) => {
+    const handleMove = (sourceSquare, targetSquare) => {
         
-        console.log("colorTurn es ", colorTurn);
-        if (winner) return;
-        if (colorTurn !== gameCopy.current.turn()) {
-          console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.current.turn()}`);
-          return;
-        }
-    
-        const piece = gameCopy.current.get(sourceSquare);
-        // Obtener movimientos legales para la casilla de origen
-    const legalMoves = gameCopy.current.moves({ square: sourceSquare, verbose: true });
-
-    // Verificar si el targetSquare está en los movimientos legales
-    const isValidMove = legalMoves.some(move => move.to === targetSquare);
-    if (!isValidMove) {
-        console.log("⚠️ Movimiento no permitido.");
+      console.log("colorTurn es ", colorTurn);
+      if (winner) return;
+      if (colorTurn !== gameCopy.current.turn()) {
+        console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.current.turn()}`);
         return;
-    }
+      }
+    
+      const piece = gameCopy.current.get(sourceSquare);
+        // Obtener movimientos legales para la casilla de origen
+      const legalMoves = gameCopy.current.moves({ square: sourceSquare, verbose: true });
 
-        const isPawnPromotion = 
-            piece && piece.type === "p" &&
-            ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
-    
-        if (isPawnPromotion && !piezaLlega) {
-          // Mostrar popup de promoción manualmente (tu modal personalizado)
-          //setShowPromotionPopup(true);
-          //setPendingPromotion({ from: sourceSquare, to: targetSquare, color: piece.color });
+      // Verificar si el targetSquare está en los movimientos legales
+      const isValidMove = legalMoves.some(move => move.to === targetSquare);
+      if (!isValidMove) {
+          console.log("⚠️ Movimiento no permitido.");
           return;
-        }
-    
-        try {
-          const move = gameCopy.current.move({
-            from: sourceSquare,
-            to: targetSquare,
-            promotion: piezaElejida || undefined,
-          });
-    
-          if (move) {
-            console.log("✔️ Movimiento exitoso:", move);
-            setFen(gameCopy.current.fen());
-            setTurn(gameCopy.current.turn());
-            setSelectedSquare(null);
-            setLegalMoves([]);
-           // setPendingPromotion(null);
-            //setShowPromotionPopup(false);
-    
-            const movimiento = move.from + move.to + (move.promotion || "");
-            socket.emit("make-move", { 
-              movimiento,
-              idPartida, 
-              idJugador: user.id 
-            });
+      }
+
+      const isPawnPromotion = 
+          piece && piece.type === "p" &&
+          ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
+  
+      if (isPawnPromotion && !piezaLlega) {
+        // Mostrar popup de promoción manualmente (tu modal personalizado)
+        //setShowPromotionPopup(true);
+        //setPendingPromotion({ from: sourceSquare, to: targetSquare, color: piece.color });
+        return;
+      }
+  
+      try {
+        const move = gameCopy.current.move({
+          from: sourceSquare,
+          to: targetSquare,
+          promotion: piezaElejida || undefined,
+        });
+  
+        if (move) {
+          if (tipoPartida === "Punt_3_2"){
+            if (colorTurn === "w"){
+              setWhiteTime((prevTime) => prevTime + 2);
+            } else {
+              setBlackTime((prevTime) => prevTime + 2);
+            }
+          } else if (tipoPartida === "Punt_5_10"){
+            if (colorTurn === "w"){
+              setWhiteTime((prevTime) => prevTime + 5);
+            } else {
+              setBlackTime((prevTime) => prevTime + 5);
+            }
           }
-        } catch (error) {
-          console.log("⚠️ Movimiento inválido", error);
-        }
-    };
-    
-    const handlePromotion = (promotionPiece) => {
-        if (!promotionPiece) return;
-        console.log("➡️ Seleccionaste:", promotionPiece);
-    
-        // Normalizamos la pieza
-        let pieza = "";
-        if (promotionPiece.endsWith("R")) pieza = "r";
-        if (promotionPiece.endsWith("Q")) pieza = "q";
-        if (promotionPiece.endsWith("B")) pieza = "b";
-        if (promotionPiece.endsWith("N")) pieza = "n";
-    
-        piezaLlega = promotionPiece;
-        piezaElejida = pieza;
-        
-        // Hacemos la jugada pendiente
-        if (pendingPromotion) {
-          const { from, to } = pendingPromotion;
+          console.log("✔️ Movimiento exitoso:", move);
+          if(tiempoPartida)
+          setFen(gameCopy.current.fen());
+          setTurn(gameCopy.current.turn());
+          setSelectedSquare(null);
+          setLegalMoves([]);
+          // setPendingPromotion(null);
           //setShowPromotionPopup(false);
-          //setPendingPromotion(null);
-          handleMove(from, to); // Aquí reintentas con la pieza seleccionada ya seteada
+  
+          const movimiento = move.from + move.to + (move.promotion || "");
+          socket.emit("make-move", { 
+            movimiento,
+            idPartida, 
+            idJugador: user.id 
+          });
         }
-        return true;
+      } catch (error) {
+        console.log("⚠️ Movimiento inválido", error);
+      }
     };
+  
+  const handlePromotion = (promotionPiece) => {
+      if (!promotionPiece) return;
+      console.log("➡️ Seleccionaste:", promotionPiece);
+  
+      // Normalizamos la pieza
+      let pieza = "";
+      if (promotionPiece.endsWith("R")) pieza = "r";
+      if (promotionPiece.endsWith("Q")) pieza = "q";
+      if (promotionPiece.endsWith("B")) pieza = "b";
+      if (promotionPiece.endsWith("N")) pieza = "n";
+  
+      piezaLlega = promotionPiece;
+      piezaElejida = pieza;
+      
+      // Hacemos la jugada pendiente
+      if (pendingPromotion) {
+        const { from, to } = pendingPromotion;
+        //setShowPromotionPopup(false);
+        //setPendingPromotion(null);
+        handleMove(from, to); // Aquí reintentas con la pieza seleccionada ya seteada
+      }
+      return true;
+  };
     
 
   const handleSendMessage = () => {
@@ -374,6 +442,35 @@ useEffect(() => {
     handleMove(selectedSquare, targetSquare);
   };
 
+  const handleOfferDraw = () => {
+    setConfirmDraw(true); // Mostrar modal de confirmación
+  };
+  
+  const handleResign = () => {
+    setConfirmResign(true); // Mostrar modal de confirmación
+  };
+
+  const acceptDraw = () => {
+    socket.emit('draw-accept', { idPartida, idJugador: user.id });
+    setDrawOfferReceived(false);
+  };
+  
+  const declineDraw = () => {
+    socket.emit('draw-decline', { idPartida, idJugador: user.id });
+    setDrawOfferReceived(false);
+  };
+
+  const confirmSendDrawOffer = () => {
+    socket.emit("draw-offer", { idPartida, idJugador: user.id });
+    setConfirmDraw(false);
+  };
+  
+  const confirmSendResign = () => {
+    socket.emit("resign", { idPartida, idJugador: user.id });
+    setConfirmResign(false);
+  };
+  
+  
   return (
     <div className={styles.gameContainer}>
       {winner && (
@@ -407,7 +504,7 @@ useEffect(() => {
       {tablas && (
         <div className={styles.winnerOverlay}>
           <h2>¡Has llegado a tablas!</h2>
-          <span className={styles.trophy}>🚫</span>
+          <span className={styles.trophy}>🤝</span>
           <div className={styles.winnerActions}>
             <button className={styles.newGameButton} onClick={resetGame}>
               Buscar otra partida
@@ -418,6 +515,35 @@ useEffect(() => {
           </div>
         </div>
       )}
+      {drawOfferReceived && (
+        <div className={styles.winnerOverlay}>
+          <h2>Tu rival ha ofrecido tablas</h2>
+          <div className={styles.winnerActions}>
+            <button onClick={acceptDraw} className={styles.newGameButton}>Aceptar</button>
+            <button onClick={declineDraw} className={styles.reviewButton}>Rechazar</button>
+        </div>
+      </div>
+    )}
+
+{confirmDraw && (
+  <div className={styles.winnerOverlay}>
+    <h2>¿Deseas ofrecer tablas?</h2>
+    <div className={styles.winnerActions}>
+      <button className={styles.newGameButton} onClick={confirmSendDrawOffer}>Sí</button>
+      <button className={styles.reviewButton} onClick={() => setConfirmDraw(false)}>No</button>
+    </div>
+  </div>
+)}
+
+{confirmResign && (
+  <div className={styles.winnerOverlay}>
+    <h2>¿Estás seguro de que quieres rendirte?</h2>
+    <div className={styles.winnerActions}>
+      <button className={styles.newGameButton} onClick={confirmSendResign}>Sí</button>
+      <button className={styles.reviewButton} onClick={() => setConfirmResign(false)}>No</button>
+    </div>
+  </div>
+)}
       
       <div className={styles.gameBody}>
         {/* Panel de Jugadas */}
@@ -490,7 +616,11 @@ useEffect(() => {
 
         {/* Panel de Chat */}
         <div className={styles.chatPanel}>
-          
+        <div className={styles.inlineButtons}>
+          <button className={styles.iconButtonTablas} onClick={handleOfferDraw}  title="Solicitar tablas">🤝</button>
+          <button className={styles.iconButtonAbandono} onClick={handleResign} title="Abandonar partida">🏳️</button>
+        </div>
+
           <h3>Chat 💬</h3>
           <div className={styles.chatMessages}>
             {messages.map((msg, index) => (

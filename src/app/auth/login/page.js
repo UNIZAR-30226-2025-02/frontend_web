@@ -22,16 +22,6 @@ export default function LoginPage() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-
-  /*useEffect(() => {
-    socket.on('existing-game', (data) => {
-      console.log('Este usuario estaba jugando una partida');
-      localStorage.setItem("colorJug", data.color);
-      localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
-      router.push(`/comun/game?id=${data.gameID}`);
-    }) 
-  }, []);*/
   
 
   const handleSubmit = async (e) => {
@@ -50,7 +40,6 @@ export default function LoginPage() {
         console.log("Respuesta del servidor:", data); // Debug para ver la respuesta exacta
         // Obtiene el token de la respuesta
       const token = data.accessToken;
-     // const user = data.publicUser.NombreUser;
     
         if (!response.ok) {
             console.log("Error en el login:", data);

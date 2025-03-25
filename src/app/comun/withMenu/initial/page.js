@@ -25,7 +25,7 @@ export default function InitialPage() {
           setToken(storedToken);
           
           // Crear la conexión del socket solo cuando el token esté disponible
-          const socketInstance = getSocket(storedToken);
+          const socketInstance = getSocket();
           setSocket(socketInstance);
     
           // Conectar el socket solo si no está conectado
@@ -109,6 +109,14 @@ export default function InitialPage() {
             alert(`Error: ${errorMessage}`); // Muestra un mensaje al usuario
         });
     };
+
+    const handleCancelSearch = () => {
+        if (!socket || !searching) return;
+        socket.emit('cancel-pairing', { idJugador: user?.id });
+        setSearching(false);
+        console.log("❌ Búsqueda cancelada por el usuario");
+    };
+    
 
     // Descripciones de los modos de juego
     const descriptions = {
@@ -204,9 +212,23 @@ export default function InitialPage() {
             </div>
 
             {/* Buscar Partida */}
-            <button className={styles.searchButton} onClick={() => handleSearchGame("Punt_10")} disabled={searching}>
-                {searching ? "Buscando..." : <><FcSearch className={styles.iconSearch} /> Buscar Partida</>}
-            </button>
+            <div className={styles.searchWrapper}>
+                <div className={styles.searchButtonContainer}>
+                    <button className={styles.searchButton} onClick={() => handleSearchGame("Punt_10")} >
+                        {!searching && <FcSearch className={styles.iconSearch} />}
+                        {searching && <div className={styles.loader}></div>}
+                        <span className={searching ? styles.hiddenText : ''}>Buscar Partida</span>
+                        <span className={!searching ? styles.hiddenText : ''}>Buscando...</span>
+                    </button>
+                </div>
+                <div className={styles.botonCancelar}>
+                {searching && (
+                    <button className={styles.cancelButton} onClick={handleCancelSearch} title="Cancelar búsqueda">
+                        ❌
+                    </button>
+                )}
+                </div>
+            </div>
         </div>
     );
 }

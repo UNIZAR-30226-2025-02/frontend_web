@@ -133,29 +133,93 @@
   cursor: pointer;
 }
 
+
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Espacio entre los botones */
+}
+
+.searchButtonContainer {
+  width: 90%;
+  display: flex;
+  justify-content: center;
+}
+
+.botonCancelar{
+  width: 10%;
+  display: flex;
+  justify-content: center;
+}
+
 .searchButton {
+  width: 100%;
   background-color: #3E76DF;
   color: white;
   border: none;
   padding: 15px 80px;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
-  margin-bottom: 30px;
   display: flex;
   align-items: center;
+  justify-content: center;
   font-weight: bold;
   font-size: 22px;
-  gap: 5px;
-}
-.iconSearch{ 
-  font-size: 38px;
-  margin-right: 20px;
+  gap: 10px;  /* Aumentamos espacio entre icono y texto */
+  white-space: nowrap;
 }
 
-.searchButton:hover, .playButton:hover{
-  background: #0056b3;
+.iconSearch {
+  font-size: 38px; /* 🔹 Fuerza el tamaño del icono */
+  flex-shrink: 0; /* 👈 Evita que el icono se reduzca */
 }
+
+
+.loader {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.cancelButton {
+  background-color: transparent;
+  border: none;
+  font-size: 2rem; /* Tamaño más grande para mejor visibilidad */
+  cursor: pointer;
+  color: #ff4d4d;
+  transition: transform 0.2s ease;
+}
+
+.cancelButton:hover {
+  transform: scale(1.2);
+}
+
+
+.hiddenIcon {
+  font-size: 38px;
+  margin-right: 20px;
+  visibility: hidden;
+  position: absolute;
+}
+
+.hiddenText {
+
+  visibility: hidden;
+  position: absolute;
+}
+
 /* Estilos para la pestaña de información */
 .infoPopup {
   background-color: rgba(0, 0, 0, 0.9); /* Fondo negro con opacidad */
