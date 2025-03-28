@@ -37,12 +37,20 @@ export default function Game() {
   const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al
   const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
   const searchParams = useSearchParams();
-  const idPartida = searchParams.get("id"); // Obtener el ID de la URL
+  const [idPartida, setIdPartida] = useState(null);
+
+  //const idPartida = searchParams.get("id"); // Obtener el ID de la URL
   
   const gameCopy = useRef(new Chess()); // Referencia única del juego
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
   // Cargar usuario desde localStorage solo una vez
+
+  useEffect(() => {
+    setIdPartida(searchParams.get("id"));
+  }, [searchParams]); // Se ejecuta cuando cambian los parámetros
+
+  
   useEffect(() => {
       if (typeof window !== 'undefined') {
         // Asegurarse de que estamos en el navegador
