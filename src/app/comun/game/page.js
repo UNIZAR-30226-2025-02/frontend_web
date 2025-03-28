@@ -30,6 +30,7 @@ export default function Game() {
   const [confirmResign, setConfirmResign] = useState(false);
   const [pendingPromotion, setPendingPromotion] = useState(null);
   const [showPromotionPopup, setShowPromotionPopup] = useState(false);
+  const [partidaAcabada, setPartidaAcabada] = useState(false);
   let piezaLlega = null;
   let piezaElejida = null;
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
@@ -88,6 +89,7 @@ useEffect(() => {
     const color = localStorage.getItem("colorJug");
     const tipoPartidaLocal = localStorage.getItem("tipoPartida");
     const idRival = localStorage.getItem("idRival");
+    const tiempoBlancas = localStorage.getItem("time");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
       console.log("✅ Usuario encontrado:", parsedUser);
@@ -95,18 +97,23 @@ useEffect(() => {
       setPlayerColor(color);
       setRival(idRival);
       setTipoPartida(tipoPartidaLocal);
-      if (tipoPartidaLocal === "Punt_10"){
-        setTiempoPartida(10);
-      } else if(tipoPartidaLocal === "Punt_30"){
-        setTiempoPartida(30);
-      } else if(tipoPartidaLocal === "Punt_5"){
-        setTiempoPartida(5);
-      } else if(tipoPartidaLocal === "Punt_3"){
-        setTiempoPartida(3);
-      } else if(tipoPartidaLocal === "Punt_5_10"){
-        setTiempoPartida(10);
-      } else if(tipoPartidaLocal === "Punt_3_2"){
-        setTiempoPartida(3);
+      if(tiempoBlancas === null){
+        if (tipoPartidaLocal === "Punt_10"){
+          setTiempoPartida(10);
+        } else if(tipoPartidaLocal === "Punt_30"){
+          setTiempoPartida(30);
+        } else if(tipoPartidaLocal === "Punt_5"){
+          setTiempoPartida(5);
+        } else if(tipoPartidaLocal === "Punt_3"){
+          setTiempoPartida(3);
+        } else if(tipoPartidaLocal === "Punt_5_10"){
+          setTiempoPartida(10);
+        } else if(tipoPartidaLocal === "Punt_3_2"){
+          setTiempoPartida(3);
+        }
+      } else {
+        console.log("⬜El tiempo de blancas recuperado es: ", tiempoBlancas);
+        setWhiteTime(tiempoBlancas);
       }
     } else {
       console.log("⚠️ No se encontraron datos de usuario en localStorage.");
@@ -125,15 +132,17 @@ useEffect(() => {
     // Definir el intervalo de restar tiempo
     const interval = setInterval(() => {
       console.log("es el turno de", gameCopy.current.turn(), "Y mi color es: ",colorTurn )
-      if (gameCopy.current.turn()==="w") {
-        setWhiteTime((prevTime) => prevTime - 1);
-      } else {
-        setBlackTime((prevTime) => prevTime - 1);
+      if(partidaAcabada===false){
+        if (gameCopy.current.turn()==="w") {
+          setWhiteTime((prevTime) => prevTime - 1);
+        } else {
+          setBlackTime((prevTime) => prevTime - 1);
+        }
       }
     }, 1000);
 
     return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
-  }, [gameCopy.current.turn()]); // Solo se vuelve a ejecutar cuando el turno o el color del jugador cambia
+  }, [gameCopy.current.turn(), partidaAcabada]); // Solo se vuelve a ejecutar cuando el turno o el color del jugador cambia
 
 
   colorTurn = playerColor === "black" ? "b" : "w";
@@ -214,24 +223,37 @@ useEffect(() => {
       console.log('Rival se ha rendido:', data);
   });
 
-    socket.on('gameOver', (data) => {
-      console.log("Llega final de partida", data);
-      if(data.winner === "draw"){
-        console.log("Tablas");
-        setTablas(true)
-      }else if(data.winner === user.id){
-        setWinner(true)
-      } else{
-        console.log("Mi id es: ", user.id);
-        console.log("Y el data es: ", data);
-        setLoser(true);
-      }
+  socket.on('gameOver', (data) => {
+    localStorage.removeItem("time");
+    setPartidaAcabada(true);
+    console.log("Llega final de partida", data);
+    if(data.winner === "draw"){
+      console.log("Tablas");
+      setTablas(true)
+    }else if(data.winner === user.id){
+      setWinner(true)
+    } else{
+      console.log("Mi id es: ", user.id);
+      console.log("Y el data es: ", data);
+      setLoser(true);
+    }
 
-    });
+  });
 
-        /*socket.on('new-message', (data)=>{
-          console.log("♟️ Mensaje recibido:", data.message);
-        })*/
+  socket.on('new-message', (data)=>{
+    console.log("♟️ Mensaje recibido:", data.message);
+
+    // Añadir el mensaje recibido al chat
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        text: data.message, // o data.text si así lo envías
+        //sender: data.user_id === user.id ? "yo" : "rival", // puedes usar "Blanco"/"Negro" o ids
+        sender: "rival",
+      },
+    ]);
+    
+  })
 
   
       return () => {
@@ -242,6 +264,27 @@ useEffect(() => {
       };
   }, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
   
+  useEffect(() => {
+    if (whiteTime !== null && socket) {
+      socket.on('get-game-status', () => {
+        console.log('👾 Obteniendo estado de la partida...');
+        console.log('Tiempo restante:', whiteTime);
+        console.log('Estado de la partida:', 'ingame');
+  
+        socket.emit('game-status', { timeLeft: whiteTime, estadoPartida: 'ingame' });
+      });
+  
+      return () => {
+        socket.off('get-game-status');
+      };
+    }
+  }, [whiteTime, socket]);
+
+
+  useEffect(()=>{
+    console.log("Estos mensajes hay: ", messages);
+    return ()=>{};
+  }, [messages]);
   
       
   /*
@@ -317,7 +360,7 @@ useEffect(() => {
             }
           }
           console.log("✔️ Movimiento exitoso:", move);
-          if(tiempoPartida)
+          //if(tiempoPartida)
           setFen(gameCopy.current.fen());
           setTurn(gameCopy.current.turn());
           setSelectedSquare(null);
@@ -363,13 +406,27 @@ useEffect(() => {
     
 
   const handleSendMessage = () => {
-    if (message.trim() !== "") {
-      const newMessage = { Id_partida:idPartida, Id_usuario: user.id,  Mensaje: message};
+    /*if (message.trim() !== "") {
+      const newMessage = { message: message, game_id:idPartida, user_id: user.id};
       setMessages([...messages, newMessage]);
       console.log("♟️ Mensaje enviado:", newMessage);
       socket.emit("send-message", newMessage);
+      setMessages(message);
+    }*/
+      const newMessage = {
+        text: message,
+        sender: "yo", // puedes usar "Blanco"/"Negro" si prefieres
+      };
+      
+      setMessages([...messages, newMessage]);
+      
+      socket.emit("send-message", {
+        message,
+        game_id: idPartida,
+        user_id: user.id,
+      });
+      
       setMessage("");
-    }
   };
 
   // Función para formatear el tiempo en mm:ss
@@ -466,8 +523,21 @@ useEffect(() => {
   };
   
   const confirmSendResign = () => {
+    localStorage.removeItem("time");
+    setPartidaAcabada(true);
     socket.emit("resign", { idPartida, idJugador: user.id });
     setConfirmResign(false);
+  };
+  
+  const getMovePairs = () => {
+    const history = gameCopy.current.history();
+    const moves = [];
+  
+    for (let i = 0; i < history.length; i += 2) {
+      moves.push([history[i], history[i + 1] || ""]);
+    }
+  
+    return moves;
   };
   
   
@@ -548,13 +618,18 @@ useEffect(() => {
       <div className={styles.gameBody}>
         {/* Panel de Jugadas */}
         <div className={styles.movesPanel}>
-          {/*<h3>JUGADAS</h3>
-          <ul>
-            {game.history().map((move, index) => (
-              <li key={index}>{move}</li>
+          <h3>Jugadas</h3>
+          <div className={styles.movesList}>
+            {getMovePairs().map((pair, index) => (
+              <div key={index} className={styles.moveRow}>
+                <span className={styles.moveNumber}>{index + 1}.</span>
+                <span className={styles.whiteMove}>{pair[0]}</span>
+                <span className={styles.blackMove}>{pair[1]}</span>
+              </div>
             ))}
-          </ul>*/}
+          </div>
         </div>
+
 
         {/* Tablero de Ajedrez */}
         <div className={styles.boardContainer}>
@@ -623,11 +698,18 @@ useEffect(() => {
 
           <h3>Chat 💬</h3>
           <div className={styles.chatMessages}>
-            {messages.map((msg, index) => (
-              <p key={index} className={msg.sender === "Blanco" ? styles.whiteMessage : styles.blackMessage}>
-                <span className={msg.sender === "Blanco" ? styles.orangeDot : styles.greenDot}></span> {msg.text}
-              </p>
-            ))}
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={msg.sender === "yo" ? styles.messageRowRight : styles.messageRowLeft}
+            >
+              {msg.sender !== "yo" && <span className={styles.greenDotOutside}></span>}
+              <div className={msg.sender === "yo" ? styles.whiteMessage : styles.blackMessage}>
+                {msg.text}
+              </div>
+              {msg.sender === "yo" && <span className={styles.orangeDotOutside}></span>}
+            </div>
+          ))}
           </div>
           <div className={styles.chatInputContainer}>
             <input
@@ -636,7 +718,7 @@ useEffect(() => {
               className={styles.chatInput}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e)} // Detecta la tecla Enter
+              //onKeyDown={(e) => handleKeyDown(e)} // Detecta la tecla Enter
             />
             <button className={styles.sendButton} onClick={handleSendMessage}>➤</button>
           </div>

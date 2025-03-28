@@ -28,7 +28,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/register", { // Cambio de la URL
+      const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/register", { // Cambio de la URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",

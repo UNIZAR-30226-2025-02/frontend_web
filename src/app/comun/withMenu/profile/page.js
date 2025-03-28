@@ -54,6 +54,7 @@ console.log("Nombre de usuario:", user?.NombreUser);
             
             localStorage.removeItem("userData");
             localStorage.removeItem("authToken");
+            localStorage.removeItem("time");
             console.log("Datos del usuario eliminados de localStorage");
             
             if (!response.ok) {

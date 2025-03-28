@@ -45,7 +45,11 @@ export const getSocket = () => {
       const logoutEvent = new Event("forceLogout");
       window.dispatchEvent(logoutEvent);
       
-      socket.disconnect();
+      setTimeout(() => {
+        socket.disconnect();
+        console.log("Socket desconectado tras 3 segundos");
+      }, 3000);
+    
     });
   }
 

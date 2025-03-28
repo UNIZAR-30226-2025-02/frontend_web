@@ -180,6 +180,7 @@
   height: 15px;
   background-color: green;
   border-radius: 50%;
+  margin-right: 8px;
   display: inline-block;
 }
 
@@ -188,6 +189,7 @@
   height: 15px;
   background-color: orange;
   border-radius: 50%;
+  margin-left: 8px;
   display: inline-block;
 }
 
@@ -203,16 +205,12 @@
   transition: opacity 0.3s ease;
 }
 
-.chatMessages {
-  flex-grow: 1;
-  overflow-y: auto;
-  text-align: left;
-}
 
 .chatInputContainer {
   display: flex;
   align-items: center;
   gap: 5px;
+  margin-top: 10px;
 }
 
 .chatInput {
@@ -309,4 +307,99 @@
 
 .iconButtonTablas:hover {
   background-color: #357ABD;
+}
+
+.chatMessages {
+  flex-grow: 1;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.whiteMessage {
+  padding: 8px;
+  width: fit-content;
+  max-width: 50%;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  background-color: #357ABD;
+  align-self: flex-end; /* Mueve el mensaje a la derecha */
+}
+
+.blackMessage {
+  text-align: left;
+  padding: 8px;
+  width: fit-content;
+  max-width: 50%;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  background-color: #555555;
+  align-self: flex-start; /* Mueve el mensaje a la izquierda */
+}
+
+.chatMessages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre mensajes */
+
+  padding-right: 12px; /* ✅ Despega el scroll del contenido */
+  padding-left: 5px;
+}
+.messageRowLeft,
+.messageRowRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.messageRowLeft {
+  justify-content: flex-start;
+}
+
+.messageRowRight {
+  justify-content: flex-end;
+}
+
+.greenDotOutside,
+.orangeDotOutside {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.greenDotOutside {
+  background-color: green;
+}
+
+.orangeDotOutside {
+  background-color: orange;
+}
+
+.movesList {
+  margin-top: 10px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.moveRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.moveNumber {
+  width: 24px;
+  text-align: right;
+}
+
+.whiteMove {
+  color: #eee;
+}
+
+.blackMove {
+  color: #ccc;
 }
