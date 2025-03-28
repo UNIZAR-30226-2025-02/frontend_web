@@ -13,7 +13,7 @@ const eslintConfig = [
   {
     files: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
     languageOptions: {
-      parser: "@typescript-eslint/parser", // ✅ Agrega el parser explícitamente
+      parser: "@typescript-eslint/parser", 
     },
   },
   ...compat.extends("next/core-web-vitals"),

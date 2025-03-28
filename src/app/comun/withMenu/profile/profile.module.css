@@ -90,8 +90,8 @@
     display: flex;
     justify-content: space-between;
     flex-grow: 1;
-    padding-left: 62px;
-    font-size: 24px;
+    padding-left: 40px;
+    font-size: 30px;
     font-weight: bold;
     color: #00aaff;
     margin-bottom: 10px;
@@ -304,4 +304,57 @@
     color: white;
     text-align: center;
     margin-top: 20px;
+}
+
+/* Mensaje de confirmación de logout */
+.confirmOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.confirmBox {
+    background: #6e6e6e;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.confirmText {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.confirmButtons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.confirmYes, .confirmNo {
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.confirmYes {
+    background: #28a745;
+    color: white;
+}
+
+.confirmNo {
+    background: #dc3545;
+    color: white;
 }
