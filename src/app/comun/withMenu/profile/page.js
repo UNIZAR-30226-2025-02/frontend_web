@@ -8,9 +8,32 @@ import { FcApproval, FcAlarmClock, FcFlashOn, FcBullish, FcRating } from "react-
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {getSocket} from "../../../utils/sockets"; 
 
-const token = localStorage.getItem("authToken");
-const socket = getSocket(token);
-
+/*const token = localStorage.getItem("authToken");
+const socket = getSocket(token);*/
+export default function ProfilePage() {
+const [token, setToken] = useState(null);
+const [socket, setSocket] = useState(null);
+  // Cargar usuario desde localStorage solo una vez
+  
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+        // Asegurarse de que estamos en el navegador
+        const storedToken = localStorage.getItem("authToken");
+        setToken(storedToken);
+        
+        // Crear la conexión del socket solo cuando el token esté disponible
+        const socketInstance = getSocket();
+        setSocket(socketInstance);
+  
+        // Conectar el socket solo si no está conectado
+        socketInstance.connect();
+  
+        return () => {
+          console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+          //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
+        };
+      }
+    }, []);
 const Profile = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const user = userData ? userData.publicUser : null;
@@ -208,5 +231,4 @@ console.log("Nombre de usuario:", user?.NombreUser);
         </div>
     );
 };
-
-export default Profile;
+}

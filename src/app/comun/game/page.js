@@ -33,16 +33,22 @@ export default function Game() {
   const [partidaAcabada, setPartidaAcabada] = useState(false);
   let piezaLlega = null;
   let piezaElejida = null;
+  const [idPartida, setIdPartida] = useState(null); // Color asignado al 
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
   const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al
   const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
+  /*
   const searchParams = useSearchParams();
-  const idPartida = searchParams.get("id"); // Obtener el ID de la URL
+  const idPartida = searchParams.get("id"); // Obtener el ID de la URL*/
+
+
+  //const idPartida = searchParams.get("id"); // Obtener el ID de la URL
   
   const gameCopy = useRef(new Chess()); // Referencia única del juego
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
   // Cargar usuario desde localStorage solo una vez
+  
   useEffect(() => {
       if (typeof window !== 'undefined') {
         // Asegurarse de que estamos en el navegador
@@ -90,13 +96,16 @@ useEffect(() => {
     const tipoPartidaLocal = localStorage.getItem("tipoPartida");
     const idRival = localStorage.getItem("idRival");
     const tiempoBlancas = localStorage.getItem("time");
+    const partidaLocalSto = localStorage.getItem("idPartida");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
       console.log("✅ Usuario encontrado:", parsedUser);
+      setIdPartida(partidaLocalSto);
       setUser(parsedUser.publicUser);
       setPlayerColor(color);
       setRival(idRival);
       setTipoPartida(tipoPartidaLocal);
+
       if(tiempoBlancas === null){
         if (tipoPartidaLocal === "Punt_10"){
           setTiempoPartida(10);
@@ -312,7 +321,7 @@ useEffect(() => {
       console.log("colorTurn es ", colorTurn);
       if (winner) return;
       if (colorTurn !== gameCopy.current.turn()) {
-        console.log(`❌ No es tu turno. Te toca jugar con: ${playerColor}, turno actual: ${gameCopy.current.turn()}`);
+        console.log(`❌ No es tu turno. Te toca jugar con: ${colorTurn}, turno actual: ${gameCopy.current.turn()}`);
         return;
       }
     
@@ -374,6 +383,8 @@ useEffect(() => {
             idPartida, 
             idJugador: user.id 
           });
+          console.log("✔️ Movimiento enviado:", move, "Con idPartida:", idPartida);
+
         }
       } catch (error) {
         console.log("⚠️ Movimiento inválido", error);
@@ -445,7 +456,7 @@ useEffect(() => {
     
      // Verificar si hay una pieza en la casilla y si pertenece al jugador actual
     if (!piece || piece.color !== (playerColor === "white" ? "w" : "b")) {
-      console.log("❌ No puedes seleccionar una pieza rival.");
+      console.log("❌ No puedes seleccionar una pieza rival.",  piece);
       return;
     }
 

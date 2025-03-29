@@ -56,6 +56,7 @@ export default function LoginPage() {
             localStorage.setItem("colorJug", data.color);
             localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
             localStorage.setItem("time",data.timeLeft);
+            localStorage.setItem("idPartida",data.gameID);
             router.push(`/comun/game?id=${data.gameID}`);
           }) 
           router.push("/comun/withMenu/initial");
