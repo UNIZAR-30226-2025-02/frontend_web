@@ -8,11 +8,18 @@ import { FcApproval, FcAlarmClock, FcFlashOn, FcBullish, FcRating } from "react-
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {getSocket} from "../../../utils/sockets"; 
 
+
 /*const token = localStorage.getItem("authToken");
 const socket = getSocket(token);*/
 export default function Profile() {
+    console.log("Llego a la pagina de login")
     const [token, setToken] = useState(null);
     const [socket, setSocket] = useState(null);
+    const [user, setUser] = useState(null);
+    const router = useRouter();
+    const [loading, setLoading] = useState(true);
+    const [showConfirm, setShowConfirm] = useState(false);
+
   // Cargar usuario desde localStorage solo una vez
   
   useEffect(() => {
@@ -34,22 +41,32 @@ export default function Profile() {
         };
       }
     }, []);
+
+
+  // Cargar usuario desde localStorage solo una vez
+  useEffect(() => {
+      // Verificamos si hay datos en localStorage antes de intentar parsearlos
+      const storedUserData = localStorage.getItem("userData");
+      console.log("El usuario del perfil es: ", storedUserData);
+      if (storedUserData) {
+          const parsedUser = JSON.parse(storedUserData);
+          setUser(parsedUser.publicUser);
+      } else {
+          console.log("No se encontraron datos de usuario en localStorage.");
+      }
+  }, []);
     //const Profile = () => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    const user = userData ? userData.publicUser : null;
+    /*const userData = JSON.parse(localStorage.getItem("userData"));
+    const user = userData ? userData.publicUser : null;*/
+   
 
-    console.log("Nombre de usuario:", user?.NombreUser);
-    const router = useRouter();
-    const [loading, setLoading] = useState(true);
-    const [showConfirm, setShowConfirm] = useState(false);
-
-    useEffect(() => {
+   /* useEffect(() => {
         if (!user && router.pathname !== "/") {
             router.replace("/");
         } else {
             setLoading(false);
         }
-    }, [user, router]);
+    }, [user, router]);*/
 
     const confirmLogout = () => {
         setShowConfirm(true);
@@ -92,13 +109,13 @@ export default function Profile() {
         }
     };
 
-    if (loading) {
+    /*if (loading) {
         return <p className={styles.loadingText}>Cargando perfil...</p>;
     }
 
     if (!user) {
         return <p className={styles.redirectText}>Redirigiendo...</p>;
-    }
+    }*/
 
 
     const generateRandomScoreData = () => {
@@ -138,15 +155,15 @@ export default function Profile() {
                     </div>
 
                     <div className={styles.profileDetails}>
-                        <h2 className={styles.profileName}>{user.NombreUser || "No disponible"}</h2>
-                        <div className={styles.profileInfo}>
+                    <h2 className={styles.profileName}>{user?.NombreUser || "No disponible"}</h2>
+                    <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
-                                <p><strong>Amigos:</strong> {user.friends || 0}</p>
-                                <p><strong>Partidas Jugadas:</strong> {user.gamesPlayed || 0}</p>
+                                <p><strong>Amigos:</strong> 0</p>
+                                <p><strong>Partidas Jugadas:</strong> 0</p>
                             </div>
                             <div className={styles.infoColumn}>
-                                <p><strong>Porcentaje de Victoria:</strong> {user.winRate || "0%"}</p>
-                                <p><strong>Máxima Racha:</strong> {user.maxStreak || 0}</p>
+                                <p><strong>Porcentaje de Victoria:</strong> 0%</p>
+                                <p><strong>Máxima Racha:</strong> 0</p>
                             </div>
                         </div>
                     </div>
