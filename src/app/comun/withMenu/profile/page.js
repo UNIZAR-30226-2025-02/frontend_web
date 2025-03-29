@@ -10,9 +10,9 @@ import {getSocket} from "../../../utils/sockets";
 
 /*const token = localStorage.getItem("authToken");
 const socket = getSocket(token);*/
-export default function ProfilePage() {
-const [token, setToken] = useState(null);
-const [socket, setSocket] = useState(null);
+export default function Profile() {
+    const [token, setToken] = useState(null);
+    const [socket, setSocket] = useState(null);
   // Cargar usuario desde localStorage solo una vez
   
   useEffect(() => {
@@ -34,11 +34,11 @@ const [socket, setSocket] = useState(null);
         };
       }
     }, []);
-const Profile = () => {
+    //const Profile = () => {
     const userData = JSON.parse(localStorage.getItem("userData"));
     const user = userData ? userData.publicUser : null;
 
-console.log("Nombre de usuario:", user?.NombreUser);
+    console.log("Nombre de usuario:", user?.NombreUser);
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -230,5 +230,5 @@ console.log("Nombre de usuario:", user?.NombreUser);
             </div>
         </div>
     );
-};
+    //};
 }
