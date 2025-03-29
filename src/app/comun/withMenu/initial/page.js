@@ -99,6 +99,8 @@ export default function InitialPage() {
             localStorage.setItem("colorJug",jugadorActual.color);
             console.log("Guardo id rival: ", jugadorRival.id);
             localStorage.setItem("idRival", jugadorRival.id);
+            localStorage.setItem("idRival", jugadorRival.id);
+            localStorage.setItem("idPartida", idPartidaCopy);
             router.push(`/comun/game?id=${idPartidaCopy}`);
         });
         
