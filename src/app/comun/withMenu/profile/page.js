@@ -10,8 +10,9 @@ import {getSocket} from "../../../utils/sockets";
 
 /*const token = localStorage.getItem("authToken");
 const socket = getSocket(token);*/
+export default function ProfilePage() {
 const [token, setToken] = useState(null);
-  const [socket, setSocket] = useState(null);
+const [socket, setSocket] = useState(null);
   // Cargar usuario desde localStorage solo una vez
   
   useEffect(() => {
@@ -230,5 +231,4 @@ console.log("Nombre de usuario:", user?.NombreUser);
         </div>
     );
 };
-
-export default Profile;
+}
