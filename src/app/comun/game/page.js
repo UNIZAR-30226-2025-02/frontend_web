@@ -36,8 +36,11 @@ export default function Game() {
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
   const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al
   const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
+  /*
   const searchParams = useSearchParams();
-  const [idPartida, setIdPartida] = useState(null);
+  const idPartida = searchParams.get("id"); // Obtener el ID de la URL*/
+  const searchParams = typeof window !== "undefined" ? useSearchParams() : null;
+  const idPartida = searchParams ? searchParams.get("id") : null;
 
   //const idPartida = searchParams.get("id"); // Obtener el ID de la URL
   
@@ -45,11 +48,6 @@ export default function Game() {
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
   // Cargar usuario desde localStorage solo una vez
-
-  useEffect(() => {
-    setIdPartida(searchParams.get("id"));
-  }, [searchParams]); // Se ejecuta cuando cambian los parámetros
-
   
   useEffect(() => {
       if (typeof window !== 'undefined') {
