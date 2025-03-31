@@ -98,8 +98,15 @@ export default function InitialPage() {
             console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
             localStorage.setItem("colorJug",jugadorActual.color);
             console.log("Guardo id rival: ", jugadorRival.id);
-            localStorage.setItem("idRival", jugadorRival.id);
-            localStorage.setItem("idRival", jugadorRival.id);
+            if(jugadorActual.color === "black"){
+                localStorage.setItem("eloRival", jugadorRival.eloW);
+                localStorage.setItem("nombreRival", jugadorRival.nombreW);
+                localStorage.setItem("eloJug", jugadorActual.eloB);
+            } else {
+                localStorage.setItem("eloRival", jugadorRival.eloB);
+                localStorage.setItem("nombreRival", jugadorRival.nombreB);
+                localStorage.setItem("eloJug", jugadorActual.eloW);
+            }
             localStorage.setItem("idPartida", idPartidaCopy);
             router.push(`/comun/game?id=${idPartidaCopy}`);
         });

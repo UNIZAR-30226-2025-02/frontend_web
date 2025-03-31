@@ -109,13 +109,7 @@ export default function Profile() {
         }
     };
 
-    /*if (loading) {
-        return <p className={styles.loadingText}>Cargando perfil...</p>;
-    }
-
-    if (!user) {
-        return <p className={styles.redirectText}>Redirigiendo...</p>;
-    }*/
+   
 
 
     const generateRandomScoreData = () => {

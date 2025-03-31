@@ -55,7 +55,8 @@ export default function LoginPage() {
             console.log('Este usuario estaba jugando una partida');
             localStorage.setItem("colorJug", data.color);
             localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
-            localStorage.setItem("time",data.timeLeft);
+            localStorage.setItem("timeW",data.timeLeftW);
+            localStorage.setItem("timeB",data.timeLeftB);
             localStorage.setItem("idPartida",data.gameID);
             router.push(`/comun/game?id=${data.gameID}`);
           }) 

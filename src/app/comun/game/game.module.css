@@ -166,7 +166,13 @@
 .playerName {
   display: flex;
   align-items: center;
+  font-weight: bold;
   gap: 5px;
+}
+
+.userElo {
+  font-style: italic;
+  color: #9a9a9a;
 }
 
 .playerTime {

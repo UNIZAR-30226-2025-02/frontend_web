@@ -7,6 +7,8 @@ import styles from "./game.module.css";
 import io from 'socket.io-client';  // Importar cliente de socket.
 import {getSocket} from "../../utils/sockets"; 
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+
 
 
 export default function Game() {
@@ -18,6 +20,8 @@ export default function Game() {
   let colorTurn;
   const [whiteTime, setWhiteTime] = useState(600); // Tiempo en segundos
   const [blackTime, setBlackTime] = useState(600);
+  const [miElo, setMiElo] = useState(null);
+  const [eloRival, setEloRival] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [winner, setWinner] = useState(null);
@@ -37,16 +41,11 @@ export default function Game() {
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
   const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al
   const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
-  /*
-  const searchParams = useSearchParams();
-  const idPartida = searchParams.get("id"); // Obtener el ID de la URL*/
-
-
-  //const idPartida = searchParams.get("id"); // Obtener el ID de la URL
   
   const gameCopy = useRef(new Chess()); // Referencia única del juego
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
+  const router = useRouter();
   // Cargar usuario desde localStorage solo una vez
   
   useEffect(() => {
@@ -67,35 +66,38 @@ export default function Game() {
           //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
         };
       }
-    }, []);
+    }, [idPartida]);
 
   // Actualiza el valor de gameRef siempre que 'game' cambie
-useEffect(() => {
-  const pgn = localStorage.getItem("pgn");
+  useEffect(() => {
+    const pgn = localStorage.getItem("pgn");
 
-  if (pgn) {
-    const success = gameCopy.current.loadPgn(pgn);
-    if (success) {
-      console.log("♻️ PGN cargado correctamente:", gameCopy.current.fen());
+    if (pgn) {
+      const success = gameCopy.current.loadPgn(pgn);
+      if (success) {
+        console.log("♻️ PGN cargado correctamente:", gameCopy.current.fen());
+      } else {
+        console.warn("⚠️ No se pudo cargar el PGN. Usando posición inicial.");
+      }
+      localStorage.removeItem("pgn");
     } else {
-      console.warn("⚠️ No se pudo cargar el PGN. Usando posición inicial.");
+      console.log("🔰 No hay PGN, usando juego nuevo.");
     }
-    localStorage.removeItem("pgn");
-  } else {
-    console.log("🔰 No hay PGN, usando juego nuevo.");
-  }
-  setFen(gameCopy.current.fen()); // Iniciar con el FEN correcto
-  setTurn(gameCopy.current.turn());
-  
-}, []);
+    setFen(gameCopy.current.fen()); // Iniciar con el FEN correcto
+    setTurn(gameCopy.current.turn());
+    
+  }, []);
 
   useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
     const storedUserData = localStorage.getItem("userData");
     const color = localStorage.getItem("colorJug");
     const tipoPartidaLocal = localStorage.getItem("tipoPartida");
-    const idRival = localStorage.getItem("idRival");
-    const tiempoBlancas = localStorage.getItem("time");
+    const nombreRival = localStorage.getItem("nombreRival");
+    const eloRival = localStorage.getItem("eloRival");
+    const eloJug = localStorage.getItem("eloJug");
+    const tiempoBlancas = localStorage.getItem("timeW");
+    const tiempoNegras = localStorage.getItem("timeB");
     const partidaLocalSto = localStorage.getItem("idPartida");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
@@ -103,7 +105,9 @@ useEffect(() => {
       setIdPartida(partidaLocalSto);
       setUser(parsedUser.publicUser);
       setPlayerColor(color);
-      setRival(idRival);
+      setRival(nombreRival);
+      setMiElo(eloJug);
+      setEloRival(eloRival);
       setTipoPartida(tipoPartidaLocal);
 
       if(tiempoBlancas === null){
@@ -123,11 +127,12 @@ useEffect(() => {
       } else {
         console.log("⬜El tiempo de blancas recuperado es: ", tiempoBlancas);
         setWhiteTime(tiempoBlancas);
+        setBlackTime(tiempoNegras);
       }
     } else {
       console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
-  }, []);
+  }, [idPartida]);
 
   useEffect(() => {
     if (tiempoPartida !== null) {
@@ -140,7 +145,6 @@ useEffect(() => {
   useEffect(() => {
     // Definir el intervalo de restar tiempo
     const interval = setInterval(() => {
-      console.log("es el turno de", gameCopy.current.turn(), "Y mi color es: ",colorTurn )
       if(partidaAcabada===false){
         if (gameCopy.current.turn()==="w") {
           setWhiteTime((prevTime) => prevTime - 1);
@@ -220,7 +224,6 @@ useEffect(() => {
       } else {
         console.error("Movimiento no válido:", moveStr);
       }
-      console.log ("Es el turno de", gameCopy.current.turn(), " y yo soy", playerColor);
     });
     
     socket.on('requestTie', (data) => {
@@ -233,7 +236,14 @@ useEffect(() => {
   });
 
   socket.on('gameOver', (data) => {
-    localStorage.removeItem("time");
+    localStorage.removeItem("timeW");
+    localStorage.removeItem("timeB");
+    localStorage.removeItem("idPartida");
+    localStorage.removeItem("nombreRival");
+    localStorage.removeItem("eloRical");
+    localStorage.removeItem("eloJug");
+    localStorage.removeItem("tipoPartida");
+    localStorage.removeItem("colorJug");
     setPartidaAcabada(true);
     console.log("Llega final de partida", data);
     if(data.winner === "draw"){
@@ -277,43 +287,23 @@ useEffect(() => {
     if (whiteTime !== null && socket) {
       socket.on('get-game-status', () => {
         console.log('👾 Obteniendo estado de la partida...');
-        console.log('Tiempo restante:', whiteTime);
+        console.log('Tiempo restante blancas:', whiteTime, 'y este el de negras: ', blackTime);
         console.log('Estado de la partida:', 'ingame');
   
-        socket.emit('game-status', { timeLeft: whiteTime, estadoPartida: 'ingame' });
+        socket.emit('game-status', { timeLeftW: whiteTime, timeLeftB: blackTime, estadoPartida: 'ingame' });
       });
   
       return () => {
         socket.off('get-game-status');
       };
     }
-  }, [whiteTime, socket]);
+  }, [whiteTime, blackTime, socket]);
 
 
   useEffect(()=>{
     console.log("Estos mensajes hay: ", messages);
     return ()=>{};
   }, [messages]);
-  
-      
-  /*
-      // Recibir mensajes del chat
-      socket.on("chatMessage", (msg) => {
-        setMessages((prev) => [...prev, msg]);
-      });
-  
-      // Recibir actualización de tiempo
-      socket.on("updateTime", ({ white, black }) => {
-        setWhiteTime(white);
-        setBlackTime(black);
-      });*/
-  
-      /*return () => {
-        socket.off("assignColor");
-        socket.off("move");
-        socket.off("chatMessage");
-        socket.off("updateTime");
-      };*/
     
     
     const handleMove = (sourceSquare, targetSquare) => {
@@ -476,17 +466,26 @@ useEffect(() => {
   
   
   // Función para reiniciar la partida
-  const resetGame = () => {
-    setGame(new Chess());
-    setFen(new Chess().fen());
+  const resetGame = (tiempoEnMinutos = 10) => {
+    const nuevaPartida = new Chess();
+    gameCopy.current = nuevaPartida;
+    setGame(nuevaPartida);
+    setFen(nuevaPartida.fen());
     setTurn("w");
-    setWhiteTime(600);
-    setBlackTime(600);
+    setWhiteTime(tiempoEnMinutos * 60);
+    setBlackTime(tiempoEnMinutos * 60);
     setWinner(null);
     setLoser(null);
+    setTablas(null);
     setMessages([]);
     setMessage("");
+    setSelectedSquare(null);
+    setLegalMoves([]);
+    setPendingPromotion(null);
+    setShowPromotionPopup(false);
+    setPartidaAcabada(false);
   };
+  
 
   // Función para mover la pieza si se hace clic en una casilla permitida
   const handleMoveClick = (targetSquare) => {
@@ -550,7 +549,85 @@ useEffect(() => {
   
     return moves;
   };
-  
+  const handleGoInit = () => {
+    console.log("🧠Voy a volver a inicio");
+    router.push(`/comun/withMenu/initial`);
+  }
+  // Función para buscar partida
+  const handleSearchOtherGame = async (tipoPartida) => {
+    if (!socket) return; // Asegurarse de que el socket esté conectado
+    //setSearching(true);
+    const dataToSend = { 
+        idJugador: user?.id, 
+        mode: tipoPartida
+    };
+    
+    console.log("🔍 Enviando datos:", dataToSend); // Verificar datos antes de enviar
+    console.log("Voy a buscar partida del tipo: ", tipoPartida);
+    console.log("👤 Usuario antes de enviar:", user);
+    console.log("🔍 Enviando datos:", dataToSend);
+    socket.emit("find-game", dataToSend);
+    console.log("✅ Lo he lanzado");
+    let idPartidaCopy;
+    // Escuchar la respuesta del servidor
+    socket.on('game-ready', (data) => {
+        console.log("🟢 Partida encontrada con ID:", data.idPartida);
+        //setSearching(false);
+        console.log("Estoy buscando partida", user.NombreUser);
+        console.log("he encontrado partida", user.NombreUser); 
+        localStorage.setItem("tipoPartida",tipoPartida);
+        setWinner(false);
+        setLoser(false);
+        setTablas(false);
+        resetGame(10);
+        idPartidaCopy = data.idPartida; 
+    });
+    console.log("🎧 Ahora escuchando evento 'color'...");
+    socket.on("color", (data) => {
+        console.log("🎨 Recibido evento 'color' con datos:", data);
+
+        if (!data || !data.jugadores) {
+            console.error("❌ No se recibió información válida de colores.");
+            return;
+        }
+
+        const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
+        console.log("Mi ide es: ",user.id, "y jugador.id es: ", jugadorActual.id);
+        const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
+        console.log("Mi ide es: ",user.id, "y mi rival es: ", jugadorRival);
+        if (!jugadorActual) {
+            console.error("❌ No se encontró al usuario en la lista de jugadores.");
+            return;
+        }
+
+        setPlayerColor(jugadorActual.color);
+        console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
+        localStorage.setItem("colorJug",jugadorActual.color);
+        console.log("Guardo id rival: ", jugadorRival.id);
+        if(jugadorActual.color === "black"){
+            localStorage.setItem("eloRival", jugadorRival.eloW);
+            localStorage.setItem("nombreRival", jugadorRival.nombreW);
+            localStorage.setItem("eloJug", jugadorActual.eloB);
+        } else {
+            localStorage.setItem("eloRival", jugadorRival.eloB);
+            localStorage.setItem("nombreRival", jugadorRival.nombreB);
+            localStorage.setItem("eloJug", jugadorActual.eloW);
+        }
+        localStorage.setItem("idPartida", idPartidaCopy);
+        setIdPartida(idPartidaCopy);
+        setPartidaAcabada(false);
+        router.push(`/comun/game?id=${idPartidaCopy}`);
+        //window.location.href = `/comun/game?id=${idPartidaCopy}`; // recarga limpia
+        //router.refresh();
+    });
+    
+    // Escuchar errores del backend
+    socket.on('error', (errorMessage) => {
+        setSearching(false);
+        console.error("❌ Error al unirse a la partida:", errorMessage);
+        alert(`Error: ${errorMessage}`); // Muestra un mensaje al usuario
+    });
+};
   
   return (
     <div className={styles.gameContainer}>
@@ -559,13 +636,16 @@ useEffect(() => {
           <h2>¡Has ganado!</h2>
           <span className={styles.trophy}>🏆</span>
           <div className={styles.winnerActions}>
-            <button className={styles.newGameButton} onClick={resetGame}>
+            <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
               Buscar otra partida
             </button>
             <button className={styles.reviewButton} onClick={resetGame}>
               Revisar Partida
             </button>
-          </div>
+            <button className={styles.rematchButton} onClick={handleGoInit}>
+            Volver Inicio
+          </button>
+           </div>
         </div>
       )}
       {loser && (
@@ -573,11 +653,14 @@ useEffect(() => {
           <h2>¡Has perdido!</h2>
           <span className={styles.trophy}>❌</span>
           <div className={styles.winnerActions}>
-            <button className={styles.newGameButton} onClick={resetGame}>
+            <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
               Buscar otra partida
             </button>
             <button className={styles.reviewButton} onClick={resetGame}>
               Revisar Partida
+          </button>
+          <button className={styles.rematchButton} onClick={handleGoInit}>
+            Volver Inicio
           </button>
           </div>
         </div>
@@ -587,11 +670,14 @@ useEffect(() => {
           <h2>¡Has llegado a tablas!</h2>
           <span className={styles.trophy}>🤝</span>
           <div className={styles.winnerActions}>
-            <button className={styles.newGameButton} onClick={resetGame}>
+            <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
               Buscar otra partida
             </button>
             <button className={styles.reviewButton} onClick={resetGame}>
               Revisar Partida
+          </button>
+          <button className={styles.rematchButton} onClick={handleGoInit}>
+            Volver Inicio
           </button>
           </div>
         </div>
@@ -646,8 +732,10 @@ useEffect(() => {
         <div className={styles.boardContainer}>
            <div className={`${styles.playerInfoTop} ${gameCopy.current.turn() !== colorTurn ? styles.activePlayer : styles.inactivePlayer}`}>
              <div className={styles.playerName}>
-               <span className={styles.greenDot}></span> {rival ? rival : "NuevoJugador"}
-             </div>
+              <span className={styles.greenDot}></span> 
+              <span className={styles.userName}>{rival ? rival : "NuevoJugador"}</span> 
+              <span className={styles.userElo}>{eloRival ? `(${eloRival})` : "(miElo)"}</span>
+            </div>
              <div className={styles.playerTime}>{"b" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
            </div>
           <Chessboard
@@ -682,9 +770,11 @@ useEffect(() => {
             animationDuration={200}
           />
           <div className={`${styles.playerInfoBottom} ${gameCopy.current.turn() === colorTurn ? styles.activePlayer : styles.inactivePlayer}`}>
-             <div className={styles.playerName}>
-               <span className={styles.orangeDot}></span> {user ? user.NombreUser : "NuevoJugador"}
-             </div>
+          <div className={styles.playerName}>
+            <span className={styles.orangeDot}></span> 
+            <span className={styles.userName}>{user ? user.NombreUser : "NuevoJugador"}</span> 
+            <span className={styles.userElo}>{miElo ? `(${miElo})` : "(miElo)"}</span>
+          </div>
              <div className={styles.playerTime}>{"w" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
            </div>
          {/*} {showPromotionPopup && (
