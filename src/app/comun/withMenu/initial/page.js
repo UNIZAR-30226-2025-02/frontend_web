@@ -97,7 +97,7 @@ export default function InitialPage() {
             setPlayerColor(jugadorActual.color);
             console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
             localStorage.setItem("colorJug",jugadorActual.color);
-            console.log("Guardo id rival: ", jugadorRival.id);
+            console.log("🌈Guardo id rival: ", jugadorRival.id, "Con el eloW: ", jugadorRival.eloW, "y el eloB: ", jugadorRival.eloB);
             if(jugadorActual.color === "black"){
                 localStorage.setItem("eloRival", jugadorRival.eloW);
                 localStorage.setItem("nombreRival", jugadorRival.nombreW);

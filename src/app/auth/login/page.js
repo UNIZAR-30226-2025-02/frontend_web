@@ -55,20 +55,22 @@ export default function LoginPage() {
             console.log('Este usuario estaba jugando una partida');
             localStorage.setItem("colorJug", data.color);
             localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
+            const pgnVar = data.pgn;
             localStorage.setItem("timeW",data.timeLeftW);
             localStorage.setItem("timeB",data.timeLeftB);
             localStorage.setItem("idPartida",data.gameID);
+           /* if (data.color === "black"){
+              localStorage.setItem("eloJug",pgnVar.header()['White Elo']);
+              localStorage.setItem("eloJug",pgnVar.header()['Black Elo']);  
+            } else {
+              localStorage.setItem("eloJug",pgnVar.header()['White Elo'])
+              localStorage.setItem("eloRival",pgnVar.header()['Black Elo']);
+            }*/
+
             router.push(`/comun/game?id=${data.gameID}`);
           }) 
           router.push("/comun/withMenu/initial");
-        } /*else if (data.id) {
-          // Si no hay token, pero el id está presente, podrías redirigir a una página de perfil o mostrar un mensaje
-          console.log("Usuario autenticado, pero no se encontró token.");
-          // Aquí puedes guardar los datos del usuario, si es necesario, o redirigir a otra página
-          localStorage.setItem("userData", JSON.stringify(data));  // Guardar datos del usuario si es necesario
-          //localStorage.setItem("estadoJuego", data.EstadoPartida);
-          router.push("/comun/withMenu/initial");  // O redirigir a otra página 
-        }*/else {
+        } else {
             throw new Error("⚠️ Respuesta inesperada del servidor");
         }
     } catch (error) {

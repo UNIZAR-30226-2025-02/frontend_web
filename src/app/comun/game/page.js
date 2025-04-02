@@ -21,6 +21,7 @@ export default function Game() {
   const [whiteTime, setWhiteTime] = useState(600); // Tiempo en segundos
   const [blackTime, setBlackTime] = useState(600);
   const [miElo, setMiElo] = useState(null);
+  const [nuevoInicio, setNuevoInicio] = useState(null);
   const [eloRival, setEloRival] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
@@ -53,7 +54,6 @@ export default function Game() {
         // Asegurarse de que estamos en el navegador
         const storedToken = localStorage.getItem("authToken");
         setToken(storedToken);
-        
         // Crear la conexión del socket solo cuando el token esté disponible
         const socketInstance = getSocket();
         setSocket(socketInstance);
@@ -71,6 +71,7 @@ export default function Game() {
   // Actualiza el valor de gameRef siempre que 'game' cambie
   useEffect(() => {
     const pgn = localStorage.getItem("pgn");
+    setNuevoInicio(true);
 
     if (pgn) {
       const success = gameCopy.current.loadPgn(pgn);
@@ -101,7 +102,7 @@ export default function Game() {
     const partidaLocalSto = localStorage.getItem("idPartida");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
-      console.log("✅ Usuario encontrado:", parsedUser);
+      console.log("✅ Usuario encontrado:", parsedUser, "con elo: ", eloJug, "y el elo del rival:",eloRival);
       setIdPartida(partidaLocalSto);
       setUser(parsedUser.publicUser);
       setPlayerColor(color);
@@ -132,7 +133,7 @@ export default function Game() {
     } else {
       console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
-  }, [idPartida]);
+  }, [idPartida, nuevoInicio]);
 
   useEffect(() => {
     if (tiempoPartida !== null) {
@@ -233,55 +234,54 @@ export default function Game() {
 
     socket.on('player-surrendered', (data) => {
       console.log('Rival se ha rendido:', data);
-  });
+    });
 
-  socket.on('gameOver', (data) => {
-    localStorage.removeItem("timeW");
-    localStorage.removeItem("timeB");
-    localStorage.removeItem("idPartida");
-    localStorage.removeItem("nombreRival");
-    localStorage.removeItem("eloRical");
-    localStorage.removeItem("eloJug");
-    localStorage.removeItem("tipoPartida");
-    localStorage.removeItem("colorJug");
-    setPartidaAcabada(true);
-    console.log("Llega final de partida", data);
-    if(data.winner === "draw"){
-      console.log("Tablas");
-      setTablas(true)
-    }else if(data.winner === user.id){
-      setWinner(true)
-    } else{
-      console.log("Mi id es: ", user.id);
-      console.log("Y el data es: ", data);
-      setLoser(true);
-    }
+    socket.on('gameOver', (data) => {
+      localStorage.removeItem("timeW");
+      localStorage.removeItem("timeB");
+      localStorage.removeItem("idPartida");
+      localStorage.removeItem("nombreRival");
+      localStorage.removeItem("eloRical");
+      localStorage.removeItem("eloJug");
+      localStorage.removeItem("tipoPartida");
+      localStorage.removeItem("colorJug");
+      setPartidaAcabada(true);
+      console.log("Llega final de partida", data);
+      if(data.winner === "draw"){
+        console.log("Tablas");
+        setTablas(true)
+      }else if(data.winner === user.id){
+        setWinner(true)
+      } else{
+        console.log("Mi id es: ", user.id);
+        console.log("Y el data es: ", data);
+        setLoser(true);
+      }
 
-  });
+    });
 
-  socket.on('new-message', (data)=>{
-    console.log("♟️ Mensaje recibido:", data.message);
+    socket.on('new-message', (data)=>{
+      console.log("♟️ Mensaje recibido:", data.message);
 
-    // Añadir el mensaje recibido al chat
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        text: data.message, // o data.text si así lo envías
-        //sender: data.user_id === user.id ? "yo" : "rival", // puedes usar "Blanco"/"Negro" o ids
-        sender: "rival",
-      },
-    ]);
+      // Añadir el mensaje recibido al chat
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          text: data.message, // o data.text si así lo envías
+          sender: "rival",
+        },
+      ]);
+      
+    })
     
-  })
-
-  
-      return () => {
-          console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
-          //socket.off("color");
-          socket.off("new-move");
-          socket.off("requestTie");
-      };
-  }, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
+    return () => {
+        console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
+        //socket.off("color");
+        socket.off("new-move");
+        socket.off("new-message");
+        socket.off("requestTie");
+    };
+}, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
   
   useEffect(() => {
     if (whiteTime !== null && socket) {
@@ -289,7 +289,14 @@ export default function Game() {
         console.log('👾 Obteniendo estado de la partida...');
         console.log('Tiempo restante blancas:', whiteTime, 'y este el de negras: ', blackTime);
         console.log('Estado de la partida:', 'ingame');
-  
+        localStorage.removeItem("timeW");
+        localStorage.removeItem("timeB");
+        localStorage.removeItem("idPartida");
+        localStorage.removeItem("nombreRival");
+        localStorage.removeItem("eloRival");
+        localStorage.removeItem("eloJug");
+        localStorage.removeItem("tipoPartida");
+        localStorage.removeItem("colorJug");
         socket.emit('game-status', { timeLeftW: whiteTime, timeLeftB: blackTime, estadoPartida: 'ingame' });
       });
   
@@ -407,27 +414,21 @@ export default function Game() {
     
 
   const handleSendMessage = () => {
-    /*if (message.trim() !== "") {
-      const newMessage = { message: message, game_id:idPartida, user_id: user.id};
-      setMessages([...messages, newMessage]);
-      console.log("♟️ Mensaje enviado:", newMessage);
-      socket.emit("send-message", newMessage);
-      setMessages(message);
-    }*/
-      const newMessage = {
-        text: message,
-        sender: "yo", // puedes usar "Blanco"/"Negro" si prefieres
-      };
-      
-      setMessages([...messages, newMessage]);
-      
-      socket.emit("send-message", {
-        message,
-        game_id: idPartida,
-        user_id: user.id,
-      });
-      
-      setMessage("");
+    console.log("📤Voy a enviar un mensaje: ", message);
+    const newMessage = {
+      text: message,
+      sender: "yo", // puedes usar "Blanco"/"Negro" si prefieres
+    };
+    
+    setMessages([...messages, newMessage]);
+    
+    socket.emit("send-message", {
+      message,
+      game_id: idPartida,
+      user_id: user.id,
+    });
+    
+    setMessage("");
   };
 
   // Función para formatear el tiempo en mm:ss
