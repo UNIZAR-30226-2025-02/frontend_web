@@ -41,3 +41,51 @@
     color: #007bff;
   }
   
+  .sidebarContainer {
+    position: relative;
+    z-index: 1000;
+  }
+  
+  .hamburger {
+    background-color: transparent;
+    color: white;
+    font-size: 28px;
+    padding: 8px 12px;
+    border: none;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  
+  .dropdownMenu {
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    background-color: #1e1e1e;
+    border: 2px solid #3E76DF;
+    border-radius: 10px;
+    padding: 10px;
+    width: 260px;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .dropdownMenu .menuItem {
+    display: flex;
+    padding: 15px;
+    font-size: 16px;
+    border-bottom: 1px solid #333;
+  }
+  
+  .dropdownMenu .menuItem:last-child {
+    border-bottom: none;
+  }
+  
+
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+  
+  

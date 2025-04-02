@@ -26,6 +26,7 @@
   align-items: center; /* Alinea los elementos centralmente */
   padding: 20px; /* Añadir un poco de relleno interno */
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .container h2{
@@ -271,3 +272,86 @@
   word-wrap: break-word;
 }
  
+/* 📱 Responsividad para pantallas pequeñas */
+@media (max-width: 768px) {
+  .container {
+    margin-left: 0; /* Quitamos el margen lateral fijo */
+    width: 100%;
+    padding-top: 100px;
+  }
+
+  .welcomeMessage {
+    text-align: center;
+  }
+
+  .containerPartidas {
+    width: 95%;
+    height: auto;
+    padding: 10px;
+  }
+
+  .card, .cardRacha {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .rachaCount {
+    margin-left: 0;
+    margin-top: 10px;
+    font-size: 28px;
+  }
+
+  .mode {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .icon, .shield {
+    font-size: 48px;
+  }
+
+  .text {
+    font-size: 20px;
+    margin-left: 0;
+  }
+
+  .time {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+
+  .playButton {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  .searchButtonContainer,
+  .botonCancelar {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .searchButton {
+    padding: 12px 30px;
+    font-size: 18px;
+    flex-wrap: wrap;
+  }
+
+  .iconSearch {
+    font-size: 30px;
+  }
+
+  .cancelButton {
+    font-size: 1.5rem;
+  }
+
+  .infoPopup {
+    width: 90vw;
+    left: -50%;
+    transform: translateX(50%);
+  }
+}
+

@@ -85,7 +85,7 @@ export default function LoginPage() {
     <form onSubmit={handleSubmit} className="form">
       {error && <p className="error-message">{error}</p>}
       <div>
-        <label className="label">Username</label>
+        <label className="label">Nombre de usuario</label>
         <input
           type="text"
           name="NombreUser"
@@ -97,7 +97,7 @@ export default function LoginPage() {
       </div>
 
       <div className="password-container">
-        <label className="label">Password</label>
+        <label className="label">Contraseña</label>
         <div className="password-wrapper">
           <input
             type={showPassword ? "text" : "password"}
@@ -114,13 +114,13 @@ export default function LoginPage() {
       </div>
 
       <div>
-        <a href="./forgotPassword" className="link">Forgot password?</a>
+        <a href="./forgotPassword" className="link">¿Has olvidado tu contraseña?</a>
       </div>
 
-      <button type="submit" className="button">Sign In</button>
+      <button type="submit" className="button">Iniciar Sesión</button>
 
       <div className="links">
-        <a href="./register" className="link">New? Sign Up</a>
+        <a href="./register" className="link">¿Eres nuevo? Regístrate</a>
       </div>
     </form>
   );

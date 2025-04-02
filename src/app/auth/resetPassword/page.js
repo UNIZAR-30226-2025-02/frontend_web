@@ -9,6 +9,7 @@ export default function ResetPasswordPage() {
     NombreUser: "",
     token: "",
     Contrasena: "",
+    ConfirmarContrasena: "",
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -23,8 +24,13 @@ export default function ResetPasswordPage() {
     setMessage("");
     setError("");
 
+    if (form.Contrasena !== form.ConfirmarContrasena) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
     try {
-        const response = await fetch("http://localhost:3000/tryResetPasswd", {
+        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/tryResetPasswd", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -97,7 +103,19 @@ export default function ResetPasswordPage() {
         />
       </div>
 
-      <button type="submit" className="button">Restablecer</button>
+      <div>
+        <label className="label">Repetir Contraseña</label>
+        <input
+          type="password"
+          name="ConfirmarContrasena"
+          value={form.ConfirmarContrasena}
+          onChange={handleChange}
+          className="input"
+          required
+        />
+      </div>
+
+      <button type="submit" className="button">Restablecer Contraseña</button>
 
       {message && <p className="success-message">{message}</p>}
       {error && <p className="error-message">{error}</p>}
