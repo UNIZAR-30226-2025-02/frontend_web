@@ -179,6 +179,7 @@ export default function Profile() {
     const imagenesDisponibles = [
         "/reina_azul.webp",
         "/torre_azul.webp",
+        "/fotosPerfilWebp/Multiavatar-0e9ff1d81c95f9b464.webp",
     ];
     return (
         <div className={styles.profileContainer}>
