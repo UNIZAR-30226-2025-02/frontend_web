@@ -74,7 +74,7 @@
     border-radius: 10px;
     font-size: 14px;
     font-weight: bold;
-    padding: 10px;
+    margin-left: 10px;
 }
 
 /* 🔹 Contenedor del nombre y la información */
@@ -467,4 +467,11 @@
 .avatarSelected {
     border: 2px solid #00aaff;
     box-shadow: 0 0 10px #00aaff;
+}
+
+.profileImage {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
 }

@@ -142,7 +142,7 @@ export default function Profile() {
             // Actualizamos el usuario en estado y localStorage
             setUser(data.publicUser);
             localStorage.setItem("userData", JSON.stringify({ publicUser: data.publicUser }));
-    
+            window.location.reload();
             setEditing(false);
         } catch (err) {
             console.error("Error al editar usuario:", err);
@@ -177,8 +177,8 @@ export default function Profile() {
     ];
 
     const imagenesDisponibles = [
-        "../../../../public/reina_azul.webp",
-        "../../../../public/torre_azul.webp",
+        "/reina_azul.webp",
+        "/torre_azul.webp",
     ];
     return (
         <div className={styles.profileContainer}>
@@ -192,8 +192,16 @@ export default function Profile() {
             </button>
 
                 <div className={styles.profileHeader}>
-                    <div className={styles.profilePhoto}>
+                <div className={styles.profilePhoto}>
+                    {editing ? (
+                        <img src={newFotoPerfil} alt="Preview" className={styles.profileImage} />
+                    ) : (
+                        user?.FotoPerfil ? (
+                        <img src={user.FotoPerfil} alt="Foto de perfil" className={styles.profileImage} />
+                        ) : (
                         <p>FOTO</p>
+                        )
+                    )}
                     </div>
 
                     <div className={styles.profileDetails}>

@@ -56,9 +56,10 @@
 }
 
 .userAvatar {
-    width: 80px; /* Ajusta el tamaño de la imagen */
-    height: 80px;
+    width: 70px; /* Ajusta el tamaño de la imagen */
+    height: 70px;
     border-radius: 50%; /* Hace la imagen redonda */
+    margin-bottom: 8px;
     object-fit: cover; /* Ajusta la imagen dentro del espacio */
 }
 
