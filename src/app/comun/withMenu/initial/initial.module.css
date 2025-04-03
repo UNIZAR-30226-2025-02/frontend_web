@@ -273,7 +273,7 @@
 }
  
 /* 📱 Responsividad para pantallas pequeñas */
-@media (max-width: 768px) {
+@media (max-width: 780px) {
   .container {
     margin-left: 0; /* Quitamos el margen lateral fijo */
     width: 100%;
@@ -291,7 +291,7 @@
   }
 
   .card, .cardRacha {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     text-align: center;
     padding: 20px;
@@ -304,7 +304,7 @@
   }
 
   .mode {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     gap: 10px;
   }
@@ -348,10 +348,6 @@
     font-size: 1.5rem;
   }
 
-  .infoPopup {
-    width: 90vw;
-    left: -50%;
-    transform: translateX(50%);
-  }
+  
 }
 

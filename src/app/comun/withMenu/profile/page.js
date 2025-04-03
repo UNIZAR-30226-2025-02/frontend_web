@@ -19,6 +19,10 @@ export default function Profile() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [newNombreUser, setNewNombreUser] = useState("");
+    const [newFotoPerfil, setNewFotoPerfil] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
 
   // Cargar usuario desde localStorage solo una vez
   
@@ -109,7 +113,43 @@ export default function Profile() {
         }
     };
 
-   
+    const handleEditProfile = async () => {
+        setErrorMsg("");
+    
+        if (newNombreUser.length < 4 || newFotoPerfil.length < 4) {
+            setErrorMsg("Nombre y Foto deben tener al menos 4 caracteres.");
+            return;
+        }
+    
+        try {
+            const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/editUser", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: user.id,
+                    NombreUser: newNombreUser,
+                    FotoPerfil: newFotoPerfil,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                setErrorMsg(data.error || "Error al editar usuario");
+                return;
+            }
+    
+            // Actualizamos el usuario en estado y localStorage
+            setUser(data.publicUser);
+            localStorage.setItem("userData", JSON.stringify({ publicUser: data.publicUser }));
+    
+            setEditing(false);
+        } catch (err) {
+            console.error("Error al editar usuario:", err);
+            setErrorMsg("Error al conectar con el servidor");
+        }
+    };
+    
 
 
     const generateRandomScoreData = () => {
@@ -136,12 +176,20 @@ export default function Profile() {
         { id: 5, mode: "Avanzado", whitePlayer: "Jugador123", blackPlayer: "JugadorB", result: "win", moves: 32, date: "4 sept 2024" },
     ];
 
+    const imagenesDisponibles = [
+        "../../../../public/reina_azul.webp",
+        "../../../../public/torre_azul.webp",
+    ];
     return (
         <div className={styles.profileContainer}>
             <div className={styles.profileCard}>
-                <button className={styles.editButton}>
-                    <FaEdit className={styles.editIcon} /> Editar
-                </button>
+            <button className={styles.editButton} onClick={() => {
+                setEditing(true);
+                setNewNombreUser(user?.NombreUser || "");
+                setNewFotoPerfil(user?.FotoPerfil || "");
+            }}>
+                <FaEdit className={styles.editIcon} /> Editar
+            </button>
 
                 <div className={styles.profileHeader}>
                     <div className={styles.profilePhoto}>
@@ -178,6 +226,42 @@ export default function Profile() {
                     </div>
                 </div>
             )}
+            {editing && (
+                <div className={styles.confirmOverlay}>
+                    <div className={styles.editProfileBox}>
+                        <h3>Editar Perfil</h3>
+                        <label>
+                            Nombre de Usuario:
+                            <input 
+                                type="text" 
+                                value={newNombreUser} 
+                                onChange={(e) => setNewNombreUser(e.target.value)} 
+                            />
+                        </label>
+
+                        <label>Selecciona tu nueva foto de perfil:</label>
+                        <div className={styles.avatarGallery}>
+                            {imagenesDisponibles.map((url, index) => (
+                                <img 
+                                    key={index}
+                                    src={url}
+                                    alt={`Avatar ${index + 1}`}
+                                    className={`${styles.avatarOption} ${newFotoPerfil === url ? styles.avatarSelected : ""}`}
+                                    onClick={() => setNewFotoPerfil(url)}
+                                />
+                            ))}
+                        </div>
+
+                        {errorMsg && <p className={styles.editError}>{errorMsg}</p>}
+                        <div className={styles.editButtons}>
+                            <button className={styles.saveEditBtn} onClick={handleEditProfile}>Guardar</button>
+                            <button className={styles.cancelEditBtn} onClick={() => setEditing(false)}>Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
 
             <div className={styles.scoresContainer}>
                 {gameModes.map((mode, index) => (
