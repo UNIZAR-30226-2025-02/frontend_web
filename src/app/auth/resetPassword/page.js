@@ -2,6 +2,7 @@
 
 import "../layout.css";
 import { useState, useEffect } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
@@ -13,10 +14,15 @@ export default function ResetPasswordPage() {
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e) => {
@@ -93,6 +99,7 @@ export default function ResetPasswordPage() {
 
       <div>
         <label className="label">Nueva Contraseña</label>
+        <div className="password-wrapper">
         <input
           type="password"
           name="Contrasena"
@@ -101,10 +108,15 @@ export default function ResetPasswordPage() {
           className="input"
           required
         />
+        <span className="eye-icon" onClick={togglePasswordVisibility}>
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
       </div>
 
       <div>
         <label className="label">Repetir Contraseña</label>
+        <div className="password-wrapper">
         <input
           type="password"
           name="ConfirmarContrasena"
@@ -113,6 +125,10 @@ export default function ResetPasswordPage() {
           className="input"
           required
         />
+        <span className="eye-icon" onClick={togglePasswordVisibility}>
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
       </div>
 
       <button type="submit" className="button">Restablecer Contraseña</button>

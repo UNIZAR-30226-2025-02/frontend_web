@@ -21,13 +21,13 @@ export default function Menu() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setIsMobile(window.innerWidth <= 1000);
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [window.innerWidth]);
 
   const renderLinks = () => (
     <ul className={styles.menu}>

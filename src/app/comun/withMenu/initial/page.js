@@ -17,6 +17,7 @@ export default function InitialPage() {
     const [playerColor, setPlayerColor] = useState(null);
     const [token, setToken] = useState(null);
     const [socket, setSocket] = useState(null);
+    const [racha, setRacha] = useState(null);
     // Cargar usuario desde localStorage solo una vez
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -37,7 +38,7 @@ export default function InitialPage() {
           };
         }
       }, []);
-    
+      console.log("Usuario desde localStorage:", user);
       // Cargar usuario desde localStorage solo una vez
       useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -48,7 +49,27 @@ export default function InitialPage() {
           }
         }
       }, []);
-    console.log("Usuario desde localStorage:", user);
+
+      useEffect(() => {
+        if (user) {
+            // Actualizar racha local (esto ya lo tenés)
+            setRacha(user.actualStreak);
+        
+            // También actualizar localStorage
+            if (typeof window !== 'undefined') {
+              const storedUserData = localStorage.getItem("userData");
+              if (storedUserData) {
+                const parsedData = JSON.parse(storedUserData);
+                const updatedData = {
+                  ...parsedData,
+                  publicUser: user,
+                };
+                localStorage.setItem("userData", JSON.stringify(updatedData));
+              }
+            }
+          }
+      }, [user]);
+   
 
     // Función para buscar partida
     const handleSearchGame = async (tipoPartida) => {
@@ -86,9 +107,9 @@ export default function InitialPage() {
             }
 
             const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
-            console.log("Mi ide es: ",user.id, "y jugador.id es: ", jugadorActual.id);
+            console.log("Mi id es: ",user.id, "y jugador.id es: ", jugadorActual.id);
             const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
-            console.log("Mi ide es: ",user.id, "y mi rival es: ", jugadorRival);
+            console.log("Mi id es: ",user.id, "y mi rival es: ", jugadorRival);
             if (!jugadorActual) {
                 console.error("❌ No se encontró al usuario en la lista de jugadores.");
                 return;
@@ -168,7 +189,7 @@ export default function InitialPage() {
                         <div className={styles.racha}>
                             <FaFire className={styles.shield} style={{ color: '#ff8000' }} />
                             <span className={styles.text}>Tu racha</span>
-                            <span className={styles.rachaCount}>{user.maxStreak || 0}</span>
+                            <span className={styles.rachaCount}>{racha || 0}</span>
                             <div className={styles.checks}>  
                             </div>
                         </div>
@@ -226,8 +247,8 @@ export default function InitialPage() {
                     <button className={styles.searchButton} onClick={() => handleSearchGame("Punt_10")} >
                         {!searching && <FcSearch className={styles.iconSearch} />}
                         {searching && <div className={styles.loader}></div>}
-                        <span className={searching ? styles.hiddenText : ''}>Buscar Partida</span>
-                        <span className={!searching ? styles.hiddenText : ''}>Buscando...</span>
+                        <span className={searching ? styles.hiddenText : ''}>Buscar Partida Clasica</span>
+                        <span className={!searching ? styles.hiddenText : ''}>Emparejando...</span>
                     </button>
                 </div>
                 <div className={styles.botonCancelar}>

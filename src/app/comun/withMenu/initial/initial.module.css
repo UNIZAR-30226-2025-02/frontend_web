@@ -273,7 +273,7 @@
 }
  
 /* 📱 Responsividad para pantallas pequeñas */
-@media (max-width: 780px) {
+@media (max-width: 1000px) {
   .container {
     margin-left: 0; /* Quitamos el margen lateral fijo */
     width: 100%;

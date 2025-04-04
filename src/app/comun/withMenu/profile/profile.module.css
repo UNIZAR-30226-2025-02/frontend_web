@@ -1,12 +1,11 @@
 /* 🔹 CONTENEDOR PRINCIPAL */
 .profileContainer {
-    padding-top: 40px;
     padding-left: 300px;
     background: #6e6e6e;
     color: #fff;
     border-radius: 10px;
     max-width: 900px;
-    margin: 150px auto 0;
+    margin: 190px auto 0;
     text-align: center;
     display: flex;
     flex-direction: column;

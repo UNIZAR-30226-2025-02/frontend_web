@@ -10,7 +10,6 @@ export default function LoginPage() {
     NombreUser: "",
     Contrasena: "",
   });
-  const socketUrl = 'http://localhost:3000';  
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();  // Inicializar el router
@@ -85,7 +84,7 @@ export default function LoginPage() {
     <form onSubmit={handleSubmit} className="form">
       {error && <p className="error-message">{error}</p>}
       <div>
-        <label className="label">Nombre de usuario</label>
+        <label className="label">Nombre de Usuario</label>
         <input
           type="text"
           name="NombreUser"

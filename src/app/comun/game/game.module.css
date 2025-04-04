@@ -51,7 +51,7 @@
   margin-bottom: 20px;
 }
 
-.reviewButton, .newGameButton, .rematchButton {
+.reviewButton, .newGameButton, .rematchButton, .newGameButtonCancel {
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -59,6 +59,7 @@
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 
 .reviewButton {
   background-color: #4A90E2;
@@ -76,6 +77,15 @@
 
 .newGameButton:hover {
   background-color: #218838;
+}
+
+.newGameButtonCancel {
+  background-color: #dc3545;
+  color: white;
+}
+
+.newGameButtonCancel:hover {
+  background-color: #c82333;
 }
 
 .rematchButton {
@@ -408,4 +418,23 @@
 
 .blackMove {
   color: #ccc;
+}
+
+.loader {
+  width: 60px;
+  height: 60px;
+  border: 8px solid rgba(255, 255, 255, 0.3); /* antes 3px */
+  border-top-color: #357ABD;
+  border-radius: 50%;
+  margin-right: 10px;
+  margin-bottom: 25px;
+  margin-top: 25px;
+  animation: spin 1s linear infinite;
+}
+
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

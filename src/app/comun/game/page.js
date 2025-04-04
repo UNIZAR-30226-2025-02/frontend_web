@@ -42,7 +42,7 @@ export default function Game() {
   const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
   const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al
   const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
-  
+  const [searching, setSearching] = useState(false);
   const gameCopy = useRef(new Chess()); // Referencia única del juego
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
@@ -524,7 +524,7 @@ export default function Game() {
   };
   
   const declineDraw = () => {
-    socket.emit('draw-decline', { idPartida, idJugador: user.id });
+    socket.emit('draw-declined', { idPartida, idJugador: user.id });
     setDrawOfferReceived(false);
   };
 
@@ -554,10 +554,17 @@ export default function Game() {
     console.log("🧠Voy a volver a inicio");
     router.push(`/comun/withMenu/initial`);
   }
+
+  const handleCancelSearch = () => {
+    if (!socket || !searching) return;
+    socket.emit('cancel-pairing', { idJugador: user?.id });
+    setSearching(false);
+    console.log("❌ Búsqueda cancelada por el usuario");
+  };
   // Función para buscar partida
   const handleSearchOtherGame = async (tipoPartida) => {
     if (!socket) return; // Asegurarse de que el socket esté conectado
-    //setSearching(true);
+    setSearching(true);
     const dataToSend = { 
         idJugador: user?.id, 
         mode: tipoPartida
@@ -573,7 +580,7 @@ export default function Game() {
     // Escuchar la respuesta del servidor
     socket.on('game-ready', (data) => {
         console.log("🟢 Partida encontrada con ID:", data.idPartida);
-        //setSearching(false);
+        setSearching(false);
         console.log("Estoy buscando partida", user.NombreUser);
         console.log("he encontrado partida", user.NombreUser); 
         localStorage.setItem("tipoPartida",tipoPartida);
@@ -634,53 +641,110 @@ export default function Game() {
     <div className={styles.gameContainer}>
       {winner && (
         <div className={styles.winnerOverlay}>
+        {searching && (
+          <h2>Buscando una nueva partida...</h2>
+        )}
+        {!searching && (
           <h2>¡Has ganado!</h2>
+        )}
+        {searching && (
+          <div className={styles.loader}></div>
+        )}
+        {!searching && (
           <span className={styles.trophy}>🏆</span>
-          <div className={styles.winnerActions}>
+        )}
+        <div className={styles.winnerActions}>
+        {searching && (
+            <button className={styles.newGameButtonCancel} onClick={handleCancelSearch} title="Cancelar búsqueda">
+              Cancelar búsqueda
+            </button>)}
+          {!searching && (
             <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
               Buscar otra partida
-            </button>
+            </button>)}
+          {!searching && (
             <button className={styles.reviewButton} onClick={resetGame}>
-              Revisar Partida
+            Revisar Partida
             </button>
-            <button className={styles.rematchButton} onClick={handleGoInit}>
+          ) }
+        </div>
+        {!searching && (
+          <button className={styles.rematchButton} onClick={handleGoInit}>
             Volver Inicio
           </button>
-           </div>
-        </div>
+        ) }
+      </div>
       )}
       {loser && (
         <div className={styles.winnerOverlay}>
+        {searching && (
+          <h2>Buscando una nueva partida...</h2>
+        )}
+        {!searching && (
           <h2>¡Has perdido!</h2>
+        )}
+        {searching && (
+          <div className={styles.loader}></div>
+        )}
+        {!searching && (
           <span className={styles.trophy}>❌</span>
-          <div className={styles.winnerActions}>
+        )}
+        <div className={styles.winnerActions}>
+        {searching && (
+            <button className={styles.newGameButtonCancel} onClick={handleCancelSearch} title="Cancelar búsqueda">
+                Cancelar búsqueda
+            </button>)}
+          {!searching && (
             <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
               Buscar otra partida
-            </button>
+            </button>)}
+          {!searching && (
             <button className={styles.reviewButton} onClick={resetGame}>
-              Revisar Partida
-          </button>
+            Revisar Partida
+            </button>
+          ) }
+        </div>
+        {!searching && (
           <button className={styles.rematchButton} onClick={handleGoInit}>
             Volver Inicio
           </button>
-          </div>
-        </div>
+        ) }
+      </div>
       )}
       {tablas && (
         <div className={styles.winnerOverlay}>
-          <h2>¡Has llegado a tablas!</h2>
-          <span className={styles.trophy}>🤝</span>
+          {searching && (
+            <h2>Buscando una nueva partida...</h2>
+          )}
+          {!searching && (
+            <h2>!Has llegado a tablas!</h2>
+          )}
+          {searching && (
+            <div className={styles.loader}></div>
+          )}
+          {!searching && (
+            <span className={styles.trophy}>🤝</span>
+         )}
           <div className={styles.winnerActions}>
-            <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
-              Buscar otra partida
-            </button>
-            <button className={styles.reviewButton} onClick={resetGame}>
+          {searching && (
+              <button className={styles.newGameButtonCancel} onClick={handleCancelSearch} title="Cancelar búsqueda">
+                  Cancelar búsqueda
+              </button>)}
+            {!searching && (
+              <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
+                Buscar otra partida
+              </button>)}
+            {!searching && (
+              <button className={styles.reviewButton} onClick={resetGame}>
               Revisar Partida
-          </button>
-          <button className={styles.rematchButton} onClick={handleGoInit}>
-            Volver Inicio
-          </button>
+              </button>
+            ) }
           </div>
+          {!searching && (
+            <button className={styles.rematchButton} onClick={handleGoInit}>
+              Volver Inicio
+            </button>
+          ) }
         </div>
       )}
       {drawOfferReceived && (
