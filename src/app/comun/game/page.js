@@ -241,7 +241,7 @@ export default function Game() {
       localStorage.removeItem("timeB");
       localStorage.removeItem("idPartida");
       localStorage.removeItem("nombreRival");
-      localStorage.removeItem("eloRical");
+      localStorage.removeItem("eloRival");
       localStorage.removeItem("eloJug");
       localStorage.removeItem("tipoPartida");
       localStorage.removeItem("colorJug");
@@ -297,7 +297,7 @@ export default function Game() {
         localStorage.removeItem("eloJug");
         localStorage.removeItem("tipoPartida");
         localStorage.removeItem("colorJug");
-        socket.emit('game-status', { timeLeftW: whiteTime, timeLeftB: blackTime, estadoPartida: 'ingame' });
+        socket.emit('game-status', { timeLeftW: whiteTime, timeLeftB: blackTime, estadoPartida: 'ingame', gameMode: tipoPartida});
       });
   
       return () => {

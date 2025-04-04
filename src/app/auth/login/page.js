@@ -54,18 +54,12 @@ export default function LoginPage() {
             console.log('Este usuario estaba jugando una partida');
             localStorage.setItem("colorJug", data.color);
             localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
-            const pgnVar = data.pgn;
             localStorage.setItem("timeW",data.timeLeftW);
             localStorage.setItem("timeB",data.timeLeftB);
             localStorage.setItem("idPartida",data.gameID);
-           /* if (data.color === "black"){
-              localStorage.setItem("eloJug",pgnVar.header()['White Elo']);
-              localStorage.setItem("eloJug",pgnVar.header()['Black Elo']);  
-            } else {
-              localStorage.setItem("eloJug",pgnVar.header()['White Elo'])
-              localStorage.setItem("eloRival",pgnVar.header()['Black Elo']);
-            }*/
-
+            localStorage.setItem("eloJug", data.miElo);
+            localStorage.setItem("eloRival", data.eloRival);  
+            localStorage.setItem("nombreRival", data.nombreRival);                          
             router.push(`/comun/game?id=${data.gameID}`);
           }) 
           router.push("/comun/withMenu/initial");
