@@ -2,6 +2,7 @@
 
 import "../layout.css";
 import { useState, useEffect } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
@@ -9,13 +10,19 @@ export default function ResetPasswordPage() {
     NombreUser: "",
     token: "",
     Contrasena: "",
+    ConfirmarContrasena: "",
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e) => {
@@ -23,8 +30,13 @@ export default function ResetPasswordPage() {
     setMessage("");
     setError("");
 
+    if (form.Contrasena !== form.ConfirmarContrasena) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
     try {
-        const response = await fetch("http://localhost:3000/tryResetPasswd", {
+        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/tryResetPasswd", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -87,6 +99,7 @@ export default function ResetPasswordPage() {
 
       <div>
         <label className="label">Nueva Contraseña</label>
+        <div className="password-wrapper">
         <input
           type="password"
           name="Contrasena"
@@ -95,9 +108,30 @@ export default function ResetPasswordPage() {
           className="input"
           required
         />
+        <span className="eye-icon" onClick={togglePasswordVisibility}>
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
       </div>
 
-      <button type="submit" className="button">Restablecer</button>
+      <div>
+        <label className="label">Repetir Contraseña</label>
+        <div className="password-wrapper">
+        <input
+          type="password"
+          name="ConfirmarContrasena"
+          value={form.ConfirmarContrasena}
+          onChange={handleChange}
+          className="input"
+          required
+        />
+        <span className="eye-icon" onClick={togglePasswordVisibility}>
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" className="button">Restablecer Contraseña</button>
 
       {message && <p className="success-message">{message}</p>}
       {error && <p className="error-message">{error}</p>}

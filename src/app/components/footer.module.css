@@ -6,8 +6,9 @@
     padding-bottom: 16px;
     margin-top:  16px;
     font-size: 14px;
-    margin-left: 300px;
-    width: calc(100% - 300px); /* Corrige la expresión '100% - 300px' */
+    /*margin-left: 300px;*/
+   /* width: calc(100% - 300px); /* Corrige la expresión '100% - 300px' */
+    width: 100%;
   }
   
   .container {

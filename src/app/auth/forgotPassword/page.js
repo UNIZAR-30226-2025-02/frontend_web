@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3000/sendPasswdReset", {
+      const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/sendPasswdReset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Correo: email }),
@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
       {error && <p className="error-message">{error}</p>}
 
       <div className="links">
-        <a href="/auth/login" className="link">Volver al Login</a>
+        <a href="/auth/login" className="link">Volver a Inicio de Sesión</a>
       </div>
     </form>
   );

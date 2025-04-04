@@ -60,7 +60,7 @@ export default function RegisterPage() {
       {error && <p className="error-message">{error}</p>}
 
       <div>
-        <label className="label">Username</label>
+        <label className="label">Nombre de usuario</label>
         <input
           type="text"
           name="NombreUser"
@@ -72,7 +72,7 @@ export default function RegisterPage() {
       </div>
 
       <div>
-        <label className="label">Email</label>
+        <label className="label">Correo Electrónico</label>
         <input
           type="email"
           name="Correo"
@@ -84,7 +84,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="password-container">
-        <label className="label">Password</label>
+        <label className="label">Contraseña</label>
         <div className="password-wrapper">
           <input
             type={showPassword ? "text" : "password"}
@@ -100,10 +100,10 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <button type="submit" className="button">Register</button>
+      <button type="submit" className="button">Registrarse</button>
 
       <div className="links">
-        <a href="./login" className="link">Already have an account? Sign In</a>
+        <a href="./login" className="link">¿Ya tienes una cuenta? Inicia Sesión</a>
       </div>
     </form>
   );
