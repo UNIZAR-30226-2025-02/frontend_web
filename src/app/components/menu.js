@@ -47,7 +47,12 @@ export default function Menu() {
         </Link>
       </li>
       <li>
-        <Link href="/ajustes" className={styles.menuItem}>
+        <Link
+            href="/comun/withMenu/friend"
+            className={`${styles.menuItem} ${
+              pathname === "/comun/withMenu/friend" ? styles.active : ""
+            }`}
+        >
           <FcConferenceCall className={styles.icon} /> Social
         </Link>
       </li>

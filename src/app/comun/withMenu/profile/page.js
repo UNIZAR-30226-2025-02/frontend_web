@@ -176,11 +176,7 @@ export default function Profile() {
         { id: 5, mode: "Avanzado", whitePlayer: "Jugador123", blackPlayer: "JugadorB", result: "win", moves: 32, date: "4 sept 2024" },
     ];
 
-    const imagenesDisponibles = [
-        "/reina_azul.webp",
-        "/torre_azul.webp",
-        "/fotosPerfilWebp/avatar_1.webp",
-    ];
+    const imagenesDisponibles = Array.from({ length: 33 }, (_, i) => `/fotosPerfilWebp/avatar_${i + 1}.webp`);
     return (
         <div className={styles.profileContainer}>
             <div className={styles.profileCard}>
@@ -195,10 +191,10 @@ export default function Profile() {
                 <div className={styles.profileHeader}>
                 <div className={styles.profilePhoto}>
                     {editing ? (
-                        <img src={newFotoPerfil} alt="Preview" className={styles.profileImage} />
+                        <img src={`/fotosPerfilWebp/${newFotoPerfil}`} alt="Preview" className={styles.profileImage} />
                     ) : (
                         user?.FotoPerfil ? (
-                        <img src={user.FotoPerfil} alt="Foto de perfil" className={styles.profileImage} />
+                            <img src={`/fotosPerfilWebp/${user.FotoPerfil}`} alt="Foto de perfil" className={styles.profileImage} />
                         ) : (
                         <p>FOTO</p>
                         )
@@ -209,12 +205,16 @@ export default function Profile() {
                     <h2 className={styles.profileName}>{user?.NombreUser || "No disponible"}</h2>
                     <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
-                                <p><strong>Amigos:</strong> 0</p>
-                                <p><strong>Partidas Jugadas:</strong> 0</p>
+                                <p><strong>Amigos:</strong> {user?.amistades?.length ?? 0}</p>
+                                <p><strong>Partidas Jugadas:</strong> {user?.totalGames ?? "No disponible"}</p>
                             </div>
                             <div className={styles.infoColumn}>
-                                <p><strong>Porcentaje de Victoria:</strong> 0%</p>
-                                <p><strong>Máxima Racha:</strong> 0</p>
+                                <p><strong>Porcentaje de Victoria: </strong> 
+                                    {user?.totalGames && user?.totalWins 
+                                        ? `${((user.totalWins / user.totalGames) * 100).toFixed(0)}%` 
+                                        : "No disponible"}
+                                </p>
+                                <p><strong>Máxima Racha:</strong> {user?.maxStreak ?? "No disponible"}</p>
                             </div>
                         </div>
                     </div>
@@ -256,7 +256,11 @@ export default function Profile() {
                                     src={url}
                                     alt={`Avatar ${index + 1}`}
                                     className={`${styles.avatarOption} ${newFotoPerfil === url ? styles.avatarSelected : ""}`}
-                                    onClick={() => setNewFotoPerfil(url)}
+                                    onClick={() => {
+                                        const fileName = url.split("/").pop(); // obtiene solo el nombre del archivo
+                                        setNewFotoPerfil(fileName);
+                                      }}
+                                      
                                 />
                             ))}
                         </div>
