@@ -48,7 +48,7 @@ export default function Profile() {
 
 
   // Cargar usuario desde localStorage solo una vez
-  useEffect(() => {
+  /*useEffect(() => {
       // Verificamos si hay datos en localStorage antes de intentar parsearlos
       const storedUserData = localStorage.getItem("userData");
       console.log("El usuario del perfil es: ", storedUserData);
@@ -58,19 +58,51 @@ export default function Profile() {
       } else {
           console.log("No se encontraron datos de usuario en localStorage.");
       }
-  }, []);
-    //const Profile = () => {
-    /*const userData = JSON.parse(localStorage.getItem("userData"));
-    const user = userData ? userData.publicUser : null;*/
+  }, []);*/
    
+  //Obtengo los datos del usuario y los actualizo en loscalStorage
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+        const storedUserData = localStorage.getItem("userData");
 
-   /* useEffect(() => {
-        if (!user && router.pathname !== "/") {
-            router.replace("/");
-        } else {
-            setLoading(false);
+        if (!storedUserData) {
+            console.log("No hay userData en localStorage");
+            return;
         }
-    }, [user, router]);*/
+
+        const parsedUser = JSON.parse(storedUserData);
+        const userId = parsedUser?.publicUser?.id;
+
+        if (!userId) {
+            console.log("No se encontró el id del usuario");
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                console.error("Error al obtener info del usuario");
+                return;
+            }
+
+            const data = await response.json();
+            setUser(data); // ya te devuelve publicUser directamente
+            localStorage.setItem("userData", JSON.stringify({ publicUser: data }));
+
+        } catch (error) {
+            console.error("Error en fetchUserInfo:", error);
+        }
+    };
+
+    fetchUserInfo();
+}, []);
+
 
     const confirmLogout = () => {
         setShowConfirm(true);

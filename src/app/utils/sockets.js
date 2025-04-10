@@ -68,7 +68,7 @@ export const getSocket = () => {
     socket.on("friendRequest", (data) => {
       console.log("🔔 Nueva solicitud de amistad:", data);
       const friendId = data.idJugador;
-      const notificationEvent = new CustomEvent("newFriendMacth", {
+      const notificationEvent = new CustomEvent("newFriendRequest", {
         detail: { friendId },
       }); 
        window.dispatchEvent(notificationEvent);

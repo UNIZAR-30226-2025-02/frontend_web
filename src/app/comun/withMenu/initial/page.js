@@ -50,25 +50,49 @@ export default function InitialPage() {
         }
       }, []);
 
-      useEffect(() => {
-        if (user) {
-            // Actualizar racha local (esto ya lo tenés)
-            setRacha(user.actualStreak);
-        
-            // También actualizar localStorage
-            if (typeof window !== 'undefined') {
-              const storedUserData = localStorage.getItem("userData");
-              if (storedUserData) {
-                const parsedData = JSON.parse(storedUserData);
-                const updatedData = {
-                  ...parsedData,
-                  publicUser: user,
-                };
-                localStorage.setItem("userData", JSON.stringify(updatedData));
-              }
-            }
-          }
-      }, [user]);
+      //Obtengo los datos del usuario y los actualizo en loscalStorage
+        useEffect(() => {
+            const fetchUserInfo = async () => {
+                const storedUserData = localStorage.getItem("userData");
+
+                if (!storedUserData) {
+                    console.log("No hay userData en localStorage");
+                    return;
+                }
+
+                const parsedUser = JSON.parse(storedUserData);
+                const userId = parsedUser?.publicUser?.id;
+
+                if (!userId) {
+                    console.log("No se encontró el id del usuario");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+
+                    if (!response.ok) {
+                        console.error("Error al obtener info del usuario");
+                        return;
+                    }
+
+                    const data = await response.json();
+                    setUser(data); // ya te devuelve publicUser directamente
+                    setRacha(data.actualStreak);
+                    localStorage.setItem("userData", JSON.stringify({ publicUser: data }));
+
+                } catch (error) {
+                    console.error("Error en fetchUserInfo:", error);
+                }
+            };
+
+            fetchUserInfo();
+        }, [user]);
    
 
     // Función para buscar partida
