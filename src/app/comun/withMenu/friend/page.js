@@ -60,19 +60,78 @@ export default function FriendPage() {
     if (storedUserData) {
         const parsedUser = JSON.parse(storedUserData);
         const currentUser = parsedUser.publicUser;
-
+        
         setUser(currentUser);
-        setFriends(currentUser.amistades || []);
-        setSuggestions([
+       // setFriends(currentUser.amistades || []);
+        /*setSuggestions([
             {
                 id: "e7540325-1707-48e3-aa94-1355b7e3bf95",
                 name: "danisalas8",
             }
-        ]);
+        ]);*/
+        const fetchFriends = async () => {
+            const userId = parsedUser?.publicUser?.id;
+            console.log("Mi id es: ", userId);
+            try {
+                const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarAmigos?id=${userId}`, {
+                    method: "GET",
+                    headers: {
+                            "Content-Type": "application/json",
+                        },
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error("No se pudieron cargar los amigos");
+                }
+                setFriends(data);
+            } catch (error) {
+                console.error("Error al obtener amigos:", error);
+            }
+        };
+        fetchFriends();
     } else {
         console.log("No se encontraron datos de usuario en localStorage.");
     }
   }, []);
+
+ /* useEffect(() => {
+    if (user) {
+        
+
+        
+    }
+}, [user]);*/
+useEffect(() => {
+    const fetchSuggestions = async () => {
+        if (!searchTerm) {
+            setSuggestions([]);  // limpiar si no busca nada
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUsuarioPorUser?NombreUser=${searchTerm}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "No se pudieron cargar sugerencias");
+            }
+
+            // Filtrar para no mostrar a uno mismo ni a amigos
+            const filtered = data.filter(u =>
+                u.id !== user.id && !friends.find(f => f.id === u.id)
+            );
+
+            setSuggestions(filtered);
+
+        } catch (error) {
+            console.error("Error al buscar sugerencias:", error);
+        }
+    };
+
+    fetchSuggestions();
+
+}, [searchTerm, user, friends]);  // dependencias necesarias
+
 
   // Pedir amigos y usuarios al backend una vez tengamos el user
   /*useEffect(() => {
@@ -91,11 +150,11 @@ export default function FriendPage() {
 }, [socket, user]);*/
 
     const filteredFriends = friends.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        user.NombreUser.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const filteredSuggestions = suggestions.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        user.NombreUser.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
 
@@ -187,7 +246,7 @@ export default function FriendPage() {
                                 <div key={user.id} className={styles.userCard}>
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>FOTO</div>
-                                        <span>{user.name}</span>
+                                        <span>{user.NombreUser}</span>
                                     </div>
                                     <div className={styles.actions}>
                                         <FaChessKnight
@@ -213,7 +272,7 @@ export default function FriendPage() {
                                 <div key={user.id} className={styles.userCard}>
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>FOTO</div>
-                                        <span>{user.name}</span>
+                                        <span>{user.NombreUser}</span>
                                     </div>
                                     <div className={styles.actions}>
                                         <FaChessKnight
