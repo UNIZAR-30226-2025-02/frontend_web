@@ -19,6 +19,10 @@ export default function Profile() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [newNombreUser, setNewNombreUser] = useState("");
+    const [newFotoPerfil, setNewFotoPerfil] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
 
   // Cargar usuario desde localStorage solo una vez
   
@@ -44,7 +48,7 @@ export default function Profile() {
 
 
   // Cargar usuario desde localStorage solo una vez
-  useEffect(() => {
+  /*useEffect(() => {
       // Verificamos si hay datos en localStorage antes de intentar parsearlos
       const storedUserData = localStorage.getItem("userData");
       console.log("El usuario del perfil es: ", storedUserData);
@@ -54,19 +58,51 @@ export default function Profile() {
       } else {
           console.log("No se encontraron datos de usuario en localStorage.");
       }
-  }, []);
-    //const Profile = () => {
-    /*const userData = JSON.parse(localStorage.getItem("userData"));
-    const user = userData ? userData.publicUser : null;*/
+  }, []);*/
    
+  //Obtengo los datos del usuario y los actualizo en loscalStorage
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+        const storedUserData = localStorage.getItem("userData");
 
-   /* useEffect(() => {
-        if (!user && router.pathname !== "/") {
-            router.replace("/");
-        } else {
-            setLoading(false);
+        if (!storedUserData) {
+            console.log("No hay userData en localStorage");
+            return;
         }
-    }, [user, router]);*/
+
+        const parsedUser = JSON.parse(storedUserData);
+        const userId = parsedUser?.publicUser?.id;
+
+        if (!userId) {
+            console.log("No se encontró el id del usuario");
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                console.error("Error al obtener info del usuario");
+                return;
+            }
+
+            const data = await response.json();
+            setUser(data); // ya te devuelve publicUser directamente
+            localStorage.setItem("userData", JSON.stringify({ publicUser: data }));
+
+        } catch (error) {
+            console.error("Error en fetchUserInfo:", error);
+        }
+    };
+
+    fetchUserInfo();
+}, []);
+
 
     const confirmLogout = () => {
         setShowConfirm(true);
@@ -109,13 +145,43 @@ export default function Profile() {
         }
     };
 
-    /*if (loading) {
-        return <p className={styles.loadingText}>Cargando perfil...</p>;
-    }
-
-    if (!user) {
-        return <p className={styles.redirectText}>Redirigiendo...</p>;
-    }*/
+    const handleEditProfile = async () => {
+        setErrorMsg("");
+    
+        if (newNombreUser.length < 4 || newFotoPerfil.length < 4) {
+            setErrorMsg("Nombre y Foto deben tener al menos 4 caracteres.");
+            return;
+        }
+    
+        try {
+            const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/editUser", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: user.id,
+                    NombreUser: newNombreUser,
+                    FotoPerfil: newFotoPerfil,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                setErrorMsg(data.error || "Error al editar usuario");
+                return;
+            }
+    
+            // Actualizamos el usuario en estado y localStorage
+            setUser(data.publicUser);
+            localStorage.setItem("userData", JSON.stringify({ publicUser: data.publicUser }));
+            window.location.reload();
+            setEditing(false);
+        } catch (err) {
+            console.error("Error al editar usuario:", err);
+            setErrorMsg("Error al conectar con el servidor");
+        }
+    };
+    
 
 
     const generateRandomScoreData = () => {
@@ -142,28 +208,45 @@ export default function Profile() {
         { id: 5, mode: "Avanzado", whitePlayer: "Jugador123", blackPlayer: "JugadorB", result: "win", moves: 32, date: "4 sept 2024" },
     ];
 
+    const imagenesDisponibles = Array.from({ length: 33 }, (_, i) => `/fotosPerfilWebp/avatar_${i + 1}.webp`);
     return (
         <div className={styles.profileContainer}>
             <div className={styles.profileCard}>
-                <button className={styles.editButton}>
-                    <FaEdit className={styles.editIcon} /> Editar
-                </button>
+            <button className={styles.editButton} onClick={() => {
+                setEditing(true);
+                setNewNombreUser(user?.NombreUser || "");
+                setNewFotoPerfil(user?.FotoPerfil || "");
+            }}>
+                <FaEdit className={styles.editIcon} /> Editar
+            </button>
 
                 <div className={styles.profileHeader}>
-                    <div className={styles.profilePhoto}>
+                <div className={styles.profilePhoto}>
+                    {editing ? (
+                        <img src={`/fotosPerfilWebp/${newFotoPerfil}`} alt="Preview" className={styles.profileImage} />
+                    ) : (
+                        user?.FotoPerfil ? (
+                            <img src={`/fotosPerfilWebp/${user.FotoPerfil}`} alt="Foto de perfil" className={styles.profileImage} />
+                        ) : (
                         <p>FOTO</p>
+                        )
+                    )}
                     </div>
 
                     <div className={styles.profileDetails}>
                     <h2 className={styles.profileName}>{user?.NombreUser || "No disponible"}</h2>
                     <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
-                                <p><strong>Amigos:</strong> 0</p>
-                                <p><strong>Partidas Jugadas:</strong> 0</p>
+                                <p><strong>Amigos:</strong> {user?.amistades?.length ?? 0}</p>
+                                <p><strong>Partidas Jugadas:</strong> {user?.totalGames ?? "No disponible"}</p>
                             </div>
                             <div className={styles.infoColumn}>
-                                <p><strong>Porcentaje de Victoria:</strong> 0%</p>
-                                <p><strong>Máxima Racha:</strong> 0</p>
+                                <p><strong>Porcentaje de Victoria: </strong> 
+                                    {user?.totalGames && user?.totalWins 
+                                        ? `${((user.totalWins / user.totalGames) * 100).toFixed(0)}%` 
+                                        : "No disponible"}
+                                </p>
+                                <p><strong>Máxima Racha:</strong> {user?.maxStreak ?? "No disponible"}</p>
                             </div>
                         </div>
                     </div>
@@ -184,6 +267,46 @@ export default function Profile() {
                     </div>
                 </div>
             )}
+            {editing && (
+                <div className={styles.confirmOverlay}>
+                    <div className={styles.editProfileBox}>
+                        <h3>Editar Perfil</h3>
+                        <label>
+                            Nombre de Usuario:
+                            <input 
+                                type="text" 
+                                value={newNombreUser} 
+                                onChange={(e) => setNewNombreUser(e.target.value)} 
+                            />
+                        </label>
+
+                        <label>Selecciona tu nueva foto de perfil:</label>
+                        <div className={styles.avatarGallery}>
+                            {imagenesDisponibles.map((url, index) => (
+                                <img 
+                                    key={index}
+                                    src={url}
+                                    alt={`Avatar ${index + 1}`}
+                                    className={`${styles.avatarOption} ${newFotoPerfil === url ? styles.avatarSelected : ""}`}
+                                    onClick={() => {
+                                        const fileName = url.split("/").pop(); // obtiene solo el nombre del archivo
+                                        setNewFotoPerfil(fileName);
+                                      }}
+                                      
+                                />
+                            ))}
+                        </div>
+
+                        {errorMsg && <p className={styles.editError}>{errorMsg}</p>}
+                        <div className={styles.editButtons}>
+                            <button className={styles.saveEditBtn} onClick={handleEditProfile}>Guardar</button>
+                            <button className={styles.cancelEditBtn} onClick={() => setEditing(false)}>Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
 
             <div className={styles.scoresContainer}>
                 {gameModes.map((mode, index) => (

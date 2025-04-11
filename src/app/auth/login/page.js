@@ -10,7 +10,6 @@ export default function LoginPage() {
     NombreUser: "",
     Contrasena: "",
   });
-  const socketUrl = 'http://localhost:3000';  
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();  // Inicializar el router
@@ -55,19 +54,16 @@ export default function LoginPage() {
             console.log('Este usuario estaba jugando una partida');
             localStorage.setItem("colorJug", data.color);
             localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
-            localStorage.setItem("time",data.timeLeft);
+            localStorage.setItem("timeW",data.timeLeftW);
+            localStorage.setItem("timeB",data.timeLeftB);
             localStorage.setItem("idPartida",data.gameID);
+            localStorage.setItem("eloJug", data.miElo);
+            localStorage.setItem("eloRival", data.eloRival);  
+            localStorage.setItem("nombreRival", data.nombreRival);                          
             router.push(`/comun/game?id=${data.gameID}`);
           }) 
           router.push("/comun/withMenu/initial");
-        } /*else if (data.id) {
-          // Si no hay token, pero el id está presente, podrías redirigir a una página de perfil o mostrar un mensaje
-          console.log("Usuario autenticado, pero no se encontró token.");
-          // Aquí puedes guardar los datos del usuario, si es necesario, o redirigir a otra página
-          localStorage.setItem("userData", JSON.stringify(data));  // Guardar datos del usuario si es necesario
-          //localStorage.setItem("estadoJuego", data.EstadoPartida);
-          router.push("/comun/withMenu/initial");  // O redirigir a otra página 
-        }*/else {
+        } else {
             throw new Error("⚠️ Respuesta inesperada del servidor");
         }
     } catch (error) {
@@ -82,7 +78,7 @@ export default function LoginPage() {
     <form onSubmit={handleSubmit} className="form">
       {error && <p className="error-message">{error}</p>}
       <div>
-        <label className="label">Username</label>
+        <label className="label">Nombre de Usuario</label>
         <input
           type="text"
           name="NombreUser"
@@ -94,7 +90,7 @@ export default function LoginPage() {
       </div>
 
       <div className="password-container">
-        <label className="label">Password</label>
+        <label className="label">Contraseña</label>
         <div className="password-wrapper">
           <input
             type={showPassword ? "text" : "password"}
@@ -111,13 +107,13 @@ export default function LoginPage() {
       </div>
 
       <div>
-        <a href="./forgotPassword" className="link">Forgot password?</a>
+        <a href="./forgotPassword" className="link">¿Has olvidado tu contraseña?</a>
       </div>
 
-      <button type="submit" className="button">Sign In</button>
+      <button type="submit" className="button">Iniciar Sesión</button>
 
       <div className="links">
-        <a href="./register" className="link">New? Sign Up</a>
+        <a href="./register" className="link">¿Eres nuevo? Regístrate</a>
       </div>
     </form>
   );

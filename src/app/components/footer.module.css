@@ -1,14 +1,14 @@
 .footer {
-    background-color: #1e1e1e;
-    color: white;
-    text-align: center;
-    padding-top: 20px;
-    padding-bottom: 16px;
-    margin-top:  16px;
-    font-size: 14px;
-    margin-left: 300px;
-    width: calc(100% - 300px); /* Corrige la expresión '100% - 300px' */
-  }
+  background-color: #1e1e1e;
+  color: white;
+  text-align: center;
+  padding-top: 20px;
+  padding-bottom: 16px;
+  margin-top:  16px;
+  font-size: 14px;
+  margin-left: 300px;
+  width: calc(100% - 300px); /* Corrige la expresión '100% - 300px' */
+}
   
   .container {
     max-width: 100%;

@@ -1,12 +1,11 @@
 /* 🔹 CONTENEDOR PRINCIPAL */
 .profileContainer {
-    padding-top: 40px;
     padding-left: 300px;
     background: #6e6e6e;
     color: #fff;
     border-radius: 10px;
     max-width: 900px;
-    margin: 150px auto 0;
+    margin: 190px auto 0;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -65,7 +64,7 @@
     width: 180px;
     height: 180px;
     margin-top: 30px;
-    background: #555;
+    background: #3a3a3a;
     color: white;
     display: flex;
     flex-direction: column;
@@ -74,7 +73,7 @@
     border-radius: 10px;
     font-size: 14px;
     font-weight: bold;
-    padding: 10px;
+    margin-left: 10px;
 }
 
 /* 🔹 Contenedor del nombre y la información */
@@ -357,4 +356,123 @@
 .confirmNo {
     background: #dc3545;
     color: white;
+}
+
+/* 🔹 MODAL DE EDICIÓN DE PERFIL (hereda de confirmOverlay y confirmBox) */
+.editProfileBox {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 450px;
+}
+
+.editProfileBox h3 {
+    color: #00aaff;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 🔹 Campos del formulario */
+.editProfileBox label {
+    display: block;
+    margin-bottom: 25px;
+    font-weight: bold;
+    color: white;
+    font-size: 16px;
+}
+
+.editProfileBox input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+    background: #444;
+    color: white;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+/* 🔹 Botones */
+.editButtons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.saveEditBtn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.saveEditBtn:hover {
+    background: #1e7e34;
+}
+
+.cancelEditBtn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.cancelEditBtn:hover {
+    background: #b02a37;
+}
+
+/* 🔹 Error */
+.editError {
+    color: #ff4444;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.avatarGallery {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.avatarOption {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border 0.2s;
+}
+
+.avatarOption:hover {
+    transform: scale(1.05);
+}
+
+.avatarSelected {
+    border: 2px solid #00aaff;
+    box-shadow: 0 0 10px #00aaff;
+}
+
+.profileImage {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
 }

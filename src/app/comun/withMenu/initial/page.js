@@ -17,6 +17,7 @@ export default function InitialPage() {
     const [playerColor, setPlayerColor] = useState(null);
     const [token, setToken] = useState(null);
     const [socket, setSocket] = useState(null);
+    const [racha, setRacha] = useState(null);
     // Cargar usuario desde localStorage solo una vez
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -37,7 +38,7 @@ export default function InitialPage() {
           };
         }
       }, []);
-    
+      console.log("Usuario desde localStorage:", user);
       // Cargar usuario desde localStorage solo una vez
       useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -48,7 +49,51 @@ export default function InitialPage() {
           }
         }
       }, []);
-    console.log("Usuario desde localStorage:", user);
+
+      //Obtengo los datos del usuario y los actualizo en loscalStorage
+        useEffect(() => {
+            const fetchUserInfo = async () => {
+                const storedUserData = localStorage.getItem("userData");
+
+                if (!storedUserData) {
+                    console.log("No hay userData en localStorage");
+                    return;
+                }
+
+                const parsedUser = JSON.parse(storedUserData);
+                const userId = parsedUser?.publicUser?.id;
+
+                if (!userId) {
+                    console.log("No se encontró el id del usuario");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+
+                    if (!response.ok) {
+                        console.error("Error al obtener info del usuario");
+                        return;
+                    }
+
+                    const data = await response.json();
+                    setUser(data); // ya te devuelve publicUser directamente
+                    setRacha(data.actualStreak);
+                    localStorage.setItem("userData", JSON.stringify({ publicUser: data }));
+
+                } catch (error) {
+                    console.error("Error en fetchUserInfo:", error);
+                }
+            };
+
+            fetchUserInfo();
+        }, [user]);
+   
 
     // Función para buscar partida
     const handleSearchGame = async (tipoPartida) => {
@@ -86,9 +131,9 @@ export default function InitialPage() {
             }
 
             const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
-            console.log("Mi ide es: ",user.id, "y jugador.id es: ", jugadorActual.id);
+            console.log("Mi id es: ",user.id, "y jugador.id es: ", jugadorActual.id);
             const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
-            console.log("Mi ide es: ",user.id, "y mi rival es: ", jugadorRival);
+            console.log("Mi id es: ",user.id, "y mi rival es: ", jugadorRival);
             if (!jugadorActual) {
                 console.error("❌ No se encontró al usuario en la lista de jugadores.");
                 return;
@@ -97,9 +142,16 @@ export default function InitialPage() {
             setPlayerColor(jugadorActual.color);
             console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
             localStorage.setItem("colorJug",jugadorActual.color);
-            console.log("Guardo id rival: ", jugadorRival.id);
-            localStorage.setItem("idRival", jugadorRival.id);
-            localStorage.setItem("idRival", jugadorRival.id);
+            console.log("🌈Guardo id rival: ", jugadorRival.id, "Con el eloW: ", jugadorRival.eloW, "y el eloB: ", jugadorRival.eloB);
+            if(jugadorActual.color === "black"){
+                localStorage.setItem("eloRival", jugadorRival.eloW);
+                localStorage.setItem("nombreRival", jugadorRival.nombreW);
+                localStorage.setItem("eloJug", jugadorActual.eloB);
+            } else {
+                localStorage.setItem("eloRival", jugadorRival.eloB);
+                localStorage.setItem("nombreRival", jugadorRival.nombreB);
+                localStorage.setItem("eloJug", jugadorActual.eloW);
+            }
             localStorage.setItem("idPartida", idPartidaCopy);
             router.push(`/comun/game?id=${idPartidaCopy}`);
         });
@@ -161,7 +213,7 @@ export default function InitialPage() {
                         <div className={styles.racha}>
                             <FaFire className={styles.shield} style={{ color: '#ff8000' }} />
                             <span className={styles.text}>Tu racha</span>
-                            <span className={styles.rachaCount}>{user.maxStreak || 0}</span>
+                            <span className={styles.rachaCount}>{racha || 0}</span>
                             <div className={styles.checks}>  
                             </div>
                         </div>
@@ -219,8 +271,8 @@ export default function InitialPage() {
                     <button className={styles.searchButton} onClick={() => handleSearchGame("Punt_10")} >
                         {!searching && <FcSearch className={styles.iconSearch} />}
                         {searching && <div className={styles.loader}></div>}
-                        <span className={searching ? styles.hiddenText : ''}>Buscar Partida</span>
-                        <span className={!searching ? styles.hiddenText : ''}>Buscando...</span>
+                        <span className={searching ? styles.hiddenText : ''}>Buscar Partida Clasica</span>
+                        <span className={!searching ? styles.hiddenText : ''}>Emparejando...</span>
                     </button>
                 </div>
                 <div className={styles.botonCancelar}>

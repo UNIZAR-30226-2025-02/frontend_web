@@ -51,7 +51,28 @@ export const getSocket = () => {
       }, 3000);
     
     });
-  }
 
+    socket.on("challengeSent", (data) => {
+      console.log("🔔 Nueva partida de amigo recibida", data);
+      if (!data?.idRetador) {
+        console.warn("⚠️ El campo 'idRetador' no está presente en los datos recibidos:", data);
+      }
+      const friendId = data.idRetador;
+      const notificationEventMatch = new CustomEvent("newFriendMacthRequest", {
+        detail: { friendId: data.idRetador, mode: data.modo},
+      }); 
+       window.dispatchEvent(notificationEventMatch);
+    });
+
+
+    socket.on("friendRequest", (data) => {
+      console.log("🔔 Nueva solicitud de amistad:", data);
+      const friendId = data.idJugador;
+      const notificationEvent = new CustomEvent("newFriendRequest", {
+        detail: { friendId },
+      }); 
+       window.dispatchEvent(notificationEvent);
+    });
+  }
   return socket;
 };

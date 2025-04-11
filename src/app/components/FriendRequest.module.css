@@ -1,0 +1,45 @@
+/* En tu archivo CSS global o componente */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Oscurece el fondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Encima de todo */
+  }
+  
+  .modalBox {
+    background: #1b1b1b;
+    color:white;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .modalBox button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.2rem;
+    background: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .botones {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px; /* o usa margin directamente */
+  }
+  
+  
+  .modalBox button:hover {
+    background: #0070f3;
+  }
+  

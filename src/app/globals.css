@@ -16,6 +16,7 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 a {
@@ -38,3 +39,4 @@ a {
   border-radius: 10px;
   border: 2px solid white;
 }
+
