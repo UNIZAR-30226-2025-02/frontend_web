@@ -62,13 +62,7 @@ export default function FriendPage() {
         const currentUser = parsedUser.publicUser;
         
         setUser(currentUser);
-       // setFriends(currentUser.amistades || []);
-        /*setSuggestions([
-            {
-                id: "e7540325-1707-48e3-aa94-1355b7e3bf95",
-                name: "danisalas8",
-            }
-        ]);*/
+
         const fetchFriends = async () => {
             const userId = parsedUser?.publicUser?.id;
             console.log("Mi id es: ", userId);
@@ -150,7 +144,7 @@ useEffect(() => {
 }, [socket, user]);*/
 
     const filteredFriends = friends.filter(user =>
-        user.NombreUser.toLowerCase().includes(searchTerm.toLowerCase())
+        user.nombreAmigo.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const filteredSuggestions = suggestions.filter(user =>
@@ -242,11 +236,16 @@ useEffect(() => {
                     {filteredFriends.length > 0 && (
                         <div className={styles.section}>
                             <h3>Amigos</h3>
-                            {friends.map(user => (
+                            {filteredFriends.map(user => (
                                 <div key={user.id} className={styles.userCard}>
                                     <div className={styles.userInfo}>
-                                        <div className={styles.photo}>FOTO</div>
-                                        <span>{user.NombreUser}</span>
+                                        <div className={styles.photo}>
+                                                <img
+                                                src={`/fotosPerfilWebp/${user.fotoAmigo}` || "/default-avatar.png"}
+                                                alt={user.nombreAmigo}
+                                                className={styles.image}
+                                            /></div>
+                                        <span>{user.nombreAmigo}</span>
                                     </div>
                                     <div className={styles.actions}>
                                         <FaChessKnight
@@ -268,10 +267,15 @@ useEffect(() => {
                     {searchTerm && filteredSuggestions.length > 0 && (
                         <div className={styles.section}>
                             <h3>Sugerencias</h3>
-                            {suggestions.map(user => (
+                            {filteredSuggestions.map(user => (
                                 <div key={user.id} className={styles.userCard}>
                                     <div className={styles.userInfo}>
-                                        <div className={styles.photo}>FOTO</div>
+                                        <div className={styles.photo}>
+                                            <img
+                                            src={`/fotosPerfilWebp/${user.FotoPerfil}` || "/default-avatar.png"}
+                                            alt={user.NombreUser}
+                                            className={styles.image}
+                                        /></div>
                                         <span>{user.NombreUser}</span>
                                     </div>
                                     <div className={styles.actions}>
