@@ -23,6 +23,7 @@ export default function Profile() {
     const [newNombreUser, setNewNombreUser] = useState("");
     const [newFotoPerfil, setNewFotoPerfil] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
+    const [ultimasPartidas, setUltimasPartidas] = useState([]);
 
   // Cargar usuario desde localStorage solo una vez
   
@@ -182,7 +183,26 @@ export default function Profile() {
         }
     };
     
-
+    useEffect(() => {
+        const fetchUltimasPartidas = async () => {
+          if (!user?.id) return;
+      
+          try {
+            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUlt5PartidasDeUsuario?id=${user.id}`);
+            if (!response.ok) {
+              console.error("Error al obtener las últimas partidas");
+              return;
+            }
+            const data = await response.json();
+            setUltimasPartidas(data);
+          } catch (error) {
+            console.error("Error en fetchUltimasPartidas:", error);
+          }
+        };
+      
+        fetchUltimasPartidas();
+      }, [user]);
+      
 
     const generateRandomScoreData = () => {
         return Array.from({ length: 10 }, (_, i) => ({
@@ -191,22 +211,102 @@ export default function Profile() {
         }));
     };
 
-    const gameModes = [
+    /*const gameModes = [
         { icon: <FaChessPawn className={styles.scoreIcon} style={{ color: "#552003" }} />, name: "Clásica", data: generateRandomScoreData() },
         { icon: <FcApproval className={styles.scoreIcon} />, name: "Principiante", data: generateRandomScoreData() },
         { icon: <FcAlarmClock className={styles.scoreIcon} />, name: "Avanzado", data: generateRandomScoreData() },
         { icon: <FcFlashOn className={styles.scoreIcon} />, name: "Relámpago", data: generateRandomScoreData() },
         { icon: <FcBullish className={styles.scoreIcon} />, name: "Incremento", data: generateRandomScoreData() },
         { icon: <FcRating className={styles.scoreIcon} />, name: "Incremento Exprés", data: generateRandomScoreData() },
-    ];
+    ];*/
 
-    const matchHistory = [
+    /*const matchHistory = [
         { id: 1, mode: "Clásica", whitePlayer: "Jugador123", blackPlayer: "JugadorX", result: "win", moves: 22, date: "6 mar 2025" },
         { id: 2, mode: "Principiante", whitePlayer: "JugadorY", blackPlayer: "Jugador123", result: "lose", moves: 12, date: "17 feb 2025" },
         { id: 3, mode: "Relámpago", whitePlayer: "Jugador123", blackPlayer: "JugadorZ", result: "win", moves: 12, date: "12 feb 2025" },
         { id: 4, mode: "Incremento", whitePlayer: "JugadorA", blackPlayer: "Jugador123", result: "lose", moves: 42, date: "31 ene 2025" },
         { id: 5, mode: "Avanzado", whitePlayer: "Jugador123", blackPlayer: "JugadorB", result: "win", moves: 32, date: "4 sept 2024" },
-    ];
+    ];*/
+
+    /*const matchHistory = ultimasPartidas.map((partida, index) => ({
+        name: `P${index + 1}`,
+        score: partida.JugadorW === user.id ? partida.eloW : partida.eloB
+      }));*/
+
+      const modoMapeado = {
+        "Clásica": "Punt_10",
+        "Principiante": "Punt_30",
+        "Avanzado": "Punt_5",
+        "Relámpago": "Punt_3",
+        "Incremento": "Punt_5_10",
+        "Incremento exprés": "Punt_3_2"
+      };
+      const modoMapeadoReverse = Object.fromEntries(
+        Object.entries(modoMapeado).map(([front, back]) => [back, front])
+      );
+      
+      const iconsByMode = {
+        "Clásica": <FaChessPawn className={styles.scoreIcon} style={{ color: "#552003" }} />,
+        "Principiante": <FcApproval className={styles.scoreIcon} />,
+        "Avanzado": <FcAlarmClock className={styles.scoreIcon} />,
+        "Relámpago": <FcFlashOn className={styles.scoreIcon} />,
+        "Incremento": <FcBullish className={styles.scoreIcon} />,
+        "Incremento exprés": <FcRating className={styles.scoreIcon} />,
+      };
+      
+      const extraerElo = (pgn, userId) => {
+        if (!pgn) {
+            return { miElo: 1000, rivalElo: 0 };
+          }
+        const regexWhite = /\[White "(.*?)"\]/;
+        const regexWhiteElo = /\[White Elo "(.*?)"\]/;
+        const regexBlack = /\[Black "(.*?)"\]/;
+        const regexBlackElo = /\[Black Elo "(.*?)"\]/;
+      
+        const whiteId = pgn.match(regexWhite)?.[1];
+        const whiteElo = Math.round(parseFloat(pgn.match(regexWhiteElo)?.[1] || 0));
+      
+        const blackId = pgn.match(regexBlack)?.[1];
+        const blackElo = Math.round(parseFloat(pgn.match(regexBlackElo)?.[1] || 0));
+      
+        const esBlancas = userId === whiteId;
+      
+        return {
+          miElo: esBlancas ? whiteElo : blackElo,
+          rivalElo: esBlancas ? blackElo : whiteElo
+        };
+      };
+      
+    const modosUnicos = Object.keys(modoMapeado);
+
+    const gameModes = modosUnicos.map((modoFront) => {
+    const modoBack = modoMapeado[modoFront];
+
+    const partidasModo = ultimasPartidas.filter(p => p.Modo === modoBack);
+
+    const data = partidasModo.map((p, index) => {
+        const { miElo } = extraerElo(p.PGN, user.id);
+        console.log("Mi elo es: ", miElo);
+        return {
+        name: `P${index + 1}`,
+        score: miElo
+        };
+    });
+
+    return {
+        icon: iconsByMode[modoFront],
+        name: modoFront,
+        data: data.length > 0 
+            ? data 
+            : Array.from({ length: 5 }, (_, i) => ({
+                name: `P${i + 1}`,
+                score: 1000
+                }))
+        };
+    });
+
+
+
 
     const imagenesDisponibles = Array.from({ length: 33 }, (_, i) => `/fotosPerfilWebp/avatar_${i + 1}.webp`);
     return (
@@ -309,23 +409,24 @@ export default function Profile() {
 
 
             <div className={styles.scoresContainer}>
-                {gameModes.map((mode, index) => (
-                    <div key={index} className={styles.scoreBox}>
-                        {mode.icon}
-                        <p>{mode.name}</p>
-                        <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height={100}>
-                                <LineChart data={mode.data}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" hide />
-                                    <YAxis hide />
-                                    <Tooltip />
-                                    <Line type="monotone" dataKey="score" stroke="#00aaff" strokeWidth={2} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+            {gameModes.map((mode, index) => (
+                <div key={index} className={styles.scoreBox}>
+                    {mode.icon}
+                    <p>{mode.name}</p>
+                    <div className={styles.chartContainer}>
+                    <ResponsiveContainer width="100%" height={100}>
+                        <LineChart data={mode.data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" hide />
+                        <YAxis hide />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="score" stroke="#00aaff" strokeWidth={2} />
+                        </LineChart>
+                    </ResponsiveContainer>
                     </div>
+                </div>
                 ))}
+
             </div>
 
             <div className={styles.historyContainer}>
@@ -342,30 +443,31 @@ export default function Profile() {
                         </tr>
                     </thead>
                     <tbody>
-                        {matchHistory.map((match) => (
-                            <tr key={match.id}>
-                                <td className={styles.modeIcon}>
-                                    {gameModes.find(m => m.name === match.mode)?.icon}
-                                </td>
-                                <td className={styles.playersContainer}>
-                                    <div className={styles.playerRow}>
-                                        <span className={`${styles.colorIndicator} ${styles.whitePiece}`}></span>
-                                        <span>{match.whitePlayer}</span>
-                                    </div>
-                                    <div className={styles.playerRow}>
-                                        <span className={`${styles.colorIndicator} ${styles.blackPiece}`}></span>
-                                        <span>{match.blackPlayer}</span>
-                                    </div>
-                                </td>
-                                <td className={styles.result}>
-                                    {match.result === "win" ? "✅" : "❌"}
-                                </td>
-                                <td>{match.moves}</td>
-                                <td>{match.date}</td>
-                                <td><button className={styles.watchButton}>Ver Partida</button></td>
+                        {ultimasPartidas.map((match, index) => (
+                            <tr key={index}>
+                            <td className={styles.modeIcon} title={modoMapeadoReverse[match.Modo]}>
+                            {iconsByMode[modoMapeadoReverse[match.Modo]]}
+                            </td>
+                            <td className={styles.playersContainer}>
+                                <div className={styles.playerRow}>
+                                <span className={`${styles.colorIndicator} ${styles.whitePiece}`}></span>
+                                <span>{match.NombreW}</span>
+                                </div>
+                                <div className={styles.playerRow}>
+                                <span className={`${styles.colorIndicator} ${styles.blackPiece}`}></span>
+                                <span>{match.NombreB}</span>
+                                </div>
+                            </td>
+                            <td className={styles.result}>
+                                {match.Ganador === user.id ? '✅' : '❌'}
+                            </td>
+                            <td>{match.movimientos}</td>
+                            <td>{new Date(match.created_at).toLocaleDateString()}</td>
+                            <td><button className={styles.watchButton}>Ver Partida</button></td>
                             </tr>
                         ))}
-                    </tbody>
+                        </tbody>
+
                 </table>
             </div>
         </div>

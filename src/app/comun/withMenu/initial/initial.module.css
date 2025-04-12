@@ -82,16 +82,26 @@
 
 
 .rachaCount {
-  margin-left: 380px;
-  margin-right: 10px;
   font-size: 32px;
   font-weight: bold;
+}
+
+.textWithCount {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* espacio entre "Tu racha" y el número */
 }
 
 .checks {
   display: flex;
   font-size: 32px;
-  gap: 5px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.resultIcon {
+  font-size: 38px;  /* tamaño de los ticks o cruces */
+  color: #ff4d6d;   /* color de las X */
 }
 
 .mode {

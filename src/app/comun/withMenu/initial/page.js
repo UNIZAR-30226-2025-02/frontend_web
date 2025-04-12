@@ -18,6 +18,8 @@ export default function InitialPage() {
     const [token, setToken] = useState(null);
     const [socket, setSocket] = useState(null);
     const [racha, setRacha] = useState(null);
+    const [ultimasPartidas, setUltimasPartidas] = useState([]);
+
     // Cargar usuario desde localStorage solo una vez
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -94,7 +96,26 @@ export default function InitialPage() {
             fetchUserInfo();
         }, [user]);
    
-
+        useEffect(() => {
+            const fetchUltimasPartidas = async () => {
+              if (!user?.id) return;
+          
+              try {
+                const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUlt5PartidasDeUsuario?id=${user.id}`);
+                if (!response.ok) {
+                  console.error("Error al obtener las últimas partidas");
+                  return;
+                }
+                const data = await response.json();
+                setUltimasPartidas(data);
+              } catch (error) {
+                console.error("Error en fetchUltimasPartidas:", error);
+              }
+            };
+          
+            fetchUltimasPartidas();
+          }, [user]);
+          
     // Función para buscar partida
     const handleSearchGame = async (tipoPartida) => {
         if (!socket) return; // Asegurarse de que el socket esté conectado
@@ -212,10 +233,20 @@ export default function InitialPage() {
                     <div className={styles.cardRacha}>
                         <div className={styles.racha}>
                             <FaFire className={styles.shield} style={{ color: '#ff8000' }} />
-                            <span className={styles.text}>Tu racha</span>
-                            <span className={styles.rachaCount}>{racha || 0}</span>
-                            <div className={styles.checks}>  
+                            <div className={styles.textWithCount}>
+                                <span className={styles.text}>Tu racha</span>
+                                <span className={styles.rachaCount}>{racha || 0}</span>
                             </div>
+                        </div>
+                        <div className={styles.checks}>  
+                                {ultimasPartidas.map((partida, index) => {
+                                const victoria = (partida.Ganador === user.id);
+                                return (
+                                    <span key={index} className={styles.resultIcon}>
+                                    {victoria ? '✅' : '❌'}
+                                    </span>
+                                );
+                                })}
                         </div>
                     </div>
                 )}
