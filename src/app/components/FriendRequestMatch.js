@@ -37,7 +37,6 @@ export default function FriendRequestMatch() {
     useEffect(() => {
       // Verificamos si hay datos en localStorage antes de intentar parsearlos
       const storedUserData = localStorage.getItem("userData");
-      console.log("El usuario del perfil es: ", storedUserData);
       if (storedUserData) {
           const parsedUser = JSON.parse(storedUserData);
           const currentUser = parsedUser.publicUser;

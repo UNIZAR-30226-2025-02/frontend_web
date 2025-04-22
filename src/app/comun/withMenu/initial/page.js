@@ -40,7 +40,6 @@ export default function InitialPage() {
           };
         }
       }, []);
-      console.log("Usuario desde localStorage:", user);
       // Cargar usuario desde localStorage solo una vez
       useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -56,7 +55,6 @@ export default function InitialPage() {
         useEffect(() => {
             const fetchUserInfo = async () => {
                 const storedUserData = localStorage.getItem("userData");
-
                 if (!storedUserData) {
                     console.log("No hay userData en localStorage");
                     return;
@@ -71,6 +69,7 @@ export default function InitialPage() {
                 }
 
                 try {
+                    //console.log("Voy a buscar info del usuario con id: ", userId);
                     const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
                         method: "GET",
                         headers: {
@@ -78,12 +77,13 @@ export default function InitialPage() {
                         },
                     });
 
+                    const data = await response.json();
+
                     if (!response.ok) {
-                        console.error("Error al obtener info del usuario");
+                        console.error("Error al obtener info del usuario: ", data);
                         return;
                     }
-
-                    const data = await response.json();
+                    
                     setUser(data); // ya te devuelve publicUser directamente
                     setRacha(data.actualStreak);
                     localStorage.setItem("userData", JSON.stringify({ publicUser: data }));
@@ -120,6 +120,7 @@ export default function InitialPage() {
     const handleSearchGame = async (tipoPartida) => {
         if (!socket) return; // Asegurarse de que el socket esté conectado
         setSearching(true);
+        console.log("🔍 Buscando partida cuando el usuario es: ", user);
         const dataToSend = { 
             idJugador: user?.id, 
             mode: tipoPartida
@@ -150,7 +151,7 @@ export default function InitialPage() {
                 console.error("❌ No se recibió información válida de colores.");
                 return;
             }
-
+            
             const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
             console.log("Mi id es: ",user.id, "y jugador.id es: ", jugadorActual.id);
             const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
@@ -168,10 +169,12 @@ export default function InitialPage() {
                 localStorage.setItem("eloRival", jugadorRival.eloW);
                 localStorage.setItem("nombreRival", jugadorRival.nombreW);
                 localStorage.setItem("eloJug", jugadorActual.eloB);
+                localStorage.setItem("fotoRival", jugadorRival.fotoBlancas);
             } else {
                 localStorage.setItem("eloRival", jugadorRival.eloB);
                 localStorage.setItem("nombreRival", jugadorRival.nombreB);
                 localStorage.setItem("eloJug", jugadorActual.eloW);
+                localStorage.setItem("fotoRival", jugadorRival.fotoNegras);
             }
             localStorage.setItem("idPartida", idPartidaCopy);
             router.push(`/comun/game?id=${idPartidaCopy}`);
@@ -218,7 +221,6 @@ export default function InitialPage() {
             {user ? (
                 <div className={styles.welcomeMessage}>
                     {/* Log para verificar si el nombre del usuario está presente */}
-                    {console.log("Nombre del usuario:", user.NombreUser)}
                     <h2>Bienvenido, {user.NombreUser}!</h2>
                 </div>
             ) : (
@@ -241,9 +243,10 @@ export default function InitialPage() {
                         <div className={styles.checks}>  
                                 {ultimasPartidas.map((partida, index) => {
                                 const victoria = (partida.Ganador === user.id);
+                                const derrota = (partida.Ganador !== user.id && partida.Ganador !== null);
                                 return (
                                     <span key={index} className={styles.resultIcon}>
-                                    {victoria ? '✅' : '❌'}
+                                    {victoria ? '✅' : derrota ? '❌' : '➖'}
                                     </span>
                                 );
                                 })}

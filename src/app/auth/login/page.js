@@ -49,6 +49,8 @@ export default function LoginPage() {
             // Guardar el token en localStorage
           localStorage.setItem("authToken", token);
           localStorage.setItem("userData", JSON.stringify(data));
+          localStorage.removeItem("soyInvitado");
+          console.log("😭Datos del usuario guardados en localStorage:", data);
           const socket = getSocket(token);
           socket.on('existing-game', (data) => {
             console.log('Este usuario estaba jugando una partida');
@@ -59,7 +61,8 @@ export default function LoginPage() {
             localStorage.setItem("idPartida",data.gameID);
             localStorage.setItem("eloJug", data.miElo);
             localStorage.setItem("eloRival", data.eloRival);  
-            localStorage.setItem("nombreRival", data.nombreRival);                          
+            localStorage.setItem("nombreRival", data.nombreRival);    
+            localStorage.setItem("fotoRival", data.foto_rival);
             router.push(`/comun/game?id=${data.gameID}`);
           }) 
           router.push("/comun/withMenu/initial");

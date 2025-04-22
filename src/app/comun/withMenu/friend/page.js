@@ -27,6 +27,9 @@ export default function FriendPage() {
     const [suggestions, setSuggestions] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedRival, setSelectedRival] = useState(null);
+    const [selectedFriend, setSelectedFriend] = useState(null);
+    const [showPreview, setShowPreview] = useState(null);
+    const [showPreviewAdd, setShowPreviewAdd] = useState(null);
     const [selectedMode, setSelectedMode] = useState("Clásica");
 
 
@@ -112,7 +115,7 @@ useEffect(() => {
 
             // Filtrar para no mostrar a uno mismo ni a amigos
             const filtered = data.filter(u =>
-                u.id !== user.id && !friends.find(f => f.id === u.id)
+                !Array.isArray(friends) || !friends.find(f => f.id === u.id)
             );
 
             setSuggestions(filtered);
@@ -143,31 +146,55 @@ useEffect(() => {
     }
 }, [socket, user]);*/
 
-    const filteredFriends = friends.filter(user =>
+    const filteredFriends = Array.isArray(friends)
+    ? friends.filter(user =>
         user.nombreAmigo.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    )
+    : [];
+
 
     const filteredSuggestions = suggestions.filter(user =>
         user.NombreUser.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
 
-    const handleAddFriend = (idAmigo) => {
+    const handleAddFriend = () => {
+        console.log("💩 Voy a agregar al amigo", selectedFriend.id);
         if (socket && user) {
             socket.emit("add-friend", {
                 idJugador: user.id,
-                idAmigo,
+                idAmigo: selectedFriend.id,
             });
         }
+        setShowPreviewAdd(false);
+        setSelectedFriend(null);
     };
 
-    const handleRemoveFriend = (idAmigo) => {
+    const handleRemoveFriend = () => {
+        console.log("💩 Voy a eliminar al amigo", selectedFriend.amigoId);
         if (socket && user) {
             socket.emit("remove-friend", {
                 idJugador: user.id,
-                idAmigo,
+                idAmigo : selectedFriend.amigoId,
             });
         }
+        setShowPreview(false);
+        setSelectedFriend(null);
+        /*setTimeout(() => {
+            window.location.reload();
+        }, 1000);*/
+    };
+
+    const handleRemoveFriendPreview = (rival) => {
+        console.log("🧙‍♂️ El amigo seleccionado para eliminar es: ", rival);
+        setSelectedFriend(rival);
+        setShowPreview(true);
+    };
+
+    const handleAddFriendPreview = (rival) => {
+        console.log("🧙‍♂️ El usuario seleccionado para añadir es: ", rival);
+        setSelectedFriend(rival);
+        setShowPreviewAdd(true);
     };
 
     const handleChallenge = (rival) => {
@@ -176,10 +203,11 @@ useEffect(() => {
     };
 
     const confirmChallenge = () => {
+        console.log("🧙‍♂️ El rival seleccionado es: ", selectedRival);
         if (socket && user && selectedRival) {
             socket.emit("challenge-friend", {
                 idRetador: user.id,
-                idRetado: selectedRival.id,
+                idRetado: selectedRival,
                 modo: modoMapeado[selectedMode],
             });
         }
@@ -188,6 +216,16 @@ useEffect(() => {
         setSelectedMode("Punt_10");
     };
     
+    
+    const cancelElimination = () => {
+        setShowPreview(false);
+        setSelectedFriend(null);
+    };
+
+    const cancelSolicitud = () => {
+        setShowPreviewAdd(false);
+        setSelectedFriend(null);
+    };
 
     const cancelChallenge = () => {
         setShowModal(false);
@@ -237,7 +275,7 @@ useEffect(() => {
                         <div className={styles.section}>
                             <h3>Amigos</h3>
                             {filteredFriends.map(user => (
-                                <div key={user.id} className={styles.userCard}>
+                                <div key={user.amigoId} className={styles.userCard}>
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>
                                                 <img
@@ -251,12 +289,12 @@ useEffect(() => {
                                         <FaChessKnight
                                             className={styles.iconActionCaballo}
                                             title="Desafiar a partida"
-                                            onClick={() => handleChallenge(user.id)}
+                                            onClick={() => handleChallenge(user)}
                                         />
                                         <FaUserMinus
                                             className={styles.iconActionNoAmigo}
                                             title="Eliminar amigo"
-                                            onClick={() => handleRemoveFriend(user.id)}
+                                            onClick={() => handleRemoveFriendPreview(user)}
                                         />
                                     </div>
                                 </div>
@@ -287,7 +325,7 @@ useEffect(() => {
                                         <FaUserPlus
                                             className={styles.iconActionNewAmigo}
                                             title="Agregar amigo"
-                                            onClick={() => handleAddFriend(user.id)}
+                                            onClick={() => handleAddFriendPreview(user)}
                                         />
                                     </div>
                                 </div>
@@ -298,7 +336,7 @@ useEffect(() => {
                 {showModal && selectedRival && (
                     <div className={styles.modalOverlay}>
                         <div className={styles.modal}>
-                            <p>Selecciona el modo de juego para retar a <strong>{selectedRival.name}</strong>:</p>
+                            <p>Selecciona el modo de juego para retar a <strong>{selectedRival.nombreAmigo}</strong>:</p>
 
                             <div className={styles.modeSelector}>
                                 {modosDeJuego.map((modo) => (
@@ -315,6 +353,30 @@ useEffect(() => {
                             <div className={styles.modalButtons}>
                                 <button onClick={confirmChallenge} className={styles.btnConfirm}>Retar</button>
                                 <button onClick={cancelChallenge} className={styles.btnCancel}>Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showPreview && selectedFriend && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modal}>
+                            <p>Estas seguro de que quieres eliminar de amigos a <strong>{selectedFriend.nombreAmigo}</strong>?</p>
+                            <div className={styles.modalButtons}>
+                                <button onClick={handleRemoveFriend} className={styles.btnConfirm}>Eliminar</button>
+                                <button onClick={cancelElimination} className={styles.btnCancel}>Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showPreviewAdd && selectedFriend && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modal}>
+                            <p>Quieres enviar solicitud de amistad a <strong>{selectedFriend.NombreUser}</strong>?</p>
+                            <div className={styles.modalButtons}>
+                                <button onClick={handleAddFriend} className={styles.btnConfirm}>Enviar</button>
+                                <button onClick={cancelSolicitud} className={styles.btnCancel}>Cancelar</button>
                             </div>
                         </div>
                     </div>

@@ -18,16 +18,21 @@ export default function Menu() {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [invitado, setInvitado] = useState(null);
+
+  useEffect(() => {
+    const storedInvitado = localStorage.getItem("soyInvitado");
+    setInvitado(storedInvitado);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 1000);
     };
-
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [window.innerWidth]);
+  }, []);
 
   const renderLinks = () => (
     <ul className={styles.menu}>
@@ -47,10 +52,10 @@ export default function Menu() {
         </Link>
       </li>
       <li>
-        <Link
-            href="/comun/withMenu/friend"
+        <Link 
+            href={invitado ? "/auth/login" : "/comun/withMenu/friend"}
             className={`${styles.menuItem} ${
-              pathname === "/comun/withMenu/friend" ? styles.active : ""
+              pathname === "/comun/withMenu/friend" && !invitado ? styles.active : ""
             }`}
         >
           <FcConferenceCall className={styles.icon} /> Social

@@ -7,14 +7,16 @@ import { VscAccount } from "react-icons/vsc";
 
 export default function Header() {
   const [user, setUser] = useState(null);
-
+  const [invitado, setInvitado] = useState(null);
   // Cargar usuario desde localStorage solo una vez
   useEffect(() => {
       // Verificamos si hay datos en localStorage antes de intentar parsearlos
       const storedUserData = localStorage.getItem("userData");
+      const storedInvitado = localStorage.getItem("soyInvitado");
       if (storedUserData) {
           const parsedUser = JSON.parse(storedUserData);
           setUser(parsedUser.publicUser);
+          setInvitado(storedInvitado);
       } else {
           console.log("No se encontraron datos de usuario en localStorage.");
       }
@@ -37,18 +39,18 @@ export default function Header() {
 
       {/* Perfil a la derecha */}
       <div className={styles.profile}>
-      {user ? (
+      {invitado === null ? (
                     <Link href="/comun/withMenu/profile" className={styles.userProfile}>
                         <img 
-                            src={`/fotosPerfilWebp/${user.FotoPerfil}`}
+                            src={`/fotosPerfilWebp/${user?.FotoPerfil}`}
                             alt="Avatar" 
                             className={styles.userAvatar} 
                         />
-                        <span className={styles.userName}>{user.NombreUser}</span>
+                        <span className={styles.userName}>{user?.NombreUser}</span>
                     </Link>
                 ) : (
                     <Link href="/auth/login">
-                        <VscAccount className={styles.iconProfile} style={{ fontSize: '44px' }} />
+                        <VscAccount className={styles.iconProfile} style={{ fontSize: '55px' }} />
                     </Link>
                 )}
       </div>

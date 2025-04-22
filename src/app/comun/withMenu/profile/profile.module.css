@@ -25,7 +25,7 @@
 
 /* 🔹 Botón Editar arriba a la derecha */
 .editButton {
-    background: #007bff;
+    background: #3E76DF;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -92,7 +92,7 @@
     padding-left: 40px;
     font-size: 30px;
     font-weight: bold;
-    color: #00aaff;
+    color: #3E76DF;
     margin-bottom: 10px;
 }
 
@@ -218,7 +218,7 @@
     background: #222;
     padding: 10px;
     color: white;
-    border-bottom: 2px solid #00aaff;
+    border-bottom: 2px solid #3E76DF;
 }
 
 /* 🔹 Filas de la tabla */
@@ -281,7 +281,7 @@
 
 /* 🔹 Botón para ver la partida */
 .watchButton {
-    background: #007bff;
+    background: #3E76DF;
     color: white;
     padding: 5px 10px;
     border: none;
@@ -370,7 +370,7 @@
 }
 
 .editProfileBox h3 {
-    color: #00aaff;
+    color: #3E76DF;
     font-size: 24px;
     margin-bottom: 20px;
     text-align: center;
@@ -466,8 +466,8 @@
 }
 
 .avatarSelected {
-    border: 2px solid #00aaff;
-    box-shadow: 0 0 10px #00aaff;
+    border: 2px solid #3E76DF;
+    box-shadow: 0 0 10px #3E76DF;
 }
 
 .profileImage {
@@ -475,4 +475,10 @@
     height: 180px;
     object-fit: cover;
     border-radius: 10px;
+}
+
+/* 🔹 Estilo para el jugador que coincide con el usuario actual */
+.highlightedPlayer {
+    color: #3E76DF;
+    font-weight: bold;
 }
