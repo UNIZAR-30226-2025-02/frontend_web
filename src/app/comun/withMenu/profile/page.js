@@ -294,33 +294,58 @@ export default function Profile() {
       return { nombreBlancas, nombreNegras };
     };
       
-      const extraerElo = (pgn, userId) => {
+    const extraerElo = (pgn, userId, match) => {
         if (!pgn) {
-            return { miElo: 1000, rivalElo: 0 };
-          }
-        const regexWhite = /\[White "(.*?)"\]/;
-        const regexWhiteElo = /\[White Elo "(.*?)"\]/;
-        const regexBlack = /\[Black "(.*?)"\]/;
-        const regexBlackElo = /\[Black Elo "(.*?)"\]/;
-        const regexWhiteAlias = /\[White Alias "(.*?)"\]/;
-        const regexBlackAlias = /\[Black Alias "(.*?)"\]/;
-
-        const nombreBlancas = pgn.match(regexWhiteAlias)?.[1] || "Desconocido";
-        const nombreNegras = pgn.match(regexBlackAlias)?.[1] || "Desconocido";
-
-        const whiteId = pgn.match(regexWhite)?.[1];
-        const whiteElo = Math.round(parseFloat(pgn.match(regexWhiteElo)?.[1] || 0));
+          return { miElo: 1000, rivalElo: 0 };
+        }
       
-        const blackId = pgn.match(regexBlack)?.[1];
-        const blackElo = Math.round(parseFloat(pgn.match(regexBlackElo)?.[1] || 0));
+        const getTag = (tag) => {
+          const matchResult = pgn.match(new RegExp(`\\[${tag} "(.*?)"\\]`));
+          return matchResult?.[1] || "";
+        };
       
-        const esBlancas = userId === whiteId;
+        const whiteId = getTag("White");
+        const blackId = getTag("Black");
+        const whiteAlias = getTag("White Alias");
+        const blackAlias = getTag("Black Alias");
       
+        const whiteElo = Math.round(parseFloat(getTag("White Elo") || 0));
+        const blackElo = Math.round(parseFloat(getTag("Black Elo") || 0));
+      
+        const esBlancas = [whiteId, whiteAlias].includes(userId);
+      
+        const miEloBase = esBlancas ? whiteElo : blackElo;
+        const variacion = esBlancas ? match?.Variacion_JW : match?.Variacion_JB;
+        
+        const miElo = miEloBase + (parseFloat(variacion) || 0);
+        const rivalElo = esBlancas ? blackElo : whiteElo;
+      
+        console.log("Mi Elo es: ", miElo);
         return {
-          miElo: esBlancas ? whiteElo : blackElo,
-          rivalElo: esBlancas ? blackElo : whiteElo
+          miElo: Math.round(miElo),
+          rivalElo
         };
       };
+      
+      const extraerVariacion = (userId, match) => {
+        if (!userId || !match) return 0;
+        console.log("El jugador blancas es: ", match.JugadorB);
+        const esBlancas = match.JugadorB === userId;
+        const variacion = esBlancas ? match.Variacion_JB : match.Variacion_JW;
+      
+        return Math.round(parseFloat(variacion) || 0);
+      };
+      
+      const contarJugadas = (pgn) => {
+        if (!pgn) return 0;
+        const partes = pgn.split("\n\n");
+        const movimientosRaw = partes[1]?.trim();
+        if (!movimientosRaw) return 0;
+        const regexTurnos = /\d+\./g;
+        const turnos = movimientosRaw.match(regexTurnos);
+        return turnos ? turnos.length : 0;
+      };
+      
       
       const modosUnicos = Object.keys(modoMapeado);
 
@@ -338,23 +363,28 @@ export default function Profile() {
         
         const partidasModo = partidasPorModo[modoBack] || [];
         
-        const data = partidasModo.map((p, index) => {
-            const { miElo } = extraerElo(p.PGN, user.id);
+        let data = partidasModo.map((p, index) => {
+            const { miElo } = extraerElo(p.PGN, user.id, p);
             return {
             name: `P${index + 1}`,
             score: miElo
             };
         });
         
+            // Si solo hay una partida, agregamos un punto inicial con score 1000, ya que se inicia en 1000 puntos
+            if (data.length >= 1 && data.length <= 4) {
+                data = [
+                    ...data,
+                { name: "P0", score: 1000 }
+                ];
+            }
+
         return {
             icon: iconsByMode[modoFront],
             name: modoFront,
             data: data.length > 0
             ? data
-            : Array.from({ length: 5 }, (_, i) => ({
-                name: `P${i + 1}`,
-                score: 1000
-                }))
+            : [{ name: "P1", score: 1000 }]
         };
         });      
 
@@ -488,7 +518,7 @@ export default function Profile() {
                             <th>Modo</th>
                             <th>Jugadores</th>
                             <th>Resultado</th>
-                            <th>Movimientos</th>
+                            <th>Jugadas</th>
                             <th>Fecha</th>
                             <th>Resumen</th>
                         </tr>
@@ -496,6 +526,10 @@ export default function Profile() {
                     <tbody>
                         {ultimasPartidas.map((match, index) => {
                             const { nombreBlancas, nombreNegras } = extraerNombres(match.PGN);
+                            const whiteElo = match.PGN.match(/\[White Elo "(.*?)"\]/)?.[1];
+                            const blackElo = match.PGN.match(/\[Black Elo "(.*?)"\]/)?.[1];
+                            const finalWhiteElo = Math.round((parseFloat(whiteElo) || 0));
+                            const finalBlackElo = Math.round((parseFloat(blackElo) || 0));
                             return (
                                 <tr key={index}>
                                     <td className={styles.modeIcon} title={modoMapeadoReverse[match.Modo]}>
@@ -504,17 +538,22 @@ export default function Profile() {
                                     <td className={styles.playersContainer}>
                                         <div className={`${styles.playerRow} ${nombreBlancas === user?.NombreUser ? styles.highlightedPlayer : ''}`}>
                                             <span className={`${styles.colorIndicator} ${styles.whitePiece}`}></span>
-                                            <span>{nombreBlancas}</span>
+                                            <span>{nombreBlancas} ({finalWhiteElo})</span>
                                         </div>
                                         <div className={`${styles.playerRow} ${nombreNegras === user?.NombreUser ? styles.highlightedPlayer : ''}`}>
                                             <span className={`${styles.colorIndicator} ${styles.blackPiece}`}></span>
-                                            <span>{nombreNegras}</span>
+                                            <span>{nombreNegras} ({finalBlackElo})</span>
                                         </div>
                                     </td>
                                     <td className={styles.result}>
                                         {match.Ganador === null ? '🤝' : match.Ganador === user.id ? '✅' : '❌'}
+                                        {" "}
+                                        <span sclassName={styles.variacionPunt}>
+                                            ({extraerVariacion(user.id, match) >= 0 ? "+" : ""}
+                                            {extraerVariacion(user.id, match)})
+                                        </span>
                                     </td>
-                                    <td>{match.movimientos}</td>
+                                    <td>{contarJugadas(match.PGN)}</td>
                                     <td>{new Date(match.created_at).toLocaleDateString()}</td>
                                     <td><button className={styles.watchButton}>Ver Partida</button></td>
                                 </tr>
