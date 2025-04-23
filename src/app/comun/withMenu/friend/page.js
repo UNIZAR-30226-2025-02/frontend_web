@@ -91,13 +91,36 @@ export default function FriendPage() {
     }
   }, []);
 
- /* useEffect(() => {
+  useEffect(() => {
     if (user) {
-        
+        if (!user) {
+          console.log("❌ No hay usuario aún. Esperando...");
+          return;
+        }
+    
+        console.log("🟢 Usuario detectado:", user);
+    
+        if (!socket) {
+            console.error("❌ ERROR: socket no está definido.");
+            return;
+        }
+        socket.on("friendRequestAccepted", (data) => {
+            console.log("Solicitud de amistad aceptada:", data);
+            window.location.reload();
+        });
 
-        
+        socket.on("friendRemoved", (data) => {
+            console.log("Amigo eliminado:", data);
+            window.location.reload();
+        });
+
+        return () => {
+            socket.off("friendRequestAccepted");
+            socket.off("friendRemoved");
+        }; 
     }
-}, [user]);*/
+}, [user]);
+
 useEffect(() => {
     const fetchSuggestions = async () => {
         if (!searchTerm) {
@@ -129,18 +152,18 @@ useEffect(() => {
 
 }, [searchTerm, user, friends]);  // dependencias necesarias
 
-useEffect(() => {
+/*useEffect(() => {
     if (socket) {
         socket.on("friendRequestAccepted", (data) => {
-            console.log("Solicitud de amistad aceptada:", data);
-        window.location.reload();
+        console.log("Solicitud de amistad aceptada:", data);
+        //window.location.reload();
     });
 
         return () => {
             socket.off("friendRequestAccepted");
         };
     }
-}, [socket]);
+}, [socket]);*/
 
 
   // Pedir amigos y usuarios al backend una vez tengamos el user

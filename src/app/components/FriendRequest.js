@@ -63,8 +63,8 @@ export default function FriendRequest() {
 
   const handleAceptar = () => {
     setShow(false);
-    socket.emit("accept-request", { idJugador: user.id , idAmigo: friend });
-    //window.location.reload();
+    socket.emit("accept-request", { idJugador: friend , idAmigo: user.id });
+    window.location.reload();
   };
 
   const handleRechazar = () => {

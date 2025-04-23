@@ -79,7 +79,7 @@ export default function RankingPage() {
                     {jugador.rank}º
                   </span>
                   <span className={styles.name}>{jugador.nombre}</span>
-                  <span className={styles.score}>{Math.round(jugador.puntuacion)}</span>
+                  <span className={styles.score}>{Math.round(jugador.puntuacion)} pts</span>
                 </div>
               ))}
             </div>
@@ -95,7 +95,7 @@ export default function RankingPage() {
                   <span className={styles.userName}>{userRankings[id].nombre}</span>
                   <div>
                     <span className={styles.userPos}>#{userRankings[id].rank}</span>
-                    <span className={styles.userScore}>{Math.round(userRankings[id].puntuacion)}</span>
+                    <span className={styles.userScore}>{Math.round(userRankings[id].puntuacion)} pts</span>
                   </div>
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function RankingPage() {
                     {jugador.rank}º
                   </span>
                   <span className={styles.name}>{jugador.nombre}</span>
-                  <span className={styles.score}>{Math.round(jugador.puntuacion)}</span>
+                  <span className={styles.score}>{Math.round(jugador.puntuacion)} pts</span>
                 </div>
               ))}
             </div>
