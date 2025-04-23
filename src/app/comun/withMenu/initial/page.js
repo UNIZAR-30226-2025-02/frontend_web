@@ -198,19 +198,19 @@ export default function InitialPage() {
 
     // Descripciones de los modos de juego
     const descriptions = {
-        "Clásica": "Modo tradicional de ajedrez. Cada jugador consta de 10 min para realizar sus movimientos.",
-        "Principiante": "Ideal para quienes están aprendiendo. Cada jugador consta de 30 min para realizar sus movimientos.",
-        "Avanzado": "Para jugadores experimentados. Cada jugador consta de 5 min para realizar sus movimientos.",
-        "Relámpago": "Modo para expertos. El tiempo es muy limitado, cada jugador cuenta con 3 minutos.",
+        "Rápida": "Modo tradicional de ajedrez. Cada jugador consta de 10 min para realizar sus movimientos.",
+        "Clásica": "Ideal para quienes están aprendiendo. Cada jugador consta de 30 min para realizar sus movimientos.",
+        "Blitz": "Para jugadores experimentados. Cada jugador consta de 5 min para realizar sus movimientos.",
+        "Bullet": "Modo para expertos. El tiempo es muy limitado, cada jugador cuenta con 3 minutos.",
         "Incremento": "El tiempo aumenta 5 seg con cada jugada, partiendo de 10 min iniciales.",
         "Incremento exprés": "Versión rápida del incremento. Partiendo de 3 + 2 seg por jugada."
     };
 
     const icons = {
-        "Clásica": <FaChessPawn className={styles.icon} style={{ color: '#552003' }} />,
-        "Principiante": <FcApproval className={styles.icon} />,
-        "Avanzado": <FcAlarmClock className={styles.icon} />,
-        "Relámpago": <FcFlashOn className={styles.icon} />,
+        "Rápida": <FaChessPawn className={styles.icon} style={{ color: '#552003' }} />,
+        "Clásica": <FcApproval className={styles.icon} />,
+        "Blitz": <FcAlarmClock className={styles.icon} />,
+        "Bullet": <FcFlashOn className={styles.icon} />,
         "Incremento": <FcBullish className={styles.icon} />,
         "Incremento exprés": <FcRating className={styles.icon} />
     };
@@ -254,7 +254,7 @@ export default function InitialPage() {
                     </div>
                 )}
 
-                {['Clásica', 'Principiante', 'Avanzado', 'Relámpago', 'Incremento', 'Incremento exprés'].map((mode, index) => (
+                {['Rápida', 'Clásica', 'Blitz', 'Bullet', 'Incremento', 'Incremento exprés'].map((mode, index) => (
                     <div key={index} className={styles.card}>
                         <div className={styles.mode}>
                             {/* Icono */}

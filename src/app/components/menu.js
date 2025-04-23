@@ -47,7 +47,7 @@ export default function Menu() {
         </Link>
       </li>
       <li>
-        <Link href="/perfil" className={styles.menuItem}>
+        <Link href="/comun/withMenu/ranking" className={styles.menuItem}>
           <IoMdTrophy className={styles.icon} style={{ color: "gold" }} /> Ranking
         </Link>
       </li>

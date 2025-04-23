@@ -261,24 +261,24 @@ export default function Profile() {
     };
 
       const modoMapeado = {
-        "Clásica": "Punt_10",
-        "Principiante": "Punt_30",
-        "Avanzado": "Punt_5",
-        "Relámpago": "Punt_3",
+        "Rápida": "Punt_10",
+        "Clásica": "Punt_30",
+        "Blitz": "Punt_5",
+        "Bullet": "Punt_3",
         "Incremento": "Punt_5_10",
-        "Incremento exprés": "Punt_3_2"
+        "Incremento Exprés": "Punt_3_2"
       };
       const modoMapeadoReverse = Object.fromEntries(
         Object.entries(modoMapeado).map(([front, back]) => [back, front])
       );
       
       const iconsByMode = {
-        "Clásica": <FaChessPawn className={styles.scoreIcon} style={{ color: "#552003" }} />,
-        "Principiante": <FcApproval className={styles.scoreIcon} />,
-        "Avanzado": <FcAlarmClock className={styles.scoreIcon} />,
-        "Relámpago": <FcFlashOn className={styles.scoreIcon} />,
+        "Rápida": <FaChessPawn className={styles.scoreIcon} style={{ color: "#552003" }} />,
+        "Clásica": <FcApproval className={styles.scoreIcon} />,
+        "Blitz": <FcAlarmClock className={styles.scoreIcon} />,
+        "Bullet": <FcFlashOn className={styles.scoreIcon} />,
         "Incremento": <FcBullish className={styles.scoreIcon} />,
-        "Incremento exprés": <FcRating className={styles.scoreIcon} />,
+        "Incremento Exprés": <FcRating className={styles.scoreIcon} />,
       };
 
     const extraerNombres = (pgn) => {
@@ -548,7 +548,7 @@ export default function Profile() {
                                     <td className={styles.result}>
                                         {match.Ganador === null ? '🤝' : match.Ganador === user.id ? '✅' : '❌'}
                                         {" "}
-                                        <span sclassName={styles.variacionPunt}>
+                                        <span className={styles.variacionPunt}>
                                             ({extraerVariacion(user.id, match) >= 0 ? "+" : ""}
                                             {extraerVariacion(user.id, match)})
                                         </span>

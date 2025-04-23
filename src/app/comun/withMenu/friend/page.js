@@ -129,6 +129,19 @@ useEffect(() => {
 
 }, [searchTerm, user, friends]);  // dependencias necesarias
 
+useEffect(() => {
+    if (socket) {
+        socket.on("friendRequestAccepted", (data) => {
+            console.log("Solicitud de amistad aceptada:", data);
+        window.location.reload();
+    });
+
+        return () => {
+            socket.off("friendRequestAccepted");
+        };
+    }
+}, [socket]);
+
 
   // Pedir amigos y usuarios al backend una vez tengamos el user
   /*useEffect(() => {
@@ -180,9 +193,9 @@ useEffect(() => {
         }
         setShowPreview(false);
         setSelectedFriend(null);
-        /*setTimeout(() => {
+        setTimeout(() => {
             window.location.reload();
-        }, 1000);*/
+        }, 1000);
     };
 
     const handleRemoveFriendPreview = (rival) => {
