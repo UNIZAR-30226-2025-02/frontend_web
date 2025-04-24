@@ -269,19 +269,19 @@ useEffect(() => {
     };
     
     const modoMapeado = {
-        "Clásica": "Punt_10",
-        "Principiante": "Punt_30",
-        "Avanzado": "Punt_5",
-        "Relámpago": "Punt_3",
+        "Rápida": "Punt_10",
+        "Clásica": "Punt_30",
+        "Blitz": "Punt_5",
+        "Bullet": "Punt_3",
         "Incremento": "Punt_5_10",
         "Incremento exprés": "Punt_3_2"
     };
     
     const icons = {
-        "Clásica": <FaChessPawn className={styles.icon} style={{ color: '#552003' }} />,
-        "Principiante": <FcApproval className={styles.icon} />,
-        "Avanzado": <FcAlarmClock className={styles.icon} />,
-        "Relámpago": <FcFlashOn className={styles.icon} />,
+        "Rápida": <FaChessPawn className={styles.icon} style={{ color: '#552003' }} />,
+        "Clásica": <FcApproval className={styles.icon} />,
+        "Blitz": <FcAlarmClock className={styles.icon} />,
+        "Bullet": <FcFlashOn className={styles.icon} />,
         "Incremento": <FcBullish className={styles.icon} />,
         "Incremento exprés": <FcRating className={styles.icon} />
     };

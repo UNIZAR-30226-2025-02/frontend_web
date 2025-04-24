@@ -1,0 +1,246 @@
+.reviewContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #333;
+    top: 140px;
+    min-height: calc(100vh - 140px);
+    width: 100%;
+    color: white;
+    background-color: #6e6e6e;
+    position: relative;
+    padding-left: 380px; 
+    box-sizing: border-box;
+    overflow: auto;
+    min-height: 100vh;
+  }
+
+  .gameBody {
+    display: flex;
+    justify-content: space-around; /* Agrega espacio a los lados */
+    align-items: center;
+    width: 100%;
+    height: 100%; /* Asegura que todo ocupe la pantalla sin scroll */
+    gap: 50px;
+    padding-top: 20px;
+    background-color: #6e6e6e;
+    align-items: flex-start;
+  }
+
+  .boardContainer {
+    background-color: #222;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 60vh;
+    height: 70vh; /* Asegura que el tablero tenga la misma altura que los paneles */
+    flex-grow: 1;
+    align-self: flex-start; /* Alinea el tablero con los otros paneles */
+    position: relative; /* Permite posicionar elementos dentro */
+  }
+  
+  .title {
+    font-size: 24px;
+    margin: 20px 0 0 0;
+    text-align: center;
+    color: white;
+  }
+  
+  
+  .navigation {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 10px;
+  }
+  
+  .navigation button {
+    font-size: 24px;
+    padding: 8px 16px;
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .navigation button:disabled {
+    background-color: #777;
+    cursor: not-allowed;
+  }
+  
+  .movesPanel {
+    background-color: #444;
+    padding: 15px;
+    border-radius: 8px;
+    height: 70vh;
+    overflow-y: auto;
+    width: 20%;
+    margin-left: 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .movesPanel h3 {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .movesList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .moveItem {
+    padding: 4px 8px;
+    background-color: #555;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .moveItem.active {
+    background-color: #00aaff;
+    color: white;
+  }
+  
+  .playerInfoTop, .playerInfoBottom {
+    position: absolute;
+    width: 95%;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+  }
+  
+  .playerInfoTop {
+    top: 8px;
+    justify-content: space-between;
+  }
+  
+  .playerInfoBottom {
+    bottom: 8px;
+    justify-content: space-between;
+  }
+  
+  .playerName {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    gap: 5px;
+  }
+  
+  .userElo {
+    font-style: italic;
+    color: #9a9a9a;
+  }
+  
+  .greenDot {
+    width: 15px;
+    height: 15px;
+    background-color: green;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+  }
+  
+  .orangeDot {
+    width: 15px;
+    height: 15px;
+    background-color: orange;
+    border-radius: 50%;
+    margin-left: 8px;
+    display: inline-block;
+  }
+
+  .profilePicture {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+  }
+
+  .winnerOverlay {
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    max-width: 90vw;
+    max-height: 80vh;
+    backdrop-filter: blur(2px);
+  }
+  
+  .winnerOverlay h2{
+    margin-bottom: 0px;
+  }
+  
+  .trophy {
+    font-size: 70px;
+    color: gold;
+    margin-bottom: 20px;
+  }
+  
+  .newGameButton, .rematchButton {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .newGameButton {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .newGameButton:hover {
+    background-color: #218838;
+  }
+  
+  .rematchButton {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .rematchButton:hover {
+    background-color: #c82333;
+  }
+  
+  .winnerActions {
+    display: flex;
+    gap: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .reviewContent {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .movesPanel {
+      width: 80%;
+      height: auto;
+    }
+  
+    .boardSection {
+      width: 90%;
+    }
+  }
+  

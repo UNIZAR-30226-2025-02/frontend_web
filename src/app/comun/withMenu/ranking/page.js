@@ -15,12 +15,15 @@ import {
 } from "react-icons/fc";
 import { IoMdTrophy } from "react-icons/io";
 import { IoMdClose } from "react-icons/io";
+import {getSocket} from "../../../utils/sockets"; // Importamos el socket global
 
 export default function RankingPage() {
   const [user, setUser] = useState(null);
   const [rankings, setRankings] = useState({});
   const [userRankings, setUserRankings] = useState({});
   const [selectedModo, setSelectedModo] = useState(null);
+  const [token, setToken] = useState(null);
+  const [socket, setSocket] = useState(null);
 
   const modos = [
     { nombre: "Rápida", id: "Punt_10", icon: <FaChessPawn style={{ color: '#552003' }} /> },
@@ -31,6 +34,27 @@ export default function RankingPage() {
     { nombre: "Incremento exprés", id: "Punt_3_2", icon: <FcRating /> },
   ];
 
+  // Establecer la conexión al socket
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Asegurarse de que estamos en el navegador
+      const storedToken = localStorage.getItem("authToken");
+      setToken(storedToken);
+      
+      // Crear la conexión del socket solo cuando el token esté disponible
+      const socketInstance = getSocket();
+      setSocket(socketInstance);
+
+      // Conectar el socket solo si no está conectado
+      socketInstance.connect();
+
+      return () => {
+        console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+        //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
+      };
+    }
+  }, []);
+  
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedUserData = localStorage.getItem("userData");

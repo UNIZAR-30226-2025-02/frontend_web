@@ -20,7 +20,7 @@ export default function InitialPage() {
     const [racha, setRacha] = useState(null);
     const [ultimasPartidas, setUltimasPartidas] = useState([]);
 
-    // Cargar usuario desde localStorage solo una vez
+    // Establecer la conexión al socket
     useEffect(() => {
         if (typeof window !== 'undefined') {
           // Asegurarse de que estamos en el navegador

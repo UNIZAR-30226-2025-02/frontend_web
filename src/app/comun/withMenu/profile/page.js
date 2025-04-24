@@ -555,7 +555,12 @@ export default function Profile() {
                                     </td>
                                     <td>{contarJugadas(match.PGN)}</td>
                                     <td>{new Date(match.created_at).toLocaleDateString()}</td>
-                                    <td><button className={styles.watchButton}>Ver Partida</button></td>
+                                    <td><button className={styles.watchButton} 
+                                        onClick={() => {
+                                            localStorage.setItem("partidaParaRevisar", JSON.stringify(match));
+                                            router.push("/comun/withMenu/review");
+                                        }}>Ver Partida
+                                        </button></td>
                                 </tr>
                             );
                         })}
