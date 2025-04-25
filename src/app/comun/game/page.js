@@ -8,6 +8,7 @@ import io from 'socket.io-client';  // Importar cliente de socket.
 import {getSocket} from "../../utils/sockets"; 
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import usePreventExit from "../../components/usePreventExit"; // Importar el hook
 
 
 
@@ -89,6 +90,20 @@ export default function Game() {
     setTurn(gameCopy.current.turn());
     
   }, []);
+
+  usePreventExit({
+    onConfirm: () => {
+      if (socket) {
+        console.log("🚪 Salida confirmada. Enviando resign y redirigiendo...");
+       // socket.emit("resign", { idPartida, idJugador: user.id });
+      }
+    
+     /* setTimeout(() => {
+        router.replace('/comun/withMenu/initial');
+      }, 50); // Pequeño delay para estabilizar navegación*/
+    }
+      
+  });
 
   useEffect(() => {
     console.log("🔄 Buscando usuario en localStorage...");
@@ -186,6 +201,21 @@ export default function Game() {
     } else {
         console.log("✅ Socket ya estaba conectado con ID:", socket.id);
     }
+
+    const handleBeforeUnload = (e) => {
+      // Realiza la petición al servidor antes de que la página se cierre
+      console.log("🚪 Enviando datos de cierre de sesión al servidor...");
+      const data = JSON.stringify({ NombreUser: user.NombreUser });
+      navigator.sendBeacon("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/logout", data);
+
+      // Prevenir la acción por defecto para mostrar el mensaje de advertencia
+      e.preventDefault();
+      e.returnValue = ''; // Este valor es requerido para activar el mensaje de advertencia en algunos navegadores
+    };
+
+    // Escuchar el evento 'beforeunload'
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
   
     // Recibir movimientos del otro jugador
     socket.on('new-move', (data) => {
@@ -236,6 +266,7 @@ export default function Game() {
     });
 
     socket.on('player-surrendered', (data) => {
+      setWinner(true)
       console.log('Rival se ha rendido:', data);
     });
 
@@ -283,6 +314,8 @@ export default function Game() {
         socket.off("new-move");
         socket.off("new-message");
         socket.off("requestTie");
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+
     };
 }, [user]); // Se ejecuta solo cuando `user` cambia y está definido.
   
