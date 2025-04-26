@@ -67,7 +67,7 @@ export default function Menu() {
         </Link>
       </li>
       <li>
-        <Link href="/contacto" className={styles.menuItem}>
+        <Link href="/comun/withMenu/opening" className={styles.menuItem}>
           <FcRules className={styles.icon} /> Aperturas
         </Link>
       </li>
