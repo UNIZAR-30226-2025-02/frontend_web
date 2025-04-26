@@ -20,7 +20,7 @@ export default function OpeningPage() {
         { "f1 b5": "Clava el caballo en c6 y prepara el enroque." },
         { "FIN": "FIN" }
       ],
-      imagen: "/public/aperturas/apertura_espanola.webp"
+      imagen: "/aperturas/apertura_espanola.webp"
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ export default function OpeningPage() {
         { "d2 d4": "Rompe el centro para conseguir ventaja de espacio." },
         { "FIN": "FIN" }
       ],
-      imagen: "/public/aperturas/defensa_siciliana.webp"
+      imagen: "/aperturas/defensa_siciliana.webp"
     },
     {
       id: 3,
@@ -46,7 +46,7 @@ export default function OpeningPage() {
         { "c2 c4": "Ofrece un peón a cambio de mejor desarrollo." },
         { "FIN": "FIN" }
       ],
-      imagen: "/public/aperturas/gambito_dama.webp"
+      imagen: "/aperturas/gambito_dama.webp"
     },
     {
       id: 4,
@@ -59,7 +59,7 @@ export default function OpeningPage() {
         { "d7 d5": "Rompe el centro y plantea una estructura sólida." },
         { "FIN": "FIN" }
       ],
-      imagen: "../../../../public/aperturas/defensa_francesa.webp"
+      imagen: "/aperturas/defensa_francesa.webp"
     },
     {
       id: 5,
@@ -73,7 +73,7 @@ export default function OpeningPage() {
         { "f1 c4": "Desarrolla el alfil a una casilla activa apuntando a f7." },
         { "FIN": "FIN" }
       ],
-      imagen: "/public/aperturas/apertura_italiana.webp"
+      imagen: "/aperturas/apertura_italiana.webp"
     },
   ];
 
