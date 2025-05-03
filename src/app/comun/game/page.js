@@ -110,6 +110,7 @@ export default function Game() {
     const storedUserData = localStorage.getItem("userData");
     const color = localStorage.getItem("colorJug");
     const tipoPartidaLocal = localStorage.getItem("tipoPartida");
+    console.log("El tipode partida es: ", tipoPartidaLocal);
     const nombreRival = localStorage.getItem("nombreRival");
     const eloRival = localStorage.getItem("eloRival");
     const eloJug = localStorage.getItem("eloJug");
@@ -619,7 +620,7 @@ export default function Game() {
         setSearching(false);
         console.log("Estoy buscando partida", user.NombreUser);
         console.log("he encontrado partida", user.NombreUser); 
-        localStorage.setItem("tipoPartida",tipoPartida);
+        //localStorage.setItem("tipoPartida",tipoPartida);
         setWinner(false);
         setLoser(false);
         setTablas(false);
@@ -657,14 +658,13 @@ export default function Game() {
             localStorage.setItem("nombreRival", jugadorRival.nombreB);
             localStorage.setItem("eloJug", jugadorActual.eloW);
         }
-        localStorage.setItem("idPartida", idPartidaCopy);
+        idPartidaCopy =  localStorage.getItem("idPartida");
         setIdPartida(idPartidaCopy);
         setPartidaAcabada(false);
         router.push(`/comun/game?id=${idPartidaCopy}`);
         //window.location.href = `/comun/game?id=${idPartidaCopy}`; // recarga limpia
         //router.refresh();
     });
-    
     // Escuchar errores del backend
     socket.on('error', (errorMessage) => {
         setSearching(false);
@@ -830,23 +830,23 @@ export default function Game() {
 
 
         {/* Tablero de Ajedrez */}
-          <div className={styles.boardContainer}>
-             <div className={`${styles.playerInfoTop} ${gameCopy.current.turn() !== colorTurn ? styles.activePlayer : styles.inactivePlayer}`}>
-               <div className={styles.playerName}>
-               {fotoContrincante ? (
+              <div className={styles.boardContainer}>
+               <div className={`${styles.playerInfoTop} ${gameCopy.current.turn() !== colorTurn ? styles.activePlayer : styles.inactivePlayer}`}>
+                 <div className={styles.playerName}>
+                 {fotoContrincante ? (
                 <img src={`/fotosPerfilWebp/${fotoContrincante}`} alt="Foto de perfil" className={styles.profilePicture} />
-              ) : (
+                ) : (
                 <span className={styles.greenDot}></span> 
-              )}
+                )}
                 <span className={styles.userName}>{rival ? rival : "NuevoJugador"}</span> 
-                <span className={styles.userElo}>{eloRival ? `(${eloRival})` : "(miElo)"}</span>
-              </div>
-               <div className={styles.playerTime}>{"b" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
-             </div>
-            <Chessboard
-              position={fen}
-              boardOrientation={playerColor === "white" ? "white" : "black"}
-              onSquareClick={(square) => {
+                <span className={styles.userElo}>{eloRival ? `(${Math.round(eloRival)})` : "(miElo)"}</span>
+                </div>
+                 <div className={styles.playerTime}>{"b" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
+               </div>
+              <Chessboard
+                position={fen}
+                boardOrientation={playerColor === "white" ? "white" : "black"}
+                onSquareClick={(square) => {
               if (legalMoves.includes(square)) {
                 handleMoveClick(square);
               } else {
@@ -883,7 +883,7 @@ export default function Game() {
               <span className={styles.orangeDot}></span>
             )}
             <span className={styles.userName}>{user ? user.NombreUser : "NuevoJugador"}</span> 
-            <span className={styles.userElo}>{miElo ? `(${miElo})` : "(miElo)"}</span>
+            <span className={styles.userElo}>{miElo ? `(${Math.round(miElo)})` : "(miElo)"}</span>       
             </div>
               <div className={styles.playerTime}>{"w" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
             </div>

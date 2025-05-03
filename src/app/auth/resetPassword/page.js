@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function ResetPasswordPage() {
   const [form, setForm] = useState({
     NombreUser: "",
@@ -36,7 +38,7 @@ export default function ResetPasswordPage() {
     }
 
     try {
-        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/tryResetPasswd", {
+        const response = await fetch(`${BACKEND_URL}/tryResetPasswd`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),

@@ -8,6 +8,7 @@ import { FcApproval, FcAlarmClock, FcFlashOn, FcBullish, FcRating } from "react-
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {getSocket} from "../../../utils/sockets"; 
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 /*const token = localStorage.getItem("authToken");
 const socket = getSocket(token);*/
@@ -88,7 +89,7 @@ export default function Profile() {
         }
 
         try {
-            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
+            const response = await fetch(`${BACKEND_URL}/getUserInfo?id=${userId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -129,7 +130,7 @@ export default function Profile() {
             console.log("Enviando solicitud de logout al backend");
             console.log("El user es", user.NombreUser);
            // const response = await fetch("http://localhost:3000/logout", {
-           const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/logout", {
+           const response = await fetch(`${BACKEND_URL}/logout`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ NombreUser: user.NombreUser }),
@@ -163,7 +164,7 @@ export default function Profile() {
         }
     
         try {
-            const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/editUser", {
+            const response = await fetch(`${BACKEND_URL}/editUser`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -196,7 +197,7 @@ export default function Profile() {
           if (!user?.id) return;
       
           try {
-            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUlt5PartidasDeUsuario?id=${user.id}`);
+            const response = await fetch(`${BACKEND_URL}/buscarUlt10PartidasDeUsuario?id=${user.id}`);
             if (!response.ok) {
               console.error("Error al obtener las últimas partidas");
               return;
@@ -220,7 +221,7 @@ export default function Profile() {
               // Hacemos las peticiones en paralelo con Promise.all
               const respuestas = await Promise.all(
                 modos.map((modo) =>
-                  fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUlt5PartidasDeUsuarioPorModo?id=${user.id}&modo=${modo}`)
+                  fetch(`${BACKEND_URL}/buscarUlt5PartidasDeUsuarioPorModo?id=${user.id}&modo=${modo}`)
                 )
               );
         

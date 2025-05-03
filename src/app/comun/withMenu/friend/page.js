@@ -10,13 +10,9 @@ import {
 } from "react-icons/fc";
 import { FaChessPawn } from "react-icons/fa";
 
-// Simulación de datos
-const allUsers = [
-    { id: 1, name: "Dani04", isFriend: true },
-    { id: 2, name: "Dani0456", isFriend: false },
-    { id: 3, name: "Dani0481", isFriend: false },
-    { id: 4, name: "Ana01", isFriend: true },
-];
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+
 
 export default function FriendPage() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +66,7 @@ export default function FriendPage() {
             const userId = parsedUser?.publicUser?.id;
             console.log("Mi id es: ", userId);
             try {
-                const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarAmigos?id=${userId}`, {
+                const response = await fetch(`${BACKEND_URL}/buscarAmigos?id=${userId}`, {
                     method: "GET",
                     headers: {
                             "Content-Type": "application/json",
@@ -114,6 +110,10 @@ export default function FriendPage() {
             window.location.reload();
         });
 
+        socket.on("errorMessage", (data) => {
+            console.log("❌❌Error: ", data);
+        });
+
         return () => {
             socket.off("friendRequestAccepted");
             socket.off("friendRemoved");
@@ -129,7 +129,7 @@ useEffect(() => {
         }
 
         try {
-            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUsuarioPorUser?NombreUser=${searchTerm}`);
+            const response = await fetch(`${BACKEND_URL}/buscarUsuarioPorUser?NombreUser=${searchTerm}`);
             const data = await response.json();
 
             if (!response.ok) {
@@ -151,36 +151,6 @@ useEffect(() => {
     fetchSuggestions();
 
 }, [searchTerm, user, friends]);  // dependencias necesarias
-
-/*useEffect(() => {
-    if (socket) {
-        socket.on("friendRequestAccepted", (data) => {
-        console.log("Solicitud de amistad aceptada:", data);
-        //window.location.reload();
-    });
-
-        return () => {
-            socket.off("friendRequestAccepted");
-        };
-    }
-}, [socket]);*/
-
-
-  // Pedir amigos y usuarios al backend una vez tengamos el user
-  /*useEffect(() => {
-    if (socket && user) {
-        socket.emit("getFriendsAndUsers", { idJugador: user.id });
-
-        socket.on("friendsAndUsers", (data) => {
-            setFriends(data.friends);
-            setSuggestions(data.users);
-        });
-
-        return () => {
-            socket.off("friendsAndUsers");
-        };
-    }
-}, [socket, user]);*/
 
     const filteredFriends = Array.isArray(friends)
     ? friends.filter(user =>
@@ -239,11 +209,11 @@ useEffect(() => {
     };
 
     const confirmChallenge = () => {
-        console.log("🧙‍♂️ El rival seleccionado es: ", selectedRival);
+        console.log("🧙‍♂️ El rival seleccionado para una partida es: ", selectedRival.amigoId);
         if (socket && user && selectedRival) {
             socket.emit("challenge-friend", {
                 idRetador: user.id,
-                idRetado: selectedRival,
+                idRetado: selectedRival.amigoId,
                 modo: modoMapeado[selectedMode],
             });
         }

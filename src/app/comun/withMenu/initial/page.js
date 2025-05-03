@@ -10,6 +10,8 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import {getSocket} from "../../../utils/sockets"; // Importamos el socket global
 import { useRouter } from "next/navigation";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function InitialPage() {
     const [user, setUser] = useState(null);
     const [searching, setSearching] = useState(false);
@@ -70,7 +72,7 @@ export default function InitialPage() {
 
                 try {
                     //console.log("Voy a buscar info del usuario con id: ", userId);
-                    const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
+                    const response = await fetch(`${BACKEND_URL}/getUserInfo?id=${userId}`, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
@@ -101,7 +103,7 @@ export default function InitialPage() {
               if (!user?.id) return;
           
               try {
-                const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUlt5PartidasDeUsuario?id=${user.id}`);
+                const response = await fetch(`${BACKEND_URL}/buscarUlt5PartidasDeUsuario?id=${user.id}`);
                 if (!response.ok) {
                   console.error("Error al obtener las últimas partidas");
                   return;
@@ -133,53 +135,7 @@ export default function InitialPage() {
         socket.emit("find-game", dataToSend);
         console.log("✅ Lo he lanzado");
         let idPartidaCopy;
-        // Escuchar la respuesta del servidor
-        socket.on('game-ready', (data) => {
-            console.log("🟢 Partida encontrada con ID:", data.idPartida);
-            setSearching(false);
-            console.log("Estoy buscando partida", user.NombreUser);
-            console.log("he encontrado partida", user.NombreUser); 
-            localStorage.setItem("tipoPartida",tipoPartida);
-            idPartidaCopy = data.idPartida; 
-          
-        });
-        console.log("🎧 Ahora escuchando evento 'color'...");
-        socket.on("color", (data) => {
-            console.log("🎨 Recibido evento 'color' con datos:", data);
-
-            if (!data || !data.jugadores) {
-                console.error("❌ No se recibió información válida de colores.");
-                return;
-            }
-            
-            const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
-            console.log("Mi id es: ",user.id, "y jugador.id es: ", jugadorActual.id);
-            const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
-            console.log("Mi id es: ",user.id, "y mi rival es: ", jugadorRival);
-            if (!jugadorActual) {
-                console.error("❌ No se encontró al usuario en la lista de jugadores.");
-                return;
-            }
-
-            setPlayerColor(jugadorActual.color);
-            console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
-            localStorage.setItem("colorJug",jugadorActual.color);
-            console.log("🌈Guardo id rival: ", jugadorRival.id, "Con el eloW: ", jugadorRival.eloW, "y el eloB: ", jugadorRival.eloB);
-            if(jugadorActual.color === "black"){
-                localStorage.setItem("eloRival", jugadorRival.eloW);
-                localStorage.setItem("nombreRival", jugadorRival.nombreW);
-                localStorage.setItem("eloJug", jugadorActual.eloB);
-                localStorage.setItem("fotoRival", jugadorRival.fotoBlancas);
-            } else {
-                localStorage.setItem("eloRival", jugadorRival.eloB);
-                localStorage.setItem("nombreRival", jugadorRival.nombreB);
-                localStorage.setItem("eloJug", jugadorActual.eloW);
-                localStorage.setItem("fotoRival", jugadorRival.fotoNegras);
-            }
-            localStorage.setItem("idPartida", idPartidaCopy);
-            router.push(`/comun/game?id=${idPartidaCopy}`);
-        });
-        
+        localStorage.setItem("tipoPartida", tipoPartida); // Guardar el tipo de partida en localStorage
         // Escuchar errores del backend
         socket.on('error', (errorMessage) => {
             setSearching(false);
@@ -192,6 +148,7 @@ export default function InitialPage() {
         if (!socket || !searching) return;
         socket.emit('cancel-pairing', { idJugador: user?.id });
         setSearching(false);
+        localStorage.removeItem("tipoPartida"); // Limpiar el tipo de partida en localStorage
         console.log("❌ Búsqueda cancelada por el usuario");
     };
     

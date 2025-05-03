@@ -9,7 +9,7 @@ import {getSocket} from "../app/utils/sockets";
 
     const handleInvitado = async () => {
       try {
-        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/crearInvitado", {
+        const response = await fetch(`${BACKEND_URL}/crearInvitado`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}),

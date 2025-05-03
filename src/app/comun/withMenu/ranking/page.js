@@ -17,6 +17,8 @@ import { IoMdTrophy } from "react-icons/io";
 import { IoMdClose } from "react-icons/io";
 import {getSocket} from "../../../utils/sockets"; // Importamos el socket global
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function RankingPage() {
   const [user, setUser] = useState(null);
   const [rankings, setRankings] = useState({});
@@ -71,8 +73,8 @@ export default function RankingPage() {
     modos.forEach(async ({ id }) => {
       try {
         const [rankingRes, userRes] = await Promise.all([
-          fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/rankingPorModo?modo=${id}`),
-          fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/rankingUserPorModo?modo=${id}&user=${user.NombreUser}`)
+          fetch(`${BACKEND_URL}/rankingPorModo?modo=${id}`),
+          fetch(`${BACKEND_URL}/rankingUserPorModo?modo=${id}&user=${user.NombreUser}`)
         ]);
 
         const rankingData = await rankingRes.json();
