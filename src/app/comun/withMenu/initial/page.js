@@ -159,7 +159,7 @@ export default function InitialPage() {
         "Clásica": "Ideal para quienes están aprendiendo. Cada jugador consta de 30 min para realizar sus movimientos.",
         "Blitz": "Para jugadores experimentados. Cada jugador consta de 5 min para realizar sus movimientos.",
         "Bullet": "Modo para expertos. El tiempo es muy limitado, cada jugador cuenta con 3 minutos.",
-        "Incremento": "El tiempo aumenta 5 seg con cada jugada, partiendo de 10 min iniciales.",
+        "Incremento": "El tiempo aumenta 10 seg con cada jugada, partiendo de 15 min iniciales.",
         "Incremento exprés": "Versión rápida del incremento. Partiendo de 3 + 2 seg por jugada."
     };
 
@@ -236,7 +236,7 @@ export default function InitialPage() {
                             </div>
 
                             <span className={styles.time}>
-                                {index === 0 ? '10 min' : index === 1 ? '30 min' : index === 2 ? '5 min' : index === 3 ? '3 min' : index === 4 ? '10min + 5seg' : '3min + 2seg'}
+                                {index === 0 ? '10 min' : index === 1 ? '30 min' : index === 2 ? '5 min' : index === 3 ? '3 min' : index === 4 ? '15min + 10seg' : '3min + 2seg'}
                             </span>
                             <button
                                 className={styles.playButton}

@@ -37,6 +37,7 @@ export default function Game() {
   const [pendingPromotion, setPendingPromotion] = useState(null);
   const [showPromotionPopup, setShowPromotionPopup] = useState(false);
   const [partidaAcabada, setPartidaAcabada] = useState(false);
+  const [incremento, setIncremento] = useState(0);
   let piezaLlega = null;
   let piezaElejida = null;
   const [idPartida, setIdPartida] = useState(null); // Color asignado al 
@@ -133,16 +134,22 @@ export default function Game() {
       if(tiempoBlancas === null){
         if (tipoPartidaLocal === "Punt_10"){
           setTiempoPartida(10);
+          setIncremento(0);
         } else if(tipoPartidaLocal === "Punt_30"){
           setTiempoPartida(30);
+          setIncremento(0);
         } else if(tipoPartidaLocal === "Punt_5"){
           setTiempoPartida(5);
+          setIncremento(0);
         } else if(tipoPartidaLocal === "Punt_3"){
           setTiempoPartida(3);
+          setIncremento(0);
         } else if(tipoPartidaLocal === "Punt_5_10"){
-          setTiempoPartida(10);
+          setTiempoPartida(15);
+          setIncremento(10);
         } else if(tipoPartidaLocal === "Punt_3_2"){
           setTiempoPartida(3);
+          setIncremento(2);
         }
       } else {
         console.log("⬜El tiempo de blancas recuperado es: ", tiempoBlancas);
@@ -237,23 +244,14 @@ export default function Game() {
       const moveResult = gameCopy.current.move(moveConfig);
       
       if (moveResult) {
-        if (tipoPartida === "Punt_3_2"){
-          if (colorTurn === "b"){
-            console.log("⬜Voy a actualizar el tiempo de blanco que recibo su movimiento", whiteTime);
-            setWhiteTime((prevTime) => prevTime + 2);
+        if (incremento > 0) {
+          if (colorTurn === "b") {
+            setWhiteTime((prevTime) => prevTime + incremento);
           } else {
-            console.log("⬛Voy a actualizar el tiempo de blanco que recibo su movimiento", blackTime);
-            setBlackTime((prevTime) => prevTime + 2);
-          }
-        } else if (tipoPartida === "Punt_5_10"){
-          if (colorTurn === "b"){
-            console.log("⬜Voy a actualizar el tiempo de blanco que recibo su movimiento", whiteTime);
-            setWhiteTime((prevTime) => prevTime + 5);
-          } else {
-            console.log("⬛Voy a actualizar el tiempo de blanco que recibo su movimiento", blackTime);
-            setBlackTime((prevTime) => prevTime + 5);
+            setBlackTime((prevTime) => prevTime + incremento);
           }
         }
+        
         setFen(gameCopy.current.fen());
         setTurn(gameCopy.current.turn());
       } else {
@@ -389,17 +387,11 @@ export default function Game() {
         });
   
         if (move) {
-          if (tipoPartida === "Punt_3_2"){
-            if (colorTurn === "w"){
-              setWhiteTime((prevTime) => prevTime + 2);
+          if (incremento > 0) {
+            if (colorTurn === "w") {
+              setWhiteTime((prevTime) => prevTime + incremento);
             } else {
-              setBlackTime((prevTime) => prevTime + 2);
-            }
-          } else if (tipoPartida === "Punt_5_10"){
-            if (colorTurn === "w"){
-              setWhiteTime((prevTime) => prevTime + 5);
-            } else {
-              setBlackTime((prevTime) => prevTime + 5);
+              setBlackTime((prevTime) => prevTime + incremento);
             }
           }
           console.log("✔️ Movimiento exitoso:", move);
@@ -510,8 +502,12 @@ export default function Game() {
     setGame(nuevaPartida);
     setFen(nuevaPartida.fen());
     setTurn("w");
-    setWhiteTime(tiempoEnMinutos * 60);
-    setBlackTime(tiempoEnMinutos * 60);
+
+    // Usar el tiempo del modo anterior
+    const tiempo = tiempoPartida ? Number(tiempoPartida) : 10;
+    setWhiteTime(tiempo * 60);
+    setBlackTime(tiempo * 60);
+
     setWinner(null);
     setLoser(null);
     setTablas(null);
