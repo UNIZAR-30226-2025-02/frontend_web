@@ -45,6 +45,13 @@
   margin-bottom: 0px;
 }
 
+.lostByTime {
+  font-size: 1.2rem;
+  color: white;
+  margin-top: 8px;
+}
+
+
 .trophy {
   font-size: 70px;
   color: gold;

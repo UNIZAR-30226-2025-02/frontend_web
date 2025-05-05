@@ -126,14 +126,17 @@ export const getSocket = () => {
         console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
         localStorage.setItem("colorJug",jugadorActual.color);
         console.log("Guardo id rival: ", jugadorRival.id);
+        localStorage.setItem("idRival", jugadorRival.id);
         if(jugadorActual.color === "black"){
             localStorage.setItem("eloRival", jugadorRival.eloW);
             localStorage.setItem("nombreRival", jugadorRival.nombreW);
             localStorage.setItem("eloJug", jugadorActual.eloB);
+            localStorage.setItem("fotoRival", jugadorRival.fotoBlancas)
         } else {
             localStorage.setItem("eloRival", jugadorRival.eloB);
             localStorage.setItem("nombreRival", jugadorRival.nombreB);
             localStorage.setItem("eloJug", jugadorActual.eloW);
+            localStorage.setItem("fotoRival", jugadorRival.fotoNegras)
         }
       } else {
         console.error("❌ No se encontró información de jugadores válida. Juagador actual:", jugadorActual, "Jugador rival:", jugadorRival);

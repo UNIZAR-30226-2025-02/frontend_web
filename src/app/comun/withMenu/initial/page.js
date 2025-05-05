@@ -64,7 +64,7 @@ export default function InitialPage() {
 
                 const parsedUser = JSON.parse(storedUserData);
                 const userId = parsedUser?.publicUser?.id;
-
+                const soyInvitado = localStorage.getItem("soyInvitado");
                 if (!userId) {
                     console.log("No se encontró el id del usuario");
                     return;

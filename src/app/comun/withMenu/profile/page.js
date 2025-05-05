@@ -558,7 +558,7 @@ export default function Profile() {
                                     <td>{new Date(match.created_at).toLocaleDateString()}</td>
                                     <td><button className={styles.watchButton} 
                                         onClick={() => {
-                                            localStorage.setItem("partidaParaRevisar", JSON.stringify(match));
+                                            localStorage.setItem("partidaParaRevisar", JSON.stringify({PGN: match.PGN}));
                                             router.push("/comun/withMenu/review");
                                         }}>Ver Partida
                                         </button></td>

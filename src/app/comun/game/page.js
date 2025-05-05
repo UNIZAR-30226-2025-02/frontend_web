@@ -16,6 +16,7 @@ export default function Game() {
   const [game, setGame] = useState("");
   const [user, setUser] = useState(null);
   const [rival, setRival] = useState(null);
+  const [idRival, setIdRival] = useState(null);
   const [fen, setFen] = useState(""); // Posición actual del tablero
   let [turn, setTurn] = useState("w"); // Controla el turno
   let colorTurn;
@@ -28,6 +29,7 @@ export default function Game() {
   const [message, setMessage] = useState("");
   const [winner, setWinner] = useState(null);
   const [loser, setLoser] = useState(null);
+  const [timeOut, setTimeOut] = useState(false);
   const [tablas, setTablas] = useState(null);
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
@@ -112,6 +114,7 @@ export default function Game() {
     const color = localStorage.getItem("colorJug");
     const tipoPartidaLocal = localStorage.getItem("tipoPartida");
     console.log("El tipode partida es: ", tipoPartidaLocal);
+    const rivalID = localStorage.getItem("idRival");
     const nombreRival = localStorage.getItem("nombreRival");
     const eloRival = localStorage.getItem("eloRival");
     const eloJug = localStorage.getItem("eloJug");
@@ -124,6 +127,7 @@ export default function Game() {
       console.log("✅ Usuario encontrado:", parsedUser, "con elo: ", eloJug, "y el elo del rival:",eloRival);
       setIdPartida(partidaLocalSto);
       setUser(parsedUser.publicUser);
+      setIdRival(rivalID);
       setPlayerColor(color);
       setRival(nombreRival);
       setMiElo(eloJug);
@@ -184,6 +188,33 @@ export default function Game() {
     return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
   }, [gameCopy.current.turn(), partidaAcabada]); // Solo se vuelve a ejecutar cuando el turno o el color del jugador cambia
 
+  useEffect(() => {
+    if (!socket || partidaAcabada || !user || !playerColor) return;
+  
+    // Determinar el color del jugador actual
+    const soyBlanco = playerColor === "white";
+    const esMiTurno = (soyBlanco && gameCopy.current.turn() === "w") || (!soyBlanco && gameCopy.current.turn() === "b");
+  
+    if (whiteTime === 0 && soyBlanco && esMiTurno) {
+      console.log("⏰ Yo (blancas) he perdido por tiempo");
+      setPartidaAcabada(true);
+      socket.emit("game-timeout", {
+        idPartida,
+        idJugador: user.id,
+      });
+    }
+  
+    if (blackTime === 0 && !soyBlanco && esMiTurno) {
+      console.log("⏰ Yo (negras) he perdido por tiempo");
+      setPartidaAcabada(true);
+      socket.emit("game-timeout", {
+        idPartida,
+        idJugador: user.id,
+      });
+    }
+  }, [whiteTime, blackTime, partidaAcabada]);
+  
+  
 
   colorTurn = playerColor === "black" ? "b" : "w";
   useEffect(() => {
@@ -278,20 +309,39 @@ export default function Game() {
       localStorage.removeItem("eloJug");
       localStorage.removeItem("tipoPartida");
       localStorage.removeItem("colorJug");
+    
       setPartidaAcabada(true);
       console.log("Llega final de partida", data);
-      if(data.winner === "draw"){
+    
+      const soyElGanador = data.winner === user.id;
+      const soyElPerdedor = !soyElGanador && data.winner !== "draw";
+      const porTiempo = data.timeout === "true";
+    
+      if (data.winner === "draw") {
         console.log("Tablas");
-        setTablas(true)
-      }else if(data.winner === user.id){
-        setWinner(true)
-      } else{
-        console.log("Mi id es: ", user.id);
-        console.log("Y el data es: ", data);
+        setTablas(true);
+      } else if (soyElGanador) {
+        setWinner(true);
+    
+        // Si ganaste por tiempo, pon el reloj del rival en 0
+        if (porTiempo) {
+          if (playerColor === "white") {
+            setBlackTime(0);
+          } else {
+            setWhiteTime(0);
+          }
+        }
+      } else if (soyElPerdedor) {
         setLoser(true);
+    
+        // Mostrar mensaje extra si perdiste por tiempo
+        if (porTiempo) {
+          console.log("Perdiste por tiempo");
+          setTimeOut(true);
+        }
       }
-
     });
+    
 
     socket.on('new-message', (data)=>{
       console.log("♟️ Mensaje recibido:", data.message);
@@ -588,6 +638,36 @@ export default function Game() {
     router.push(`/comun/withMenu/initial`);
   }
 
+  const generarPGNConTags = (juego, user, rival,idRival, miElo, eloRival, esBlancas) => {
+    const tags = [
+      `[White "${esBlancas ? user.id : idRival}"]`,
+      `[Black "${esBlancas ? idRival : user.id}"]`,
+      `[White Alias "${esBlancas ? user.NombreUser : rival}"]`,
+      `[Black Alias "${esBlancas ? rival : user.NombreUser}"]`,
+      `[White Elo "${esBlancas ? miElo : eloRival}"]`,
+      `[Black Elo "${esBlancas ? eloRival : miElo}"]`,
+      "", // Espacio vacío para separar encabezado del cuerpo PGN
+    ];
+  
+    const movimientos = juego.pgn();
+    return tags.join("\n") + "\n" + movimientos;
+  };
+  
+  const goToReview = () => {
+    const pgnCompleto = generarPGNConTags(
+      gameCopy.current,
+      user,
+      rival,
+      idRival,
+      miElo,
+      eloRival,
+      playerColor === "white"
+    );
+    localStorage.setItem("partidaParaRevisar", JSON.stringify({ PGN: pgnCompleto }));
+    
+    router.push("/comun/withMenu/review");
+  };
+
   const handleCancelSearch = () => {
     if (!socket || !searching) return;
     socket.emit('cancel-pairing', { idJugador: user?.id });
@@ -695,9 +775,10 @@ export default function Game() {
               Buscar otra partida
             </button>)}
           {!searching && (
-            <button className={styles.reviewButton} onClick={resetGame}>
+            <button className={styles.reviewButton} onClick={goToReview}>
             Revisar Partida
             </button>
+          
           ) }
         </div>
         {!searching && (
@@ -714,6 +795,8 @@ export default function Game() {
         )}
         {!searching && (
           <h2>¡Has perdido!</h2>
+        )} {timeOut && (
+          <p className={styles.lostByTime}>Se te ha acabado el tiempo</p>
         )}
         {searching && (
           <div className={styles.loader}></div>
@@ -731,7 +814,7 @@ export default function Game() {
               Buscar otra partida
             </button>)}
           {!searching && (
-            <button className={styles.reviewButton} onClick={resetGame}>
+            <button className={styles.reviewButton} onClick={goToReview}>
             Revisar Partida
             </button>
           ) }
@@ -767,9 +850,10 @@ export default function Game() {
                 Buscar otra partida
               </button>)}
             {!searching && (
-              <button className={styles.reviewButton} onClick={resetGame}>
+              <button className={styles.reviewButton} onClick={goToReview}>
               Revisar Partida
               </button>
+            
             ) }
           </div>
           {!searching && (

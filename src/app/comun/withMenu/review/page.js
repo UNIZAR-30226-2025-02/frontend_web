@@ -93,42 +93,51 @@ console.log("evalCp:", evalCp, "fen:", fen);
 
   // 3) Carga PGN y extrae jugadas + tags
   useEffect(() => {
-    const raw = localStorage.getItem("partidaParaRevisar");
-    if (!raw) return;
-    const match = JSON.parse(raw);
-
+    const partidaRaw = localStorage.getItem("partidaParaRevisar");
+    if (!partidaRaw) return;
+  
+    const partida = JSON.parse(partidaRaw);
+    const pgn = partida?.PGN;
+    if (!pgn || typeof pgn !== "string") return;
+  
+    // Carga de jugadas
     const temp = new Chess();
-    if (/\d+\.\s/.test(match.PGN)) temp.loadPgn(match.PGN);
+    try {
+      if (/\d+\.\s/.test(pgn)) temp.loadPgn(pgn);
+    } catch (err) {
+      console.error("Error al cargar PGN:", err);
+      return;
+    }
     const hist = temp.history();
     temp.reset();
-
     setMoves(hist);
     setFen(temp.fen());
-
-    const tag = (t) => {
-      const mm = match.PGN.match(
-        new RegExp(`\\[${t} "(.*?)"\\]`)
-      );
-      return mm?.[1] || "";
+  
+    // Función para extraer tags
+    const getTag = (tag) => {
+      const match = pgn.match(new RegExp(`\\[${tag} "(.*?)"\\]`));
+      return match?.[1] || "";
     };
-    const wName = tag("White Alias"),
-      bName = tag("Black Alias"),
-      wElo = tag("White Elo"),
-      bElo = tag("Black Elo"),
-      wId = tag("White"),
-      bId = tag("Black");
-    const user =
-      JSON.parse(localStorage.getItem("userData"))
-        ?.publicUser || {};
-    const isW = wId === user.id || wName === user.NombreUser;
-
-    setMiNombre(isW ? wName : bName);
-    setRivalNombre(isW ? bName : wName);
-    setMiElo(isW ? wElo : bElo);
-    setRivalElo(isW ? bElo : wElo);
+  
+    // Extracción de datos
+    const wName = getTag("White Alias"),
+          bName = getTag("Black Alias"),
+          wElo  = getTag("White Elo"),
+          bElo  = getTag("Black Elo"),
+          wId   = getTag("White"),
+          bId   = getTag("Black");
+  
+    const user = JSON.parse(localStorage.getItem("userData"))?.publicUser || {};
+    const isWhite = wId === user.id || wName === user.NombreUser;
+  
+    setMiNombre(isWhite ? wName : bName);
+    setRivalNombre(isWhite ? bName : wName);
+    setMiElo(isWhite ? wElo : bElo);
+    setRivalElo(isWhite ? bElo : wElo);
     setMiFoto(user.FotoPerfil);
-    setEsBlancas(isW);
+    setEsBlancas(isWhite);
   }, []);
+  
 
   // Navegación de jugadas
   const goToMove = (index) => {
@@ -143,26 +152,36 @@ console.log("evalCp:", evalCp, "fen:", fen);
   // Fetch de info del rival
   useEffect(() => {
     const fetchRivalInfo = async () => {
-      const partida = JSON.parse(localStorage.getItem("partidaParaRevisar"));
-      if (!partida) return;
-
-      const whiteId = partida.PGN.match(/\[White "(.*?)"\]/)?.[1];
-      const blackId = partida.PGN.match(/\[Black "(.*?)"\]/)?.[1];
+      const partidaRaw = localStorage.getItem("partidaParaRevisar");
+      const partida = JSON.parse(partidaRaw);
+      const pgn = partida?.PGN;
+      if (!pgn) return;
+  
+      const getTag = (tag) => {
+        const match = pgn.match(new RegExp(`\\[${tag} "(.*?)"\\]`));
+        return match?.[1] || "";
+      };
+  
+      const whiteId = getTag("White");
+      const blackId = getTag("Black");
       const myId = JSON.parse(localStorage.getItem("userData"))?.publicUser?.id;
       if (!whiteId || !blackId || !myId) return;
-
+  
       const rivalId = whiteId === myId ? blackId : whiteId;
+  
       try {
         const res = await fetch(`${BACKEND_URL}/getUserInfo?id=${rivalId}`);
         if (!res.ok) throw new Error("Error al obtener la info del rival");
         const rivalData = await res.json();
         setRivalFoto(rivalData.FotoPerfil);
       } catch (error) {
-        console.error(error);
+        console.error("Error al obtener rival:", error);
       }
     };
+  
     fetchRivalInfo();
   }, []);
+  
 
   return (
     <div className={styles.reviewContainer}>
@@ -210,11 +229,6 @@ console.log("evalCp:", evalCp, "fen:", fen);
     );
   })()}
 </div>
-
-
-
-
-
 
             <Chessboard
               position={fen}
@@ -281,7 +295,7 @@ console.log("evalCp:", evalCp, "fen:", fen);
             </button>
           </div>
           <button onClick={() => router.push("/comun/withMenu/profile")} className={styles.backButtonMoves}>
-            Volver
+            Salir
             </button>
         </div>
       </div>
@@ -302,7 +316,7 @@ console.log("evalCp:", evalCp, "fen:", fen);
             >
               Volver a ver
             </button>
-            <button className={styles.rematchButton} onClick={() => router.back()}>
+            <button className={styles.rematchButton} onClick={() => router.push("/comun/withMenu/profile")}>
               Salir
             </button>
           </div>

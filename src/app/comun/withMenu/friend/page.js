@@ -323,11 +323,6 @@ useEffect(() => {
                                         <span>{user.NombreUser}</span>
                                     </div>
                                     <div className={styles.actions}>
-                                        <FaChessKnight
-                                            className={styles.iconActionCaballo}
-                                            title="Desafiar a partida"
-                                            onClick={() => handleChallenge(user)}
-                                        />
                                         <FaUserPlus
                                             className={styles.iconActionNewAmigo}
                                             title="Agregar amigo"
