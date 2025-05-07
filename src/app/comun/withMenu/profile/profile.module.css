@@ -27,7 +27,7 @@
 .editButton {
     background: #3E76DF;
     color: white;
-    border: none;
+    border: 2px solid #3E76DF;
     padding: 8px 12px;
     border-radius: 5px;
     font-size: 14px;
@@ -42,9 +42,10 @@
 }
 
 .editButton:hover {
-    background: #0056b3;
+    border: 2px solid #3E76DF;
+    background: #222;
+    color: #3E76DF;
 }
-
 /* 🔹 Icono de lápiz en el botón Editar */
 .editIcon {
     font-size: 16px;
@@ -293,7 +294,7 @@
     background: #3E76DF;
     color: white;
     padding: 5px 10px;
-    border: none;
+    border: 2px solid #3E76DF;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
@@ -301,7 +302,9 @@
 }
 
 .watchButton:hover {
-    background: #0056b3;
+    border: 2px solid #3E76DF;
+    background: #222;
+    color: #3E76DF;
 }
 
 

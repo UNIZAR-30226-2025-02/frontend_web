@@ -561,7 +561,7 @@ export default function Profile() {
                                         onClick={() => {
                                             localStorage.setItem("partidaParaRevisar", JSON.stringify({PGN: match.PGN}));
                                             router.push("/comun/withMenu/review");
-                                        }}>Ver Partida
+                                        }}><strong>Ver Partida</strong>
                                         </button></td>
                                 </tr>
                             );

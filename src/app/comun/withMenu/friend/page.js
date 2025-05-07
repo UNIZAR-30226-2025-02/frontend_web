@@ -318,7 +318,8 @@ useEffect(() => {
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>
                                             <img
-                                            src={`/fotosPerfilWebp/${user.FotoPerfil}` || "/fotoPerfil.png"}
+                                            src={user.FotoPerfil ? `/fotosPerfilWebp/${user.FotoPerfil}` : "/fotoPerfil.png"}
+                                            onError={(e) => { e.currentTarget.src = "/fotoPerfil.png"; }}
                                             alt={user.NombreUser}
                                             className={styles.image}
                                         /></div>

@@ -62,7 +62,7 @@
   }
 
   .boardControls button {
-    background-color: #4A90E2;
+    background-color: #3E76DF;
     color: white;
     border: none;
     padding: 4px 10px;
@@ -95,6 +95,7 @@
   
   .reglaName {
     font-size: 28px;
+    color:#3E76DF;
     font-weight: bold;
   }
   

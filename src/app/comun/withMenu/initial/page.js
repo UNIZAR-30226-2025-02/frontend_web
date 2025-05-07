@@ -178,7 +178,7 @@ export default function InitialPage() {
             {user ? (
                 <div className={styles.welcomeMessage}>
                     {/* Log para verificar si el nombre del usuario está presente */}
-                    <h2>Bienvenido, {user.NombreUser}!</h2>
+                    <h2>Bienvenido, <em>{user.NombreUser}!</em></h2>
                 </div>
             ) : (
                 <div className={styles.welcomeMessage}>
@@ -249,7 +249,7 @@ export default function InitialPage() {
                                     'Punt_3_2'
                                 )}
                                 >
-                                Jugar
+                                <strong>Jugar</strong>
                             </button>
                         </div>
                     </div>

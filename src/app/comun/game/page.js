@@ -42,11 +42,12 @@ export default function Game() {
   const [incremento, setIncremento] = useState(0);
   let piezaLlega = null;
   let piezaElejida = null;
-  const [idPartida, setIdPartida] = useState(null); // Color asignado al 
-  const [playerColor, setPlayerColor] = useState(null); // Color asignado al 
-  const [tiempoPartida, setTiempoPartida] = useState(null); // Color asignado al
-  const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
-  const [fotoContrincante, setFotoContrincante] = useState(null); // Color asignado al  
+  const [idPartida, setIdPartida] = useState(null); // Id de la partida
+  const [playerColor, setPlayerColor] = useState(null); // Colr asignado al jugador
+  const [tiempoPartida, setTiempoPartida] = useState(null); // Tiempo de la partida
+  const [tipoPartida, setTipoPartida] = useState(null); // Tipo de partida (modo)
+  const [fotoContrincante, setFotoContrincante] = useState(null); // Foto del contrincante
+  const [variacion, setVariacion] = useState(null);
   const [searching, setSearching] = useState(false);
   const [tipoReto, setTipoReto] = useState(null);
   const gameCopy = useRef(new Chess()); // Referencia única del juego
@@ -319,7 +320,11 @@ export default function Game() {
       const soyElGanador = data.winner === user.id;
       const soyElPerdedor = !soyElGanador && data.winner !== "draw";
       const porTiempo = data.timeout === "true";
-    
+      if (playerColor === "white"){
+        setVariacion(data.variacionW);
+      }else{
+        setVariacion(data.variacionB);
+      }
       if (data.winner === "draw") {
         console.log("Tablas");
         setTablas(true);
@@ -761,10 +766,12 @@ export default function Game() {
         )}
         {!searching && (
           <h2>¡Has ganado!</h2>
+        )} {tipoReto === "ranked" &&(
+          <p className={styles.eloFinal}>({variacion >= 0 ? "+" : ""}{Math.round(parseFloat(variacion) || 0)})</p>
         )}
         {searching && (
           <div className={styles.loader}></div>
-        )}
+        )} 
         {!searching && (
           <span className={styles.trophy}>🏆</span>
         )}
@@ -799,6 +806,9 @@ export default function Game() {
           <h2>¡Has perdido!</h2>
         )} {timeOut && (
           <p className={styles.lostByTime}>Se te ha acabado el tiempo</p>
+        )}
+        {tipoReto === "ranked" &&(
+          <p className={styles.eloFinal}>({Math.round(parseFloat(variacion))})</p>
         )}
         {searching && (
           <div className={styles.loader}></div>
@@ -836,7 +846,9 @@ export default function Game() {
           )}
           {!searching && (
             <h2>!Has llegado a tablas!</h2>
-          )}
+          )} {tipoReto === "ranked" &&(
+          <p className={styles.eloFinal}>({variacion >= 0 ? "+" : ""}{Math.round(parseFloat(variacion) || 0)})</p>
+        )}
           {searching && (
             <div className={styles.loader}></div>
           )}
