@@ -1,8 +1,7 @@
 "use client";
 
 import styles from './opening.module.css';
-import { FaBookOpen } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { FcRules} from "react-icons/fc";import { useRouter } from 'next/navigation';
 
 export default function OpeningPage() {
   const router = useRouter();
@@ -85,7 +84,7 @@ export default function OpeningPage() {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>
-        <FaBookOpen style={{ color: "white", fontSize: '40px' }} /> APERTURAS
+        <FcRules style={{ fontSize: '45px' }} /> APERTURAS
       </h2>
 
       {aperturas.map((apertura, index) => (

@@ -11,6 +11,12 @@
     overflow-x: hidden;
   }
   
+  .boardContainer {
+    position: relative;
+    width: 180px;
+    height: 180px;
+  }
+
   .title {
     display: flex;
     align-items: center;
@@ -19,6 +25,7 @@
     font-weight: bold;
     margin-left: 80px;
     gap: 10px;
+    margin-bottom: 20px;
   }
   
   .icon {
@@ -50,15 +57,16 @@
   .boardControls {
     display: flex;
     justify-content: center;
+    margin-top: 10px;
     gap: 10px;
   }
-  
+
   .boardControls button {
-    background-color: #444;
+    background-color: #4A90E2;
     color: white;
     border: none;
     padding: 4px 10px;
-    font-size: 16px;
+    font-size: 20px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -70,7 +78,7 @@
   }
   
   .boardControls button:hover:enabled {
-    background-color: #555;
+    background-color: #007bff;
   }
   
   .reglaContent {
@@ -79,8 +87,8 @@
     align-items: flex-start;
     color: white;
     flex: 1;
-    gap: 5px;
-    margin-top: 0;
+    gap: 2px;
+    margin-top: -25px;
     justify-content: flex-start;
   }
   
@@ -91,9 +99,89 @@
   }
   
   .reglaDescription {
+    margin-top: -5px;
     font-size: 18px;
     color: #cccccc;
     max-width: 700px;
     line-height: 1.5;
   }
+  
+  .popupOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 180px;
+  height: 180px;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.popupBox {
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.popupBox h2 {
+  font-size: 1rem;
+  margin: 4px 0;
+}
+
+.lostByTime {
+  color: #ffcaca;
+  font-size: 0.7rem;
+  margin-bottom: 6px;
+}
+
+.trophy {
+  font-size: 1.2rem;
+  color: #ff5c5c;
+  margin-bottom: 8px;
+}
+
+.winnerActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.rowActions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.newGameButton,
+.reviewButton,
+.rematchButton {
+  padding: 4px 6px;
+  font-size: 0.65rem;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reviewButton{
+  background-color: #4A90E2;
+  color: white;
+}
+
+.newGameButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.rematchButton {
+  background-color: #dc3545;
+  color: white;
+}
+
   

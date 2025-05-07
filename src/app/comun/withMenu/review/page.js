@@ -285,13 +285,13 @@ console.log("evalCp:", evalCp, "fen:", fen);
 
           <div className={styles.navigation}>
             <button onClick={() => goToMove(currentMoveIndex - 1)} disabled={currentMoveIndex === 0}>
-              ⬅
+            ⟵
             </button>
             <button
               onClick={() => goToMove(currentMoveIndex + 1)}
               disabled={currentMoveIndex === moves.length}
             >
-              ➡
+              ⟶
             </button>
           </div>
           <button onClick={() => router.push("/comun/withMenu/profile")} className={styles.backButtonMoves}>

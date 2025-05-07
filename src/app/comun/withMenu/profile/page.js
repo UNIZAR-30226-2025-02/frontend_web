@@ -416,7 +416,8 @@ export default function Profile() {
                     </div>
 
                     <div className={styles.profileDetails}>
-                    <h2 className={styles.profileName}>{user?.NombreUser || "No disponible"}</h2>
+                    <h2 className={styles.profileName}>{user?.NombreUser || "No disponible"}</h2> 
+                    <p className={styles.profileCorreo}><em>({user?.Correo || "No disponible"})</em></p> 
                     <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
                                 <p><strong>Amigos:</strong> {user?.amistades?.length ?? 0}</p>

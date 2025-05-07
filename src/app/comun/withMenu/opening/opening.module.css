@@ -83,6 +83,7 @@
   .aperturaName {
     font-size: 28px; /* Más grande */
     font-weight: bold;
+    color: #3E76DF;
   }
   
   .aperturaDescription {
@@ -93,7 +94,7 @@
   
   .topBadge {
     margin-top: 10px;
-    background-color: #007bff;
+    background-color: #3E76DF;
     padding: 5px 10px;
     border-radius: 5px;
     align-self: flex-start;

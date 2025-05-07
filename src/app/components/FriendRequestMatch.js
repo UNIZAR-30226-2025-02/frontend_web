@@ -10,9 +10,21 @@ export default function FriendRequestMatch() {
   const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(null);
   const [friend, setFriend] = useState([]);
+  const [friendName, setFriendName] = useState([]);
   const [modo, setModo] = useState([]);
+  const [modoLegible, setModoLegible] = useState([]);
   const router = useRouter();
-
+  const modoMapeado = {
+    "Rápida": "Punt_10",
+    "Clásica": "Punt_30",
+    "Blitz": "Punt_5",
+    "Bullet": "Punt_3",
+    "Incremento": "Punt_5_10",
+    "Incremento exprés": "Punt_3_2"
+};
+const modoInvertido = Object.fromEntries(
+  Object.entries(modoMapeado).map(([clave, valor]) => [valor, clave])
+);
   useEffect(() => {
       if (typeof window !== 'undefined') {
         // Asegurarse de que estamos en el navegador
@@ -52,11 +64,15 @@ export default function FriendRequestMatch() {
       console.log("🔔 Nueva solicitud de partida:", event.detail);
       const { friendId } = event.detail;
       const { mode } = event.detail;
+      const { nombreAmigo } = event.detail;
+      const modoLegible = modoInvertido[mode]
       console.log("🧾 ID del amigo recibido en evento:", friendId);
       console.log("🧾 Modo de juego recibido en evento:", mode);
       setFriend(friendId);
       setModo(mode);
+      setFriendName(nombreAmigo);
       setShow(true); // Mostrar el modal
+      setModoLegible(modoLegible);
     };
   
     window.addEventListener("newFriendMacthRequest", handleFriendRequestMatch);
@@ -68,6 +84,7 @@ export default function FriendRequestMatch() {
   const handleAceptar = () => {
     setShow(false);
     console.log("🎮Aceptando partida con ID:", user.id, "y amigo con ID:", friend);
+    localStorage.setItem("tipoPartida", modo); // Guardar el tipo de partida en localStorage
     socket.emit("accept-challenge", { idRetado : user.id , idRetador : friend , modo: modo });
   };
 
@@ -83,6 +100,7 @@ export default function FriendRequestMatch() {
     <div className={styles.overlay}>
       <div className={styles.modalBox}>
         <h2>Solicitud de partida</h2>
+        <p><strong><em>{friendName}</em></strong> te ha invitado a una partida de tipo <strong><em>{modoLegible}</em></strong></p>
         <div className={styles.botones}>
           <button onClick={handleAceptar}><strong>Aceptar</strong></button>
           <button onClick={handleRechazar}><strong>Rechazar</strong></button>

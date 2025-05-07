@@ -164,7 +164,7 @@ export default function InitialPage() {
     };
 
     const icons = {
-        "Rápida": <FaChessPawn className={styles.icon} style={{ color: '#552003' }} />,
+        "Rápida": <FaChessPawn className={styles.icon} style={{ color: '#3E76DF' }} />,
         "Clásica": <FcApproval className={styles.icon} />,
         "Blitz": <FcAlarmClock className={styles.icon} />,
         "Bullet": <FcFlashOn className={styles.icon} />,

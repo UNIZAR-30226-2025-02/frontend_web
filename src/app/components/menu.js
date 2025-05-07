@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {getSocket} from "../utils/sockets"; 
+import { VscAccount } from "react-icons/vsc";
+
 import {
   IoMdTrophy
 } from "react-icons/io";
@@ -25,6 +27,7 @@ export default function Menu() {
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
   const [user, setUser] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter(); 
   const [showSettings, setShowSettings] = useState(false);
 
@@ -76,7 +79,12 @@ useEffect(() => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const confirmLogout = () => {
+    setShowConfirm(true);
+  };
+
   const handleLogout = async () => {
+    setShowConfirm(false)
     console.log("Ejecutando handleLogout");
     if (!user) {
         console.log("No hay usuario para cerrar sesión");
@@ -126,7 +134,11 @@ useEffect(() => {
         </Link>
       </li>
       <li>
-        <Link href="/comun/withMenu/ranking" className={styles.menuItem}>
+        <Link href="/comun/withMenu/ranking" 
+        className={`${styles.menuItem} ${
+            pathname === "/comun/withMenu/ranking" ? styles.active : ""
+          }`}
+        >
           <IoMdTrophy className={styles.icon} style={{ color: "gold" }} /> Ranking
         </Link>
       </li>
@@ -141,15 +153,34 @@ useEffect(() => {
         </Link>
       </li>
       <li>
-        <Link href="/comun/withMenu/rules" className={styles.menuItem}>
+        <Link href="/comun/withMenu/rules" 
+        className={`${styles.menuItem} ${
+            pathname === "/comun/withMenu/rules" ? styles.active : ""
+          }`}
+        >
           <FcPuzzle className={styles.icon} /> Reglas
         </Link>
       </li>
       <li>
-        <Link href="/comun/withMenu/opening" className={styles.menuItem}>
+        <Link href="/comun/withMenu/opening" 
+        className={`${styles.menuItem} ${
+            pathname === "/comun/withMenu/opening" ? styles.active : ""
+          }`}
+        >
           <FcRules className={styles.icon} /> Aperturas
         </Link>
       </li>
+      {showConfirm && (
+        <div className={styles.confirmOverlay}>
+            <div className={styles.confirmBox}>
+                <p className={styles.confirmText}>¿Estás seguro de que quieres cerrar sesión?</p>
+                <div className={styles.confirmButtons}>
+                    <button className={styles.confirmYes} onClick={handleLogout}>Sí</button>
+                    <button className={styles.confirmNo} onClick={() => setShowConfirm(false)}>No</button>
+                </div>
+            </div>
+        </div>
+      )}
       <li onClick={() => setShowSettings(!showSettings)}>
           <div className={`${styles.menuItem} ${showSettings ? styles.active : ""}`}>
           <FcSettings className={styles.icon} /> Ajustes
@@ -160,13 +191,35 @@ useEffect(() => {
               <ul className={styles.popupList}>
                 <li>
                 <button
-                  onClick={() => router.push("/comun/withMenu/profile")}
+                  onClick={() => {
+                    if (invitado !== null) {
+                    } else {
+                      router.push("/comun/withMenu/profile");
+                    }
+                  }}  
                   className={styles.popupItem}>
-                  👤 <strong>Perfil</strong>
+                  {invitado !== null ? (
+                    <>
+                    <Link href="/auth/login">
+                      <span className={styles.emoji}>👤</span><strong>Iniciar sesión</strong>
+                    </Link>               
+                   </>
+                  ) : (
+                    <>
+                      <img
+                        src={`/fotosPerfilWebp/${user?.FotoPerfil}`}
+                        alt="Foto de perfil"
+                        className={styles.profilePhoto}
+                      />
+                      <strong>Perfil</strong>
+                    </>
+                  )}
                   </button>          
                 </li>
                 <li>
-                  <button onClick={handleLogout} className={styles.popupItem}>🔓 <strong>Cerrar sesión</strong></button>
+                  <button onClick={confirmLogout} className={styles.popupItemLogout}>
+                    <span className={styles.emoji}>🔐</span> <strong>Cerrar sesión</strong>
+                  </button>
                 </li>
               </ul>
             </div>

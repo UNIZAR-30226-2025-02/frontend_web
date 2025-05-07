@@ -56,8 +56,8 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
             <p>
             Tu nueva forma de jugar ajedrez online. Rápido, moderno y con análisis en tiempo real.<br /><br />
             Si eres principiante, aprende las reglas y las mejores aperturas para mejorar tu nivel y desafiar a tus amigos.<br />
-            Con esta aplicación no tienes techo, observa los rankings de los distintos modos de juego y lucha por llegar a lo más alto,<br />
-            analizando tus errores y tus mejores jugadas.<br />
+            Con esta aplicación no tienes techo, observa los rankings de los distintos modos de juego y lucha por llegar a lo más alto,
+            analizando tus errores y tus mejores jugadas.<br /><br />
             ¡Es hora de pasarlo bien jugando al ajedrez!
           </p>
 

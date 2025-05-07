@@ -10,6 +10,7 @@ export default function FriendRequest() {
   const [socket, setSocket] = useState(null);
   const [token, setToken] = useState(null);
   const [friend, setFriend] = useState([]);
+  const [friendName, setFriendName] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -50,8 +51,10 @@ export default function FriendRequest() {
     const handleFriendRequest = (event) => {
       console.log("🔔 Nueva solicitud de amistad:", event.detail);
       const { friendId } = event.detail;
+      const { nombreJugador } = event.detail;
       console.log("🧾 ID del amigo recibido en evento:", friendId);
       setFriend(friendId);
+      setFriendName(nombreJugador);
       setShow(true); // Mostrar el modal
     };
   
@@ -78,6 +81,7 @@ export default function FriendRequest() {
     <div className={styles.overlay}>
       <div className={styles.modalBox}>
         <h2>Solicitud de amistad</h2>
+        <p><strong><em>{friendName}</em></strong> quiere ser tu amigo</p>
         <div className={styles.botones}>
           <button onClick={handleAceptar}><strong>Aceptar</strong></button>
           <button onClick={handleRechazar}><strong>Rechazar</strong></button>

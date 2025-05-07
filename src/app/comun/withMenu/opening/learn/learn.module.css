@@ -70,8 +70,11 @@
   }
   
   .navigation button:disabled {
-    background-color: #777;
     cursor: not-allowed;
+  }
+
+  .navigation button:hover:enabled{
+    background-color: #007bff;
   }
   
   .movesPanel {
@@ -116,7 +119,7 @@
   }
 
   .moveItem.active {
-    background-color: #00aaff;
+    background-color: #007bff;
     color: white;
   }
 

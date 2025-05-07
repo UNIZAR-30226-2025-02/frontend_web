@@ -63,7 +63,7 @@ export const getSocket = () => {
       }
       const friendId = data.idRetador;
       const notificationEventMatch = new CustomEvent("newFriendMacthRequest", {
-        detail: { friendId: data.idRetador, mode: data.modo},
+        detail: { friendId: data.idRetador, mode: data.modo, nombreAmigo: data.nombreRetador },
       }); 
        window.dispatchEvent(notificationEventMatch);
     });
@@ -73,7 +73,7 @@ export const getSocket = () => {
       console.log("🔔 Nueva solicitud de amistad:", data);
       const friendId = data.idJugador;
       const notificationEvent = new CustomEvent("newFriendRequest", {
-        detail: { friendId },
+        detail: { friendId, nombreJugador: data.nombreJugador },
       }); 
        window.dispatchEvent(notificationEvent);
     });
@@ -93,6 +93,7 @@ export const getSocket = () => {
       console.log("🟢 Partida encontrada con ID:", data.idPartida);
       console.log("Estoy buscando partida", user);
       console.log("he encontrado partida", user.NombreUser); 
+      localStorage.setItem("tipoReto", data.tipo); // Guardar el ID de la partida en localStorage
       const idPartidaCopy = data.idPartida; 
       localStorage.setItem("idPartida", idPartidaCopy);
 

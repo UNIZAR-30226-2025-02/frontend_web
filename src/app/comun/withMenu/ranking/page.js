@@ -24,11 +24,12 @@ export default function RankingPage() {
   const [rankings, setRankings] = useState({});
   const [userRankings, setUserRankings] = useState({});
   const [selectedModo, setSelectedModo] = useState(null);
+  const [soyInvitado, setSoyInvitado] = useState(false);
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
 
   const modos = [
-    { nombre: "Rápida", id: "Punt_10", icon: <FaChessPawn style={{ color: '#552003' }} /> },
+    { nombre: "Rápida", id: "Punt_10", icon: <FaChessPawn style={{ color: '#3E76DF' }} /> },
     { nombre: "Clásica", id: "Punt_30", icon: <FcApproval /> },
     { nombre: "Blitz", id: "Punt_5", icon: <FcAlarmClock /> },
     { nombre: "Bullet", id: "Punt_3", icon: <FcFlashOn /> },
@@ -60,6 +61,8 @@ export default function RankingPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedUserData = localStorage.getItem("userData");
+      const soyInvitadoLocal = localStorage.getItem("soyInvitado");
+      setSoyInvitado(soyInvitadoLocal);
       if (storedUserData) {
         const parsedUser = JSON.parse(storedUserData);
         setUser(parsedUser.publicUser);
@@ -110,7 +113,7 @@ export default function RankingPage() {
               ))}
             </div>
 
-            {userRankings[id] && (
+            {userRankings[id] && !soyInvitado &&(
               <div className={styles.userCard}>
                 <img
                   src={`/fotosPerfilWebp/${user.FotoPerfil}`}
@@ -123,6 +126,23 @@ export default function RankingPage() {
                     <span className={styles.userPos}>#{userRankings[id].rank}</span>
                     <span className={styles.userScore}>{Math.round(userRankings[id].puntuacion)} pts</span>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {soyInvitado && (
+              <div className={styles.userCard}>
+                <div className={styles.userInfo}>
+                  <span className={styles.userName}>Inicia sesión para ver tu posición en el ranking</span>
+                  <button
+                    className={styles.loginButton}
+                    onClick={() => {
+                      setSelectedModo(null);
+                      window.location.href = "/auth/login";
+                    }}
+                  >
+                    Iniciar sesión
+                  </button>
                 </div>
               </div>
             )}

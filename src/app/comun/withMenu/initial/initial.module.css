@@ -144,6 +144,16 @@
   cursor: pointer;
 }
 
+.playButton:hover {
+  background-color: #3E76DF;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 
 .searchWrapper {
   display: flex;

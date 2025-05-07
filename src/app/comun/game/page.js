@@ -48,6 +48,7 @@ export default function Game() {
   const [tipoPartida, setTipoPartida] = useState(null); // Color asignado al  
   const [fotoContrincante, setFotoContrincante] = useState(null); // Color asignado al  
   const [searching, setSearching] = useState(false);
+  const [tipoReto, setTipoReto] = useState(null);
   const gameCopy = useRef(new Chess()); // Referencia única del juego
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
@@ -122,6 +123,7 @@ export default function Game() {
     const tiempoNegras = localStorage.getItem("timeB");
     const partidaLocalSto = localStorage.getItem("idPartida");
     const fotoRival = localStorage.getItem("fotoRival");
+    const tipoRetoLocal = localStorage.getItem("tipoReto");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
       console.log("✅ Usuario encontrado:", parsedUser, "con elo: ", eloJug, "y el elo del rival:",eloRival);
@@ -134,6 +136,7 @@ export default function Game() {
       setEloRival(eloRival);
       setTipoPartida(tipoPartidaLocal);
       setFotoContrincante(fotoRival);
+      setTipoReto(tipoRetoLocal);
 
       if(tiempoBlancas === null){
         if (tipoPartidaLocal === "Punt_10"){
@@ -765,27 +768,26 @@ export default function Game() {
         {!searching && (
           <span className={styles.trophy}>🏆</span>
         )}
-        <div className={styles.winnerActions}>
-        {searching && (
-            <button className={styles.newGameButtonCancel} onClick={handleCancelSearch} title="Cancelar búsqueda">
-              Cancelar búsqueda
-            </button>)}
-          {!searching && (
-            <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
-              Buscar otra partida
-            </button>)}
-          {!searching && (
-            <button className={styles.reviewButton} onClick={goToReview}>
-            Revisar Partida
-            </button>
-          
-          ) }
-        </div>
+        <div className={styles.winnerActions}>       
+        {!searching && (
+          <button className={styles.reviewButton} onClick={goToReview}>
+          Revisar Partida
+          </button>
+        ) }
         {!searching && (
           <button className={styles.rematchButton} onClick={handleGoInit}>
             Volver Inicio
           </button>
         ) }
+        </div>
+          {searching && (
+          <button className={styles.newGameButtonCancel} onClick={handleCancelSearch} title="Cancelar búsqueda">
+            Cancelar búsqueda
+          </button>)}
+        {!searching && tipoReto === "ranked" &&(
+          <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
+            Buscar otra partida
+          </button>)}
       </div>
       )}
       {loser && (
@@ -809,21 +811,22 @@ export default function Game() {
             <button className={styles.newGameButtonCancel} onClick={handleCancelSearch} title="Cancelar búsqueda">
                 Cancelar búsqueda
             </button>)}
-          {!searching && (
-            <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
-              Buscar otra partida
-            </button>)}
+      
           {!searching && (
             <button className={styles.reviewButton} onClick={goToReview}>
             Revisar Partida
             </button>
-          ) }
-        </div>
-        {!searching && (
+          )}
+          {!searching && (
           <button className={styles.rematchButton} onClick={handleGoInit}>
             Volver Inicio
           </button>
         ) }
+        </div>
+        {!searching && tipoReto === "ranked" &&(
+            <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
+              Buscar otra partida
+            </button>)}
       </div>
       )}
       {tablas && (
@@ -846,21 +849,20 @@ export default function Game() {
                   Cancelar búsqueda
               </button>)}
             {!searching && (
-              <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
-                Buscar otra partida
-              </button>)}
-            {!searching && (
               <button className={styles.reviewButton} onClick={goToReview}>
               Revisar Partida
-              </button>
-            
+              </button>           
             ) }
-          </div>
-          {!searching && (
+            {!searching && (
             <button className={styles.rematchButton} onClick={handleGoInit}>
               Volver Inicio
             </button>
           ) }
+          </div>
+          {!searching && tipoReto === "ranked" &&(
+              <button className={styles.newGameButton} onClick={() => handleSearchOtherGame(tipoPartida)}>
+                Buscar otra partida
+              </button>)}
         </div>
       )}
       {drawOfferReceived && (

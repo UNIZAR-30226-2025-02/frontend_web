@@ -138,7 +138,8 @@ useEffect(() => {
 
             // Filtrar para no mostrar a uno mismo ni a amigos
             const filtered = data.filter(u =>
-                !Array.isArray(friends) || !friends.find(f => f.id === u.id)
+                u.id !== user.id &&                   // excluirse a uno mismo
+                (!Array.isArray(friends) || !friends.find(f => f.amigoId === u.id)) // excluir amigos
             );
 
             setSuggestions(filtered);
@@ -209,7 +210,7 @@ useEffect(() => {
     };
 
     const confirmChallenge = () => {
-        console.log("🧙‍♂️ El rival seleccionado para una partida es: ", selectedRival.amigoId);
+        console.log("🧙‍♂️ El rival seleccionado para una partida es: ", selectedRival, "de: ", modoMapeado[selectedMode]);
         if (socket && user && selectedRival) {
             socket.emit("challenge-friend", {
                 idRetador: user.id,
@@ -217,6 +218,7 @@ useEffect(() => {
                 modo: modoMapeado[selectedMode],
             });
         }
+        localStorage.setItem("tipoPartida", modoMapeado[selectedMode]); // Guardar el tipo de partida en localStorage
         setShowModal(false);
         setSelectedRival(null);
         setSelectedMode("Punt_10");
@@ -285,7 +287,7 @@ useEffect(() => {
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>
                                                 <img
-                                                src={`/fotosPerfilWebp/${user.fotoAmigo}` || "/default-avatar.png"}
+                                                src={`/fotosPerfilWebp/${user.fotoAmigo}` || "/fotoPerfil.png"}
                                                 alt={user.nombreAmigo}
                                                 className={styles.image}
                                             /></div>
@@ -316,7 +318,7 @@ useEffect(() => {
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>
                                             <img
-                                            src={`/fotosPerfilWebp/${user.FotoPerfil}` || "/default-avatar.png"}
+                                            src={`/fotosPerfilWebp/${user.FotoPerfil}` || "/fotoPerfil.png"}
                                             alt={user.NombreUser}
                                             className={styles.image}
                                         /></div>
