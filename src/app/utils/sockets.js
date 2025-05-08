@@ -41,6 +41,11 @@ export const getSocket = () => {
       console.log(`❌ Socket desconectado. Razón: ${reason}`);
     });
 
+    socket.on("ping", (data) => {
+      console.log("🔔 Ping recibido:", data);
+      socket.emit("pong", { message: userId });
+    });
+
     socket.on("force-logout", (data) => {
       console.log("⚠️ Sesión abierta en otro dispositivo:", data.message);
       localStorage.removeItem("authToken");

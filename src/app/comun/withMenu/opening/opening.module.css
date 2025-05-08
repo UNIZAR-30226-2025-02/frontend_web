@@ -75,7 +75,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 5px;
+    
+    margin-top: -25px;
     color: white;
     flex: 1;
   }
@@ -90,6 +91,7 @@
     font-size: 18px; /* Más grande */
     color: #cccccc;
     max-width: 700px; /* Opcional para no hacerlo infinito */
+    margin-top: -5px;
   }
   
   .topBadge {

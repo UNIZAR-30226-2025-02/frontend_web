@@ -262,7 +262,7 @@ export default function InitialPage() {
                     <button className={styles.searchButton} onClick={() => handleSearchGame("Punt_10")} >
                         {!searching && <FcSearch className={styles.iconSearch} />}
                         {searching && <div className={styles.loader}></div>}
-                        <span className={searching ? styles.hiddenText : ''}>Buscar Partida Clasica</span>
+                        <span className={searching ? styles.hiddenText : ''}>Buscar Partida Rápida</span>
                         <span className={!searching ? styles.hiddenText : ''}>Emparejando...</span>
                     </button>
                 </div>

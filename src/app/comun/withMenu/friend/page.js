@@ -287,7 +287,8 @@ useEffect(() => {
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>
                                                 <img
-                                                src={`/fotosPerfilWebp/${user.fotoAmigo}` || "/fotoPerfil.png"}
+                                                src={`/fotosPerfilWebp/${user.fotoAmigo}` || "/torre_azul.webp"}
+                                                onError={(e) => { e.currentTarget.src = "/torre_azul.webp"; }}
                                                 alt={user.nombreAmigo}
                                                 className={styles.image}
                                             /></div>
@@ -318,8 +319,8 @@ useEffect(() => {
                                     <div className={styles.userInfo}>
                                         <div className={styles.photo}>
                                             <img
-                                            src={user.FotoPerfil ? `/fotosPerfilWebp/${user.FotoPerfil}` : "/fotoPerfil.png"}
-                                            onError={(e) => { e.currentTarget.src = "/fotoPerfil.png"; }}
+                                            src={user.FotoPerfil ? `/fotosPerfilWebp/${user.FotoPerfil}` : "/torre_azul.webp"}
+                                            onError={(e) => { e.currentTarget.src = "/torre_azul.webp"; }}
                                             alt={user.NombreUser}
                                             className={styles.image}
                                         /></div>
