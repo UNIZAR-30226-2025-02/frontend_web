@@ -75,14 +75,14 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
-    margin-top: -25px;
+    margin-top: -45px;
     color: white;
     flex: 1;
   }
   
   .aperturaName {
     font-size: 28px; /* Más grande */
+    margin-top: 0px;
     font-weight: bold;
     color: #3E76DF;
   }
@@ -91,7 +91,7 @@
     font-size: 18px; /* Más grande */
     color: #cccccc;
     max-width: 700px; /* Opcional para no hacerlo infinito */
-    margin-top: -5px;
+    margin-top: -2px;
   }
   
   .topBadge {

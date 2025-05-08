@@ -760,6 +760,7 @@ export default function Game() {
   return (
     <div className={styles.gameContainer}>
       {winner && (
+        <div className={styles.overlay}>
         <div className={styles.winnerOverlay}>
         {searching && (
           <h2>Buscando una nueva partida...</h2>
@@ -796,8 +797,10 @@ export default function Game() {
             Buscar otra partida
           </button>)}
       </div>
+      </div>
       )}
       {loser && (
+        <div className={styles.overlay}>
         <div className={styles.winnerOverlay}>
         {searching && (
           <h2>Buscando una nueva partida...</h2>
@@ -838,8 +841,10 @@ export default function Game() {
               Buscar otra partida
             </button>)}
       </div>
+      </div>
       )}
       {tablas && (
+        <div className={styles.overlay}>
         <div className={styles.winnerOverlay}>
           {searching && (
             <h2>Buscando una nueva partida...</h2>
@@ -876,15 +881,18 @@ export default function Game() {
                 Buscar otra partida
               </button>)}
         </div>
+      </div>
       )}
       {drawOfferReceived && (
+        <div className={styles.overlay}>
         <div className={styles.winnerOverlay}>
           <h2>Tu rival ha ofrecido tablas</h2>
           <div className={styles.winnerActions}>
             <button onClick={acceptDraw} className={styles.newGameButton}>Aceptar</button>
             <button onClick={declineDraw} className={styles.reviewButton}>Rechazar</button>
         </div>
-      </div>
+        </div>
+        </div>
     )}
 
 {confirmDraw && (

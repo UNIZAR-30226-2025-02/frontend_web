@@ -17,6 +17,7 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -25,6 +26,10 @@ export default function ResetPasswordPage() {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const togglePasswordConfirmVisibility = () => {
+    setShowPasswordConfirm(!showPasswordConfirm);
   };
 
   const handleSubmit = async (e) => {
@@ -103,7 +108,7 @@ export default function ResetPasswordPage() {
         <label className="label">Nueva Contraseña</label>
         <div className="password-wrapper">
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           name="Contrasena"
           value={form.Contrasena}
           onChange={handleChange}
@@ -120,15 +125,15 @@ export default function ResetPasswordPage() {
         <label className="label">Repetir Contraseña</label>
         <div className="password-wrapper">
         <input
-          type="password"
+          type={showPasswordConfirm ? "text" : "password"}
           name="ConfirmarContrasena"
           value={form.ConfirmarContrasena}
           onChange={handleChange}
           className="input"
           required
         />
-        <span className="eye-icon" onClick={togglePasswordVisibility}>
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+        <span className="eye-icon" onClick={togglePasswordConfirmVisibility}>
+            {showPasswordConfirm ? <FaEyeSlash /> : <FaEye />}
           </span>
         </div>
       </div>

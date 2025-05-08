@@ -13,8 +13,9 @@
   }
   
   .modalBox {
-    background: white;
+    background: #1b1b1b;
     padding: 2rem;
+    color: white;
     border-radius: 8px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);

@@ -301,24 +301,26 @@ console.log("evalCp:", evalCp, "fen:", fen);
       </div>
 
       {showReviewEnd && (
-        <div className={styles.winnerOverlay}>
-          <h2>Fin de la revisión</h2>
-          <span className={styles.trophy}>🏁</span>
-          <p>Has llegado al final de la partida.</p>
-          <div className={styles.winnerActions}>
-            <button
-              className={styles.newGameButton}
-              onClick={() => {
-                setCurrentMoveIndex(0);
-                goToMove(0);
-                setShowReviewEnd(false);
-              }}
-            >
-              Volver a ver
-            </button>
-            <button className={styles.rematchButton} onClick={() => router.push("/comun/withMenu/profile")}>
-              Salir
-            </button>
+        <div className={styles.overlay}>
+          <div className={styles.winnerOverlay}>
+            <h2>Fin de la revisión</h2>
+            <span className={styles.trophy}>🏁</span>
+            <p>Has llegado al final de la partida.</p>
+            <div className={styles.winnerActions}>
+              <button
+                className={styles.newGameButton}
+                onClick={() => {
+                  setCurrentMoveIndex(0);
+                  goToMove(0);
+                  setShowReviewEnd(false);
+                }}
+              >
+                Volver a ver
+              </button>
+              <button className={styles.rematchButton} onClick={() => router.push("/comun/withMenu/profile")}>
+                Salir
+              </button>
+            </div>
           </div>
         </div>
       )}

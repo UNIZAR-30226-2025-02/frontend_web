@@ -42,7 +42,6 @@ export const getSocket = () => {
     });
 
     socket.on("ping", (data) => {
-      console.log("🔔 Ping recibido:", data);
       socket.emit("pong", { message: userId });
     });
 
