@@ -1,0 +1,225 @@
+.reviewContainer {
+  padding-top: 140px;
+  padding-left: 300px; 
+  min-height: calc(100vh - 140px);
+  width: 100%;  
+  height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #333;
+  color: white;
+  background-color: #6e6e6e;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  min-height: 100vh;
+  }
+
+  .gameBody {
+    display: flex;
+    justify-content: center; /* Agrega espacio a los lados */
+    align-items: center;
+    width: 100%;
+    height: 100%; /* Asegura que todo ocupe la pantalla sin scroll */
+    gap: 100px;
+    padding-top: 20px;
+    background-color: #6e6e6e;
+    align-items: flex-start;
+  }
+
+  .boardContainer {
+    background-color: #222;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 60vh;
+    height: 70vh; /* Asegura que el tablero tenga la misma altura que los paneles */
+    flex-grow: 1;
+    align-self: flex-start; /* Alinea el tablero con los otros paneles */
+    position: relative; /* Permite posicionar elementos dentro */
+  }
+  
+  .title {
+    font-size: 24px;
+    margin: 10px 0 20px 0;
+    text-align: center;
+    color: white;
+  }
+  
+  
+  .navigation {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 10px;
+  }
+  
+  .navigation button {
+    font-size: 24px;
+    padding: 8px 16px;
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .navigation button:disabled {
+    cursor: not-allowed;
+  }
+
+  .navigation button:hover:enabled{
+    background-color: #007bff;
+  }
+  
+  .movesPanel {
+    background-color: #444;
+    padding: 15px;
+    border-radius: 8px;
+    height: 70vh;
+    overflow-y: auto;
+    width: 20%;
+    margin-left: 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .movesPanel h3 {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .movesList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .moveItem {
+    padding: 4px 8px;
+    background-color: #555;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .moveItem.whiteMove {
+    background-color: #6e6e6e;
+  }
+  
+  .moveItem.blackMove {
+    background-color: #222;
+  }
+
+  .moveItem.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .backButtonMoves {
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    margin-top: 20px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .backButtonMoves:hover {
+    background-color: #0056b3; /* azul más oscuro al pasar ratón */
+  }
+  
+  @media (max-width: 1000px) and (min-width: 768px) {
+    .reviewContainer {
+      padding-left: 40px; /* ⬅️ pequeño margen para que no quede pegado */
+      padding-right: 40px;
+      align-items: center;
+    }
+  
+    .gameBody {
+      flex-direction: row; /* ⬅️ sigue tablero a la izquierda y movimientos a la derecha */
+      justify-content: center;
+      gap: 50px;
+    }
+  
+    .boardContainer {
+      width: auto;
+    }
+  
+    .movesPanel {
+      width: 30%;
+      height: auto;
+      margin-left: 0;
+      margin-top: 0;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .toggleMovimientosButton {
+      display: none; /* ⬅️ NO mostramos el botón de desplegar movimientos */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .reviewContainer {
+      padding-left: 30px;
+      align-items: center;
+    }
+  
+    .gameBody {
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+  
+    .boardContainer {
+      width: 90%;
+      height: auto;
+      align-items: center;
+    }
+  
+    .movesPanel {
+      width: 90%;
+      height: auto;
+      margin-left: 0;
+      margin-top: 10px;
+      display: none; /* Oculto por defecto en móvil */
+    }
+  
+    .movesPanel.visible {
+      display: flex; /* Se muestra si está expandido */
+      flex-direction: column;
+    }
+  
+    .toggleMovimientosButton {
+      display: block;
+      background-color: #444;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+  
+    .toggleMovimientosButton:hover {
+      background-color: #666;
+    }
+  }
+  
+  
+  

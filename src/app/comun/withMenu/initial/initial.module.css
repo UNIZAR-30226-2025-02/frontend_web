@@ -82,16 +82,26 @@
 
 
 .rachaCount {
-  margin-left: 380px;
-  margin-right: 10px;
   font-size: 32px;
   font-weight: bold;
+}
+
+.textWithCount {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* espacio entre "Tu racha" y el número */
 }
 
 .checks {
   display: flex;
   font-size: 32px;
-  gap: 5px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.resultIcon {
+  font-size: 38px;  /* tamaño de los ticks o cruces */
+  color: #ff4d6d;   /* color de las X */
 }
 
 .mode {
@@ -129,9 +139,18 @@
   color: white;
   font-weight: bold;
   border: none;
+  border: 2px solid #3E76DF;
   padding: 15px 30px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.3s ease-in-out;
+
+}
+
+.playButton:hover {
+  background-color: #1e1e1e;
+  color: #3E76DF;
+  border: 2px solid #3E76DF;
 }
 
 
@@ -163,6 +182,7 @@
   border-radius: 5px;
   cursor: pointer;
   display: flex;
+  border: 4px solid #3E76DF;
   align-items: center;
   justify-content: center;
   font-weight: bold;
@@ -170,6 +190,7 @@
   gap: 10px;  /* Aumentamos espacio entre icono y texto */
   white-space: nowrap;
 }
+
 
 .iconSearch {
   font-size: 38px; /* 🔹 Fuerza el tamaño del icono */

@@ -2,7 +2,10 @@
 
 import { io } from "socket.io-client";
 
+const SOCKET_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 let socket = null;
+
 
 export const getSocket = () => {
   if (!socket && typeof window !== "undefined") {
@@ -13,12 +16,13 @@ export const getSocket = () => {
       console.warn("⚠️ No se encontró token o userData en localStorage");
       return null;
     }
+    const user = JSON.parse(userData); // 👈 guardas el usuario aquí
 
     const userId = JSON.parse(userData).id;
 
     console.log("🚀 Conectando al socket con:", { userId, token });
 
-    socket = io("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/", {
+    socket = io(SOCKET_URL, {
       transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 10,
@@ -35,6 +39,10 @@ export const getSocket = () => {
 
     socket.on("disconnect", (reason) => {
       console.log(`❌ Socket desconectado. Razón: ${reason}`);
+    });
+
+    socket.on("ping", (data) => {
+      socket.emit("pong", { message: userId });
     });
 
     socket.on("force-logout", (data) => {
@@ -59,7 +67,7 @@ export const getSocket = () => {
       }
       const friendId = data.idRetador;
       const notificationEventMatch = new CustomEvent("newFriendMacthRequest", {
-        detail: { friendId: data.idRetador, mode: data.modo},
+        detail: { friendId: data.idRetador, mode: data.modo, nombreAmigo: data.nombreRetador },
       }); 
        window.dispatchEvent(notificationEventMatch);
     });
@@ -69,10 +77,86 @@ export const getSocket = () => {
       console.log("🔔 Nueva solicitud de amistad:", data);
       const friendId = data.idJugador;
       const notificationEvent = new CustomEvent("newFriendRequest", {
-        detail: { friendId },
+        detail: { friendId, nombreJugador: data.nombreJugador },
       }); 
        window.dispatchEvent(notificationEvent);
     });
+
+    socket.on('game-ready', (data) => {
+      const userData = localStorage.getItem("userData");
+
+      if (!userData) {
+        console.warn("⚠️ No se encontró token o userData en localStorage");
+        return null;
+      }
+      console.log("🔔 En user data tenemos:", userData);
+      const publicUser = JSON.parse(userData); // ✅ Aquí tienes el objeto completo del usuario
+      const user = publicUser.publicUser; // ✅ Aquí tienes el objeto completo del usuario 
+      console.log("🔔 En user  tenemos:", publicUser);   
+      console.log("🔔 Recibo el game-ready:", data);
+      console.log("🟢 Partida encontrada con ID:", data.idPartida);
+      console.log("Estoy buscando partida", user);
+      console.log("he encontrado partida", user.NombreUser); 
+      localStorage.setItem("tipoReto", data.tipo); // Guardar el ID de la partida en localStorage
+      const idPartidaCopy = data.idPartida; 
+      localStorage.setItem("idPartida", idPartidaCopy);
+
+  });
+  if (!window.location.pathname.startsWith("/comun/game")) {
+
+  console.log("🎧 Ahora escuchando evento 'color'...");
+  socket.on("color", (data) => {
+      const userData = localStorage.getItem("userData");
+
+      if (!userData) {
+        console.warn("⚠️ No se encontró token o userData en localStorage");
+        return null;
+      }
+      const publicUser = JSON.parse(userData); // ✅ Aquí tienes el objeto completo del usuario
+      const user = publicUser.publicUser; // ✅ Aquí tienes el objeto completo del usuario
+      console.log("🔔 Recibo el color:", data);
+      console.log("🎨 Recibido evento 'color' con datos:", data);
+
+      if (!data || !data.jugadores) {
+          console.error("❌ No se recibió información válida de colores.");
+          return;
+      }
+
+      console.log("Buscando color para el jugador:", user);
+      const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
+      const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
+
+      if (jugadorActual && jugadorRival) {
+        localStorage.setItem("colorJug",jugadorActual.color);
+        console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
+        localStorage.setItem("colorJug",jugadorActual.color);
+        console.log("Guardo id rival: ", jugadorRival.id);
+        localStorage.setItem("idRival", jugadorRival.id);
+        if(jugadorActual.color === "black"){
+            localStorage.setItem("eloRival", jugadorRival.eloW);
+            localStorage.setItem("nombreRival", jugadorRival.nombreW);
+            localStorage.setItem("eloJug", jugadorActual.eloB);
+            localStorage.setItem("fotoRival", jugadorRival.fotoBlancas)
+        } else {
+            localStorage.setItem("eloRival", jugadorRival.eloB);
+            localStorage.setItem("nombreRival", jugadorRival.nombreB);
+            localStorage.setItem("eloJug", jugadorActual.eloW);
+            localStorage.setItem("fotoRival", jugadorRival.fotoNegras)
+        }
+      } else {
+        console.error("❌ No se encontró información de jugadores válida. Juagador actual:", jugadorActual, "Jugador rival:", jugadorRival);
+      }
+      const idPartidaCopy =  localStorage.getItem("idPartida");
+      const navigateEvent = new CustomEvent("navigateToGame", {
+        detail: { idPartida: idPartidaCopy },
+      });
+      window.dispatchEvent(navigateEvent);
+      //window.location.href = `/comun/game?id=${idPartidaCopy}`; // recarga limpia
+      //router.refresh();
+  });
+  } else {
+    console.log("🔔 Ignorando evento 'color' porque ya estamos en la página de juego.");
+  }
   }
   return socket;
 };

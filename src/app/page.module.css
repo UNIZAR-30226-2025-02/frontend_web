@@ -1,130 +1,168 @@
-/* Estilos Generales */
 .page {
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  background: #0f0f0f;
+  padding: 0;
+  margin: 0;
+}
+
+
+.header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 40px;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  color: white;
-  text-align: center;
-  padding: 0px 20px;
-  gap: 5px;
-  position: relative;
-  overflow: hidden;
+  background-color: #111;
 }
 
-/* 🎨 Fondo Animado */
-.animatedBackground {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1; /* Para que esté detrás del contenido */
-  background: linear-gradient(-45deg, #1e1e1e, #3d3d3d, #1a1a1a, #000);
-  background-size: 300% 300%;
+.logo {
+  height: 50px;
 }
 
-/* Sección de Texto */
-.textSection h1 {
-  font-size: 2.5rem;
-  margin-bottom: 5px;
+.btn {
+  margin-left: 20px;
+  color: #fff;
+  text-decoration: none;
+  border: 2px solid #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: 0.3s;
   font-weight: bold;
 }
 
-.textSection p {
-  font-size: 1.2rem;
-  color: #cccccc;
+.btn:hover {
+  background-color: #3E76DF;
+  color: whitesmoke;
 }
 
-/* Sección de Imagen */
-.imageSection img {
-  width: 300px;
-  height: auto;
-  max-width: 100%;
-  margin: 5px 0;
-}
-
-/* Contenedor de Botones */
-.ctas {
+.hero {
   display: flex;
-  flex-direction: row;
-  gap: 12px;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
+  padding: 40px 40px;
   flex-wrap: wrap;
-  width: 100%;
 }
 
-/* Contenedor del botón "Entrar como invitado" */
-.guestContainer {
+.heroText {
+  max-width: 500px;
+}
+
+.heroText h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.heroText p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.primaryBtn {
+  background-color: #3E76DF;
+  color: whitesmoke;
+  padding: 14px 30px;
+  font-size: 20px;
+  border: 2px solid #3E76DF;
+  border-radius: 8px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.primaryBtn:hover {
+  background-color: #111;
+  color: whitesmoke;
+  border: 2px solid whitesmoke;
+}
+
+.heroImg {
+  max-width: 400px;
+  border-radius: 20px;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  padding: 40px 40px;
+  background-color: #1b1b1b;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.feature {
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.feature h3{
+  color: #3E76DF;
+}
+
+.feature img {
+  width: 600px;
+  margin-top: 10px;
+}
+
+.gallery {
+  padding: 60px 40px;
+  background-color: #222;
+  text-align: center;
+}
+
+.images {
   display: flex;
   justify-content: center;
-  margin-top: 12px;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
-/* Botones */
-.button {
-  text-decoration: none;
-  padding: 12px 24px;
-  font-size: 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: background 0.3s ease, transform 0.2s ease;
-  display: inline-block;
+.images img {
+  width: 250px;
+  border-radius: 15px;
+}
+
+.footer {
   text-align: center;
-  width: 220px;
+  padding: 20px;
+  background-color: #111;
+  color: #aaa;
 }
 
-.primary {
-  background-color: #ffffff;
-  color: #1e1e1e;
-  border: 2px solid white;
+.container {
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-.primary:hover {
-  background-color: #cccccc;
-  transform: scale(1.05);
+.links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
-.secondary {
-  background-color: transparent;
+.links li {
+  display: inline;
+}
+
+.iconoTiktok, .iconoInsta, .iconoX{
+  transition: color 0.3s ease;
+  transition: transform 0.3s ease-in-out;
+  font-size: 30px;
+  color: #828282;
+}
+
+.iconoTiktok:hover{
+  color: #00ffe0;
+  transform: scale(1.2);
+}
+
+.iconoInsta:hover{
+  color: #ff008f;
+  transform: scale(1.2);
+}
+
+.iconoX:hover{
   color: white;
-  border: 2px solid white;
-}
-
-.secondary:hover {
-  background-color: #333333;
-  transform: scale(1.05);
-}
-
-.guest {
-  background-color: transparent;
-  color: #007bff;
-  border: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-  text-decoration: none;
-  transition: text-decoration 0.3s ease;
-}
-
-.guest:hover {
-  text-decoration: underline;
-}
-
-/* Responsive */
-@media (max-width: 500px) {
-  .page {
-    padding: 40px;
-  }
-
-  .ctas {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .button {
-    width: 100%;
-    max-width: 250px;
-  }
+  transform: scale(1.2);
 }

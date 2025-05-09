@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function ResetPasswordPage() {
   const [form, setForm] = useState({
     NombreUser: "",
@@ -15,6 +17,7 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -23,6 +26,10 @@ export default function ResetPasswordPage() {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const togglePasswordConfirmVisibility = () => {
+    setShowPasswordConfirm(!showPasswordConfirm);
   };
 
   const handleSubmit = async (e) => {
@@ -36,7 +43,7 @@ export default function ResetPasswordPage() {
     }
 
     try {
-        const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/tryResetPasswd", {
+        const response = await fetch(`${BACKEND_URL}/tryResetPasswd`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -101,7 +108,7 @@ export default function ResetPasswordPage() {
         <label className="label">Nueva Contraseña</label>
         <div className="password-wrapper">
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           name="Contrasena"
           value={form.Contrasena}
           onChange={handleChange}
@@ -118,15 +125,15 @@ export default function ResetPasswordPage() {
         <label className="label">Repetir Contraseña</label>
         <div className="password-wrapper">
         <input
-          type="password"
+          type={showPasswordConfirm ? "text" : "password"}
           name="ConfirmarContrasena"
           value={form.ConfirmarContrasena}
           onChange={handleChange}
           className="input"
           required
         />
-        <span className="eye-icon" onClick={togglePasswordVisibility}>
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+        <span className="eye-icon" onClick={togglePasswordConfirmVisibility}>
+            {showPasswordConfirm ? <FaEyeSlash /> : <FaEye />}
           </span>
         </div>
       </div>

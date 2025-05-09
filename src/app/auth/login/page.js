@@ -5,6 +5,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from 'next/navigation';  // Importar useRouter
 import {getSocket} from "../../utils/sockets"; 
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function LoginPage() {
   const [form, setForm] = useState({
     NombreUser: "",
@@ -28,8 +30,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-       //const response = await fetch("http://localhost:3000/login", {
-       const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/login", {
+       const response = await fetch(`${BACKEND_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(form),
@@ -49,6 +50,8 @@ export default function LoginPage() {
             // Guardar el token en localStorage
           localStorage.setItem("authToken", token);
           localStorage.setItem("userData", JSON.stringify(data));
+          localStorage.removeItem("soyInvitado");
+          console.log("😭Datos del usuario guardados en localStorage:", data);
           const socket = getSocket(token);
           socket.on('existing-game', (data) => {
             console.log('Este usuario estaba jugando una partida');
@@ -59,7 +62,8 @@ export default function LoginPage() {
             localStorage.setItem("idPartida",data.gameID);
             localStorage.setItem("eloJug", data.miElo);
             localStorage.setItem("eloRival", data.eloRival);  
-            localStorage.setItem("nombreRival", data.nombreRival);                          
+            localStorage.setItem("nombreRival", data.nombreRival);    
+            localStorage.setItem("fotoRival", data.foto_rival);
             router.push(`/comun/game?id=${data.gameID}`);
           }) 
           router.push("/comun/withMenu/initial");

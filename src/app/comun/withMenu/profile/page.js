@@ -8,6 +8,7 @@ import { FcApproval, FcAlarmClock, FcFlashOn, FcBullish, FcRating } from "react-
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {getSocket} from "../../../utils/sockets"; 
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 /*const token = localStorage.getItem("authToken");
 const socket = getSocket(token);*/
@@ -23,6 +24,15 @@ export default function Profile() {
     const [newNombreUser, setNewNombreUser] = useState("");
     const [newFotoPerfil, setNewFotoPerfil] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
+    const [ultimasPartidas, setUltimasPartidas] = useState([]);
+    const [partidasClasica, setPartidasClasica] = useState([]);
+    const [partidasPrincipiante, setPartidasPrincipiante] = useState([]);
+    const [partidasAvanzado, setPartidasAvanzado] = useState([]);
+    const [partidasRelampago, setPartidasRelampago] = useState([]);
+    const [partidasIncremento, setPartidasIncremento] = useState([]);
+    const [partidasExpres, setPartidasExpres] = useState([]);
+
+
 
   // Cargar usuario desde localStorage solo una vez
   
@@ -79,7 +89,7 @@ export default function Profile() {
         }
 
         try {
-            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/getUserInfo?id=${userId}`, {
+            const response = await fetch(`${BACKEND_URL}/getUserInfo?id=${userId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -120,7 +130,7 @@ export default function Profile() {
             console.log("Enviando solicitud de logout al backend");
             console.log("El user es", user.NombreUser);
            // const response = await fetch("http://localhost:3000/logout", {
-           const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/logout", {
+           const response = await fetch(`${BACKEND_URL}/logout`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ NombreUser: user.NombreUser }),
@@ -154,7 +164,7 @@ export default function Profile() {
         }
     
         try {
-            const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/editUser", {
+            const response = await fetch(`${BACKEND_URL}/editUser`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -182,7 +192,67 @@ export default function Profile() {
         }
     };
     
+    useEffect(() => {
+        const fetchUltimasPartidas = async () => {
+          if (!user?.id) return;
+      
+          try {
+            const response = await fetch(`${BACKEND_URL}/buscarUlt10PartidasDeUsuario?id=${user.id}`);
+            if (!response.ok) {
+              console.error("Error al obtener las últimas partidas");
+              return;
+            }
+            const data = await response.json();
+            console.log("🗳️Las ultimas partidas son: ", data);
+            setUltimasPartidas(data);
+          } catch (error) {
+            console.error("Error en fetchUltimasPartidas:", error);
+          }
+        };
+      
+        fetchUltimasPartidas();
 
+        const fetchUltimasPartidasPorModo = async () => {
+            if (!user?.id) return;
+        
+            try {
+              const modos = ["Punt_10", "Punt_5", "Punt_3", "Punt_5_10", "Punt_3_2", "Punt_30"];
+        
+              // Hacemos las peticiones en paralelo con Promise.all
+              const respuestas = await Promise.all(
+                modos.map((modo) =>
+                  fetch(`${BACKEND_URL}/buscarUlt5PartidasDeUsuarioPorModo?id=${user.id}&modo=${modo}`)
+                )
+              );
+        
+              // Comprobamos si alguna falló
+              if (respuestas.some((res) => !res.ok)) {
+                console.error("Error al obtener partidas por modo");
+                return;
+              }
+        
+              // Obtenemos los JSON de todas las respuestas
+              const [partidasPunt_10, partidasPunt_5, partidasPunt_3, partidasPunt_5_10, partidasPunt_3_2, partidasPunt_30] = await Promise.all(
+                respuestas.map((res) => res.json())
+              );
+        
+              // Aquí puedes guardar cada set de partidas en un estado distinto
+              setPartidasClasica(partidasPunt_10);
+              setPartidasPrincipiante(partidasPunt_30);
+              setPartidasAvanzado(partidasPunt_5);
+              setPartidasRelampago(partidasPunt_3);
+              setPartidasIncremento(partidasPunt_5_10);
+              setPartidasExpres(partidasPunt_3_2);
+        
+            } catch (error) {
+              console.error("Error en fetchUltimasPartidasPorModo:", error);
+            }
+          };
+        
+          fetchUltimasPartidasPorModo();
+
+      }, [user]);
+      
 
     const generateRandomScoreData = () => {
         return Array.from({ length: 10 }, (_, i) => ({
@@ -191,22 +261,134 @@ export default function Profile() {
         }));
     };
 
-    const gameModes = [
-        { icon: <FaChessPawn className={styles.scoreIcon} style={{ color: "#552003" }} />, name: "Clásica", data: generateRandomScoreData() },
-        { icon: <FcApproval className={styles.scoreIcon} />, name: "Principiante", data: generateRandomScoreData() },
-        { icon: <FcAlarmClock className={styles.scoreIcon} />, name: "Avanzado", data: generateRandomScoreData() },
-        { icon: <FcFlashOn className={styles.scoreIcon} />, name: "Relámpago", data: generateRandomScoreData() },
-        { icon: <FcBullish className={styles.scoreIcon} />, name: "Incremento", data: generateRandomScoreData() },
-        { icon: <FcRating className={styles.scoreIcon} />, name: "Incremento Exprés", data: generateRandomScoreData() },
-    ];
+      const modoMapeado = {
+        "Rápida": "Punt_10",
+        "Clásica": "Punt_30",
+        "Blitz": "Punt_5",
+        "Bullet": "Punt_3",
+        "Incremento": "Punt_5_10",
+        "Incremento Exprés": "Punt_3_2"
+      };
+      const modoMapeadoReverse = Object.fromEntries(
+        Object.entries(modoMapeado).map(([front, back]) => [back, front])
+      );
+      
+      const iconsByMode = {
+        "Rápida": <FaChessPawn className={styles.scoreIcon} style={{ color: "#552003" }} />,
+        "Clásica": <FcApproval className={styles.scoreIcon} />,
+        "Blitz": <FcAlarmClock className={styles.scoreIcon} />,
+        "Bullet": <FcFlashOn className={styles.scoreIcon} />,
+        "Incremento": <FcBullish className={styles.scoreIcon} />,
+        "Incremento Exprés": <FcRating className={styles.scoreIcon} />,
+      };
 
-    const matchHistory = [
-        { id: 1, mode: "Clásica", whitePlayer: "Jugador123", blackPlayer: "JugadorX", result: "win", moves: 22, date: "6 mar 2025" },
-        { id: 2, mode: "Principiante", whitePlayer: "JugadorY", blackPlayer: "Jugador123", result: "lose", moves: 12, date: "17 feb 2025" },
-        { id: 3, mode: "Relámpago", whitePlayer: "Jugador123", blackPlayer: "JugadorZ", result: "win", moves: 12, date: "12 feb 2025" },
-        { id: 4, mode: "Incremento", whitePlayer: "JugadorA", blackPlayer: "Jugador123", result: "lose", moves: 42, date: "31 ene 2025" },
-        { id: 5, mode: "Avanzado", whitePlayer: "Jugador123", blackPlayer: "JugadorB", result: "win", moves: 32, date: "4 sept 2024" },
-    ];
+    const extraerNombres = (pgn) => {
+      if (!pgn) {
+        return { nombreBlancas: "Desconocido", nombreNegras: "Desconocido" };
+      }
+      const regexWhiteAlias = /\[White Alias "(.*?)"\]/;
+      const regexBlackAlias = /\[Black Alias "(.*?)"\]/;
+
+      const nombreBlancas = pgn.match(regexWhiteAlias)?.[1] || "Desconocido";
+      const nombreNegras = pgn.match(regexBlackAlias)?.[1] || "Desconocido";
+
+      return { nombreBlancas, nombreNegras };
+    };
+      
+    const extraerElo = (pgn, userId, match) => {
+        if (!pgn) {
+          return { miElo: 1000, rivalElo: 0 };
+        }
+      
+        const getTag = (tag) => {
+          const matchResult = pgn.match(new RegExp(`\\[${tag} "(.*?)"\\]`));
+          return matchResult?.[1] || "";
+        };
+      
+        const whiteId = getTag("White");
+        const blackId = getTag("Black");
+        const whiteAlias = getTag("White Alias");
+        const blackAlias = getTag("Black Alias");
+      
+        const whiteElo = Math.round(parseFloat(getTag("White Elo") || 0));
+        const blackElo = Math.round(parseFloat(getTag("Black Elo") || 0));
+      
+        const esBlancas = [whiteId, whiteAlias].includes(userId);
+      
+        const miEloBase = esBlancas ? whiteElo : blackElo;
+        const variacion = esBlancas ? match?.Variacion_JW : match?.Variacion_JB;
+        
+        const miElo = miEloBase + (parseFloat(variacion) || 0);
+        const rivalElo = esBlancas ? blackElo : whiteElo;
+      
+        console.log("Mi Elo es: ", miElo);
+        return {
+          miElo: Math.round(miElo),
+          rivalElo
+        };
+      };
+      
+      const extraerVariacion = (userId, match) => {
+        if (!userId || !match) return 0;
+        console.log("El jugador blancas es: ", match.JugadorB);
+        const esBlancas = match.JugadorB === userId;
+        const variacion = esBlancas ? match.Variacion_JB : match.Variacion_JW;
+      
+        return Math.round(parseFloat(variacion) || 0);
+      };
+      
+      const contarJugadas = (pgn) => {
+        if (!pgn) return 0;
+        const partes = pgn.split("\n\n");
+        const movimientosRaw = partes[1]?.trim();
+        if (!movimientosRaw) return 0;
+        const regexTurnos = /\d+\./g;
+        const turnos = movimientosRaw.match(regexTurnos);
+        return turnos ? turnos.length : 0;
+      };
+      
+      
+      const modosUnicos = Object.keys(modoMapeado);
+
+      const partidasPorModo = {
+        Punt_10: partidasClasica,
+        Punt_30: partidasPrincipiante,
+        Punt_5: partidasAvanzado,
+        Punt_3: partidasRelampago,
+        Punt_5_10: partidasIncremento,
+        Punt_3_2: partidasExpres
+      };
+      
+      const gameModes = modosUnicos.map((modoFront) => {
+        const modoBack = modoMapeado[modoFront];
+        
+        const partidasModo = partidasPorModo[modoBack] || [];
+        
+        let data = partidasModo.map((p, index) => {
+            const { miElo } = extraerElo(p.PGN, user.id, p);
+            return {
+            name: `P${index + 1}`,
+            score: miElo
+            };
+        });
+        
+            // Si solo hay una partida, agregamos un punto inicial con score 1000, ya que se inicia en 1000 puntos
+            if (data.length >= 1 && data.length <= 4) {
+                data = [
+                    ...data,
+                { name: "P0", score: 1000 }
+                ];
+            }
+
+        return {
+            icon: iconsByMode[modoFront],
+            name: modoFront,
+            data: data.length > 0
+            ? data
+            : [{ name: "P1", score: 1000 }]
+        };
+        });      
+
 
     const imagenesDisponibles = Array.from({ length: 33 }, (_, i) => `/fotosPerfilWebp/avatar_${i + 1}.webp`);
     return (
@@ -234,7 +416,8 @@ export default function Profile() {
                     </div>
 
                     <div className={styles.profileDetails}>
-                    <h2 className={styles.profileName}>{user?.NombreUser || "No disponible"}</h2>
+                    <h2 className={styles.profileName}>{user?.NombreUser || "No disponible"}</h2> 
+                    <p className={styles.profileCorreo}><em>({user?.Correo || "No disponible"})</em></p> 
                     <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
                                 <p><strong>Amigos:</strong> {user?.amistades?.length ?? 0}</p>
@@ -309,23 +492,24 @@ export default function Profile() {
 
 
             <div className={styles.scoresContainer}>
-                {gameModes.map((mode, index) => (
-                    <div key={index} className={styles.scoreBox}>
-                        {mode.icon}
-                        <p>{mode.name}</p>
-                        <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height={100}>
-                                <LineChart data={mode.data}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" hide />
-                                    <YAxis hide />
-                                    <Tooltip />
-                                    <Line type="monotone" dataKey="score" stroke="#00aaff" strokeWidth={2} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+            {gameModes.map((mode, index) => (
+                <div key={index} className={styles.scoreBox}>
+                    {mode.icon}
+                    <p>{mode.name}</p>
+                    <div className={styles.chartContainer}>
+                    <ResponsiveContainer width="100%" height={100}>
+                    <LineChart data={mode.data.slice().reverse()}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" hide />
+                        <YAxis hide />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="score" stroke="#00aaff" strokeWidth={2} />
+                    </LineChart>
+                    </ResponsiveContainer>
                     </div>
+                </div>
                 ))}
+
             </div>
 
             <div className={styles.historyContainer}>
@@ -336,36 +520,54 @@ export default function Profile() {
                             <th>Modo</th>
                             <th>Jugadores</th>
                             <th>Resultado</th>
-                            <th>Movimientos</th>
+                            <th>Jugadas</th>
                             <th>Fecha</th>
                             <th>Resumen</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {matchHistory.map((match) => (
-                            <tr key={match.id}>
-                                <td className={styles.modeIcon}>
-                                    {gameModes.find(m => m.name === match.mode)?.icon}
-                                </td>
-                                <td className={styles.playersContainer}>
-                                    <div className={styles.playerRow}>
-                                        <span className={`${styles.colorIndicator} ${styles.whitePiece}`}></span>
-                                        <span>{match.whitePlayer}</span>
-                                    </div>
-                                    <div className={styles.playerRow}>
-                                        <span className={`${styles.colorIndicator} ${styles.blackPiece}`}></span>
-                                        <span>{match.blackPlayer}</span>
-                                    </div>
-                                </td>
-                                <td className={styles.result}>
-                                    {match.result === "win" ? "✅" : "❌"}
-                                </td>
-                                <td>{match.moves}</td>
-                                <td>{match.date}</td>
-                                <td><button className={styles.watchButton}>Ver Partida</button></td>
-                            </tr>
-                        ))}
+                        {ultimasPartidas.map((match, index) => {
+                            const { nombreBlancas, nombreNegras } = extraerNombres(match.PGN);
+                            const whiteElo = match.PGN.match(/\[White Elo "(.*?)"\]/)?.[1];
+                            const blackElo = match.PGN.match(/\[Black Elo "(.*?)"\]/)?.[1];
+                            const finalWhiteElo = Math.round((parseFloat(whiteElo) || 0));
+                            const finalBlackElo = Math.round((parseFloat(blackElo) || 0));
+                            return (
+                                <tr key={index}>
+                                    <td className={styles.modeIcon} title={modoMapeadoReverse[match.Modo]}>
+                                        {iconsByMode[modoMapeadoReverse[match.Modo]]}
+                                    </td>
+                                    <td className={styles.playersContainer}>
+                                        <div className={`${styles.playerRow} ${nombreBlancas === user?.NombreUser ? styles.highlightedPlayer : ''}`}>
+                                            <span className={`${styles.colorIndicator} ${styles.whitePiece}`}></span>
+                                            <span>{nombreBlancas} ({finalWhiteElo})</span>
+                                        </div>
+                                        <div className={`${styles.playerRow} ${nombreNegras === user?.NombreUser ? styles.highlightedPlayer : ''}`}>
+                                            <span className={`${styles.colorIndicator} ${styles.blackPiece}`}></span>
+                                            <span>{nombreNegras} ({finalBlackElo})</span>
+                                        </div>
+                                    </td>
+                                    <td className={styles.result}>
+                                        {match.Ganador === null ? '🤝' : match.Ganador === user.id ? '✅' : '❌'}
+                                        {" "}
+                                        <span className={styles.variacionPunt}>
+                                            ({extraerVariacion(user.id, match) >= 0 ? "+" : ""}
+                                            {extraerVariacion(user.id, match)})
+                                        </span>
+                                    </td>
+                                    <td>{contarJugadas(match.PGN)}</td>
+                                    <td>{new Date(match.created_at).toLocaleDateString()}</td>
+                                    <td><button className={styles.watchButton} 
+                                        onClick={() => {
+                                            localStorage.setItem("partidaParaRevisar", JSON.stringify({PGN: match.PGN}));
+                                            router.push("/comun/withMenu/review");
+                                        }}><strong>Ver Partida</strong>
+                                        </button></td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
+
                 </table>
             </div>
         </div>

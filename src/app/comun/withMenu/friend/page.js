@@ -10,13 +10,9 @@ import {
 } from "react-icons/fc";
 import { FaChessPawn } from "react-icons/fa";
 
-// Simulación de datos
-const allUsers = [
-    { id: 1, name: "Dani04", isFriend: true },
-    { id: 2, name: "Dani0456", isFriend: false },
-    { id: 3, name: "Dani0481", isFriend: false },
-    { id: 4, name: "Ana01", isFriend: true },
-];
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+
 
 export default function FriendPage() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -27,6 +23,9 @@ export default function FriendPage() {
     const [suggestions, setSuggestions] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedRival, setSelectedRival] = useState(null);
+    const [selectedFriend, setSelectedFriend] = useState(null);
+    const [showPreview, setShowPreview] = useState(null);
+    const [showPreviewAdd, setShowPreviewAdd] = useState(null);
     const [selectedMode, setSelectedMode] = useState("Clásica");
 
 
@@ -62,18 +61,12 @@ export default function FriendPage() {
         const currentUser = parsedUser.publicUser;
         
         setUser(currentUser);
-       // setFriends(currentUser.amistades || []);
-        /*setSuggestions([
-            {
-                id: "e7540325-1707-48e3-aa94-1355b7e3bf95",
-                name: "danisalas8",
-            }
-        ]);*/
+
         const fetchFriends = async () => {
             const userId = parsedUser?.publicUser?.id;
             console.log("Mi id es: ", userId);
             try {
-                const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarAmigos?id=${userId}`, {
+                const response = await fetch(`${BACKEND_URL}/buscarAmigos?id=${userId}`, {
                     method: "GET",
                     headers: {
                             "Content-Type": "application/json",
@@ -94,13 +87,40 @@ export default function FriendPage() {
     }
   }, []);
 
- /* useEffect(() => {
+  useEffect(() => {
     if (user) {
-        
+        if (!user) {
+          console.log("❌ No hay usuario aún. Esperando...");
+          return;
+        }
+    
+        console.log("🟢 Usuario detectado:", user);
+    
+        if (!socket) {
+            console.error("❌ ERROR: socket no está definido.");
+            return;
+        }
+        socket.on("friendRequestAccepted", (data) => {
+            console.log("Solicitud de amistad aceptada:", data);
+            window.location.reload();
+        });
 
-        
+        socket.on("friendRemoved", (data) => {
+            console.log("Amigo eliminado:", data);
+            window.location.reload();
+        });
+
+        socket.on("errorMessage", (data) => {
+            console.log("❌❌Error: ", data);
+        });
+
+        return () => {
+            socket.off("friendRequestAccepted");
+            socket.off("friendRemoved");
+        }; 
     }
-}, [user]);*/
+}, [user]);
+
 useEffect(() => {
     const fetchSuggestions = async () => {
         if (!searchTerm) {
@@ -109,7 +129,7 @@ useEffect(() => {
         }
 
         try {
-            const response = await fetch(`https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/buscarUsuarioPorUser?NombreUser=${searchTerm}`);
+            const response = await fetch(`${BACKEND_URL}/buscarUsuarioPorUser?NombreUser=${searchTerm}`);
             const data = await response.json();
 
             if (!response.ok) {
@@ -118,7 +138,8 @@ useEffect(() => {
 
             // Filtrar para no mostrar a uno mismo ni a amigos
             const filtered = data.filter(u =>
-                u.id !== user.id && !friends.find(f => f.id === u.id)
+                u.id !== user.id &&                   // excluirse a uno mismo
+                (!Array.isArray(friends) || !friends.find(f => f.amigoId === u.id)) // excluir amigos
             );
 
             setSuggestions(filtered);
@@ -132,48 +153,55 @@ useEffect(() => {
 
 }, [searchTerm, user, friends]);  // dependencias necesarias
 
+    const filteredFriends = Array.isArray(friends)
+    ? friends.filter(user =>
+        user.nombreAmigo.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    : [];
 
-  // Pedir amigos y usuarios al backend una vez tengamos el user
-  /*useEffect(() => {
-    if (socket && user) {
-        socket.emit("getFriendsAndUsers", { idJugador: user.id });
-
-        socket.on("friendsAndUsers", (data) => {
-            setFriends(data.friends);
-            setSuggestions(data.users);
-        });
-
-        return () => {
-            socket.off("friendsAndUsers");
-        };
-    }
-}, [socket, user]);*/
-
-    const filteredFriends = friends.filter(user =>
-        user.NombreUser.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const filteredSuggestions = suggestions.filter(user =>
         user.NombreUser.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
 
-    const handleAddFriend = (idAmigo) => {
+    const handleAddFriend = () => {
+        console.log("💩 Voy a agregar al amigo", selectedFriend.id);
         if (socket && user) {
             socket.emit("add-friend", {
                 idJugador: user.id,
-                idAmigo,
+                idAmigo: selectedFriend.id,
             });
         }
+        setShowPreviewAdd(false);
+        setSelectedFriend(null);
     };
 
-    const handleRemoveFriend = (idAmigo) => {
+    const handleRemoveFriend = () => {
+        console.log("💩 Voy a eliminar al amigo", selectedFriend.amigoId);
         if (socket && user) {
             socket.emit("remove-friend", {
                 idJugador: user.id,
-                idAmigo,
+                idAmigo : selectedFriend.amigoId,
             });
         }
+        setShowPreview(false);
+        setSelectedFriend(null);
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    };
+
+    const handleRemoveFriendPreview = (rival) => {
+        console.log("🧙‍♂️ El amigo seleccionado para eliminar es: ", rival);
+        setSelectedFriend(rival);
+        setShowPreview(true);
+    };
+
+    const handleAddFriendPreview = (rival) => {
+        console.log("🧙‍♂️ El usuario seleccionado para añadir es: ", rival);
+        setSelectedFriend(rival);
+        setShowPreviewAdd(true);
     };
 
     const handleChallenge = (rival) => {
@@ -182,18 +210,30 @@ useEffect(() => {
     };
 
     const confirmChallenge = () => {
+        console.log("🧙‍♂️ El rival seleccionado para una partida es: ", selectedRival, "de: ", modoMapeado[selectedMode]);
         if (socket && user && selectedRival) {
             socket.emit("challenge-friend", {
                 idRetador: user.id,
-                idRetado: selectedRival.id,
+                idRetado: selectedRival.amigoId,
                 modo: modoMapeado[selectedMode],
             });
         }
+        localStorage.setItem("tipoPartida", modoMapeado[selectedMode]); // Guardar el tipo de partida en localStorage
         setShowModal(false);
         setSelectedRival(null);
         setSelectedMode("Punt_10");
     };
     
+    
+    const cancelElimination = () => {
+        setShowPreview(false);
+        setSelectedFriend(null);
+    };
+
+    const cancelSolicitud = () => {
+        setShowPreviewAdd(false);
+        setSelectedFriend(null);
+    };
 
     const cancelChallenge = () => {
         setShowModal(false);
@@ -201,19 +241,19 @@ useEffect(() => {
     };
     
     const modoMapeado = {
-        "Clásica": "Punt_10",
-        "Principiante": "Punt_30",
-        "Avanzado": "Punt_5",
-        "Relámpago": "Punt_3",
+        "Rápida": "Punt_10",
+        "Clásica": "Punt_30",
+        "Blitz": "Punt_5",
+        "Bullet": "Punt_3",
         "Incremento": "Punt_5_10",
         "Incremento exprés": "Punt_3_2"
     };
     
     const icons = {
-        "Clásica": <FaChessPawn className={styles.icon} style={{ color: '#552003' }} />,
-        "Principiante": <FcApproval className={styles.icon} />,
-        "Avanzado": <FcAlarmClock className={styles.icon} />,
-        "Relámpago": <FcFlashOn className={styles.icon} />,
+        "Rápida": <FaChessPawn className={styles.icon} style={{ color: '#552003' }} />,
+        "Clásica": <FcApproval className={styles.icon} />,
+        "Blitz": <FcAlarmClock className={styles.icon} />,
+        "Bullet": <FcFlashOn className={styles.icon} />,
         "Incremento": <FcBullish className={styles.icon} />,
         "Incremento exprés": <FcRating className={styles.icon} />
     };
@@ -242,22 +282,28 @@ useEffect(() => {
                     {filteredFriends.length > 0 && (
                         <div className={styles.section}>
                             <h3>Amigos</h3>
-                            {friends.map(user => (
-                                <div key={user.id} className={styles.userCard}>
+                            {filteredFriends.map(user => (
+                                <div key={user.amigoId} className={styles.userCard}>
                                     <div className={styles.userInfo}>
-                                        <div className={styles.photo}>FOTO</div>
-                                        <span>{user.NombreUser}</span>
+                                        <div className={styles.photo}>
+                                                <img
+                                                src={`/fotosPerfilWebp/${user.fotoAmigo}` || "/torre_azul.webp"}
+                                                onError={(e) => { e.currentTarget.src = "/torre_azul.webp"; }}
+                                                alt={user.nombreAmigo}
+                                                className={styles.image}
+                                            /></div>
+                                        <span>{user.nombreAmigo}</span>
                                     </div>
                                     <div className={styles.actions}>
                                         <FaChessKnight
                                             className={styles.iconActionCaballo}
                                             title="Desafiar a partida"
-                                            onClick={() => handleChallenge(user.id)}
+                                            onClick={() => handleChallenge(user)}
                                         />
                                         <FaUserMinus
                                             className={styles.iconActionNoAmigo}
                                             title="Eliminar amigo"
-                                            onClick={() => handleRemoveFriend(user.id)}
+                                            onClick={() => handleRemoveFriendPreview(user)}
                                         />
                                     </div>
                                 </div>
@@ -268,22 +314,23 @@ useEffect(() => {
                     {searchTerm && filteredSuggestions.length > 0 && (
                         <div className={styles.section}>
                             <h3>Sugerencias</h3>
-                            {suggestions.map(user => (
+                            {filteredSuggestions.map(user => (
                                 <div key={user.id} className={styles.userCard}>
                                     <div className={styles.userInfo}>
-                                        <div className={styles.photo}>FOTO</div>
+                                        <div className={styles.photo}>
+                                            <img
+                                            src={user.FotoPerfil ? `/fotosPerfilWebp/${user.FotoPerfil}` : "/torre_azul.webp"}
+                                            onError={(e) => { e.currentTarget.src = "/torre_azul.webp"; }}
+                                            alt={user.NombreUser}
+                                            className={styles.image}
+                                        /></div>
                                         <span>{user.NombreUser}</span>
                                     </div>
                                     <div className={styles.actions}>
-                                        <FaChessKnight
-                                            className={styles.iconActionCaballo}
-                                            title="Desafiar a partida"
-                                            onClick={() => handleChallenge(user)}
-                                        />
                                         <FaUserPlus
                                             className={styles.iconActionNewAmigo}
                                             title="Agregar amigo"
-                                            onClick={() => handleAddFriend(user.id)}
+                                            onClick={() => handleAddFriendPreview(user)}
                                         />
                                     </div>
                                 </div>
@@ -294,7 +341,7 @@ useEffect(() => {
                 {showModal && selectedRival && (
                     <div className={styles.modalOverlay}>
                         <div className={styles.modal}>
-                            <p>Selecciona el modo de juego para retar a <strong>{selectedRival.name}</strong>:</p>
+                            <p>Selecciona el modo de juego para retar a <strong>{selectedRival.nombreAmigo}</strong>:</p>
 
                             <div className={styles.modeSelector}>
                                 {modosDeJuego.map((modo) => (
@@ -311,6 +358,30 @@ useEffect(() => {
                             <div className={styles.modalButtons}>
                                 <button onClick={confirmChallenge} className={styles.btnConfirm}>Retar</button>
                                 <button onClick={cancelChallenge} className={styles.btnCancel}>Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showPreview && selectedFriend && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modal}>
+                            <p>Estas seguro de que quieres eliminar de amigos a <strong>{selectedFriend.nombreAmigo}</strong>?</p>
+                            <div className={styles.modalButtons}>
+                                <button onClick={handleRemoveFriend} className={styles.btnConfirm}>Eliminar</button>
+                                <button onClick={cancelElimination} className={styles.btnCancel}>Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showPreviewAdd && selectedFriend && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modal}>
+                            <p>Quieres enviar solicitud de amistad a <strong>{selectedFriend.NombreUser}</strong>?</p>
+                            <div className={styles.modalButtons}>
+                                <button onClick={handleAddFriend} className={styles.btnConfirm}>Enviar</button>
+                                <button onClick={cancelSolicitud} className={styles.btnCancel}>Cancelar</button>
                             </div>
                         </div>
                     </div>

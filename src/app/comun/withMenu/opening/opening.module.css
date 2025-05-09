@@ -1,0 +1,106 @@
+.container {
+    padding-top: 140px;
+    margin-left: 300px;
+    width: calc(100% - 300px);
+    min-height: calc(100vh - 140px);
+    background-color: #6e6e6e;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .title {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-left: 80px;
+    gap: 10px;
+  }
+  
+  .aperturaBox {
+    width: 80%;
+    background-color: #2c2c2c;
+    margin: 20px auto;
+    border-radius: 10px;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 40px; /* Más separación */
+  }
+  
+  .imagePlaceholder {
+    width: 160px;
+    height: 160px;
+    background-color: #555;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative; /* ⬅️ Importante para posicionar el Play Icon */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+  }
+  
+  .imagePlaceholder:hover {
+    transform: scale(1.05);
+  }
+  
+  .aperturaImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .playIcon {
+    position: absolute; /* ⬅️ Esto pone el icono sobre la imagen */
+    font-size: 50px;
+    color: white;
+    opacity: 0.8;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  .imagePlaceholder:hover .playIcon {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  
+  
+  .aperturaContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: -45px;
+    color: white;
+    flex: 1;
+  }
+  
+  .aperturaName {
+    font-size: 28px; /* Más grande */
+    margin-top: 0px;
+    font-weight: bold;
+    color: #3E76DF;
+  }
+  
+  .aperturaDescription {
+    font-size: 18px; /* Más grande */
+    color: #cccccc;
+    max-width: 700px; /* Opcional para no hacerlo infinito */
+    margin-top: -2px;
+  }
+  
+  .topBadge {
+    margin-top: 10px;
+    background-color: #3E76DF;
+    padding: 5px 10px;
+    border-radius: 5px;
+    align-self: flex-start;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  

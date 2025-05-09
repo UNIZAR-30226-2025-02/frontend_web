@@ -3,6 +3,8 @@ import "../layout.css";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function RegisterPage() {
   const [form, setForm] = useState({
     NombreUser: "", 
@@ -28,7 +30,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/register", { // Cambio de la URL
+      const response = await fetch(`${BACKEND_URL}/register`, { // Cambio de la URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",

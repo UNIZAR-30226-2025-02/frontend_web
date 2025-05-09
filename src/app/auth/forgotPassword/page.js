@@ -4,6 +4,8 @@ import "../layout.css"; // Asegúrate de la ruta correcta
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -16,7 +18,7 @@ export default function ForgotPasswordPage() {
     setError("");
 
     try {
-      const response = await fetch("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/sendPasswdReset", {
+      const response = await fetch(`${BACKEND_URL}/sendPasswdReset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Correo: email }),
