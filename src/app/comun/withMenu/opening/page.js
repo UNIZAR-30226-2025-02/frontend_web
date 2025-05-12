@@ -84,7 +84,7 @@ export default function OpeningPage() {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>
-        <FcRules style={{ fontSize: '45px' }} /> APERTURAS
+        <FcRules style={{ fontSize: '45px' }} /> <strong>APERTURAS</strong>
       </h2>
 
       {aperturas.map((apertura, index) => (

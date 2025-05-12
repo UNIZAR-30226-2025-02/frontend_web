@@ -241,21 +241,138 @@
     gap: 10px;
   }
 
-  @media (max-width: 768px) {
-    .reviewContent {
+  @media (max-width: 1000px) and (min-width: 768px) {
+    .reviewContainer {
+      padding-left: 40px; /* ⬅️ pequeño margen para que no quede pegado */
+      padding-right: 40px;
+      align-items: center;
+    }
+  
+    .gameBody {
+      flex-direction: row; /* ⬅️ sigue tablero a la izquierda y movimientos a la derecha */
+      justify-content: center;
+      gap: 50px;
+    }
+  
+    .boardContainer {
+      width: auto;
+    }
+  
+    .movesPanel {
+      width: 30%;
+      height: auto;
+      margin-left: 0;
+      margin-top: 0;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 80px;
+    }
+  
+    .toggleMovimientosButton {
+      display: none; /* ⬅️ NO mostramos el botón de desplegar movimientos */
+    }
+  }
+
+  @media (max-width: 1040px) {
+    .navigation {
       flex-direction: column;
       align-items: center;
     }
   
-    .movesPanel {
+    .navigation button {
       width: 80%;
-      height: auto;
-    }
-  
-    .boardSection {
-      width: 90%;
+      font-size: 16px;
+      padding: 8px 16px;
     }
   }
+  
+  @media (max-width: 1000px) {
+    .reviewContainer {
+      box-sizing: border-box;
+      padding-left: 30px;
+      align-items: center;
+      min-height: calc(100vh - 140px); 
+      height: 100%;
+      overflow-y: auto; 
+      max-width: 100%;
+      padding-bottom: 100px;
+      overflow-x: hidden;
+    }
+  
+    .gameBody {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+  
+    .boardContainer {
+      width: 90%;
+      height: auto;
+      margin: 0 auto; /* Centra horizontalmente */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    .movesPanel {
+      width: 90%;
+      height: auto;
+      margin-left: 0;
+      margin-top: 10px;
+      display: none; /* Oculto por defecto en móvil */
+    }
+  
+    .movesPanel.visible {
+      display: flex; /* Se muestra si está expandido */
+      flex-direction: column;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+  
+    .toggleMovimientosButton {
+      display: block;
+      background-color: #444;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+  
+    .toggleMovimientosButton:hover {
+      background-color: #666;
+    }
+
+    .playerInfoTop, .playerInfoBottom {
+      position: absolute;
+      width: 95%;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      margin-left: 56px;
+    }
+
+    .playerInfoTop{
+      margin-top: 5px;
+    }
+
+    .playerInfoBottom{
+      margin-bottom: 5px;
+    }
+
+    .boardAndAnalysis {
+      display: flex;
+      align-items: stretch;    /* para que la barra ocupe toda la altura del tablero */
+      width: 100%;
+      margin: 40px auto;
+    }
+  }
+  
   .boardAndAnalysis {
     display: flex;
     align-items: stretch;    /* para que la barra ocupe toda la altura del tablero */

@@ -498,3 +498,135 @@
 .variacionPunt{
     color: white;
 }
+@media (max-width: 1000px) {
+    .profileContainer {
+      padding-left: 0;
+    }
+  }
+
+  
+@media (max-width: 768px) {
+    .profileContainer {
+      padding-left: 10px;
+      margin-top: 100px;
+      border-radius: 0;
+    }
+  
+    .profileCard {
+      padding: 15px;
+      margin: 0 10px;
+    }
+  
+    .profileHeader {
+      padding: 0;
+      margin: 0;
+      flex-direction: column;
+      height: auto;
+      align-items: center;
+      text-align: center;
+    }
+  
+    .profilePhoto {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        flex-shrink: 0;
+    }
+    
+    .profileImage {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+  
+    .profileDetails {
+      padding-top: 10px;
+      align-items: center;
+    }
+  
+    .profileName {
+      font-size: 22px;
+      padding-left: 0;
+      text-align: center;
+    }
+  
+    .profileCorreo {
+      font-size: 16px;
+      padding-left: 0;
+      text-align: center;
+    }
+  
+    .profileInfo {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+      }
+    
+      .infoColumn {
+        width: auto;
+        align-items: center;
+        text-align: center;
+        gap: 4px;
+      }
+  
+    .editButton, .logoutButton {
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+  
+    .scoresContainer {
+      padding: 5px 0;
+    }
+  
+    .scoreBox {
+      width: 140px;
+      font-size: 14px;
+    }
+  
+    .scoreIcon {
+      font-size: 30px;
+    }
+  
+    .chartContainer {
+      height: 80px;
+    }
+  
+    .historyContainer {
+      padding: 15px;
+      font-size: 14px;
+    }
+  
+    .historyTable th, .historyTable td {
+      font-size: 12px;
+      padding: 6px;
+    }
+  
+    .watchButton {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+  
+    .editProfileBox {
+      width: 90%;
+      padding: 20px;
+    }
+  
+    .editProfileBox h3 {
+      font-size: 20px;
+    }
+  
+    .editButtons {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .saveEditBtn, .cancelEditBtn {
+      font-size: 14px;
+      width: 100%;
+    }
+  }
+  

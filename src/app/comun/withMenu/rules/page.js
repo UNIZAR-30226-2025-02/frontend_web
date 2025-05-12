@@ -163,7 +163,7 @@ function RuleBoard({ initialFen, moves = [], showTimeOutPopup = false }) {
 export default function RulesPage() {
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}><FcPuzzle className={styles.icon} /> REGLAS</h2>
+      <h2 className={styles.title}><FcPuzzle className={styles.icon} /> <strong>REGLAS</strong></h2>
 
       {rules.map((rule, index) => (
         <div key={index} className={styles.reglaBox}>

@@ -215,6 +215,142 @@
     border: 2px solid #3E76DF;
   }
   
+  .highlightedName {
+    color: #3E76DF;
+    font-weight: bold;
+  }
+  
+  /* 🔹 Ajustes para pantallas medianas: desde 0 hasta 1000px */
+@media (max-width: 1000px) {
+  .container {
+    margin: 20px 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 100px 20px 20px; /* espacio arriba para que no quede pegado al header */
+    align-items: center;
+    
+  }
+
+  .title {
+    font-size: 32px;
+    margin: 0 auto 20px;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
+    flex-direction: row;
+    display: flex;
+  }
+
+  .rankingBox {
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    gap: 20px;
+    width: 90%;
+  }
+
+  .modeIcon {
+    font-size: 70px;
+    margin-left: 0;
+  }
+
+  .rankingContent {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .rankingList {
+    width: 100%;
+  }
+
+  .rankingItem {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .name,
+  .score {
+    font-size: 16px;
+  }
+
+  .userCard {
+    margin-left: 0;
+    transform: none;
+    width: 100%;
+    align-items: center;
+  }
+
+  .userAvatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .userName {
+    font-size: 18px;
+  }
+
+  .userInfo > div {
+    font-size: 16px;
+    gap: 20px;
+  }
+
+  .modalContent {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modalTitle {
+    font-size: 20px;
+  }
+
+  .loginButton {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
+
+/* 🔹 Ajustes específicos para móviles pequeños: hasta 768px */
+@media (max-width: 768px) {
+  .title {
+    font-size: 24px;
+    gap: 6px;
+  }
+
+  .modeIcon {
+    font-size: 60px;
+  }
+
+  .rankingItem {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  .userAvatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .userName {
+    font-size: 16px;
+  }
+
+  .userInfo > div {
+    font-size: 14px;
+    gap: 15px;
+  }
+
+  .loginButton {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
+
+  
   
   
   

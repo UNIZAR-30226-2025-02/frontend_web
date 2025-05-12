@@ -50,6 +50,8 @@ export default function Game() {
   const [variacion, setVariacion] = useState(null);
   const [searching, setSearching] = useState(false);
   const [tipoReto, setTipoReto] = useState(null);
+  const [mostrarJugadas, setMostrarJugadas] = useState(false);
+  const [mostrarChat, setMostrarChat] = useState(false);
   const gameCopy = useRef(new Chess()); // Referencia única del juego
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
@@ -218,6 +220,16 @@ export default function Game() {
     }
   }, [whiteTime, blackTime, partidaAcabada]);
   
+  useEffect(() => {
+    const checkMobile = () => {
+      const isSmall = window.innerWidth <= 1000;
+      setMostrarJugadas(!isSmall);  // En móvil inicia oculto
+      setMostrarChat(!isSmall);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
 
   colorTurn = playerColor === "black" ? "b" : "w";
@@ -973,9 +985,14 @@ export default function Game() {
               selectedSquare ? { [selectedSquare]: { backgroundColor: "rgba(98, 189, 255, 0.59)" } } : {})
             }
             boardStyle={{ borderRadius: "5px", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)" }}
+            customBoardStyle={{
+              width: "100%",
+              height: "100%",
+            }}
              // Mantiene la opción de arrastrar piezas
             animationDuration={200}
             />
+
             <div className={`${styles.playerInfoBottom} ${gameCopy.current.turn() === colorTurn ? styles.activePlayer : styles.inactivePlayer}`}>
             
             <div className={styles.playerName}>
@@ -989,8 +1006,67 @@ export default function Game() {
             </div>
               <div className={styles.playerTime}>{"w" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
             </div>
-  
         </div>
+        {window.innerWidth <= 768 && (
+              <>
+                <div className={styles.inlineButtons}>
+                <button className={styles.iconButtonTablas} onClick={handleOfferDraw}  title="Solicitar tablas">🤝</button>
+                <button className={styles.iconButtonAbandono} onClick={handleResign} title="Abandonar partida">🏳️</button>
+                </div>
+                <button className={styles.toggleButton} onClick={() => setMostrarJugadas(!mostrarJugadas)}>
+                  {mostrarJugadas ? "Ocultar jugadas ▲" : "Ver jugadas ▼"}
+                </button>
+                {mostrarJugadas && (
+                  <div className={styles.movesPanelMobile}>
+                    <h3>Jugadas</h3>
+                    <div className={styles.movesList}>
+                      {getMovePairs().map((pair, index) => (
+                        <div key={index} className={styles.moveRow}>
+                          <span className={styles.moveNumber}>{index + 1}.</span>
+                          <span className={styles.whiteMove}>{pair[0]}</span>
+                          <span className={styles.blackMove}>{pair[1]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button className={styles.toggleButton} onClick={() => setMostrarChat(!mostrarChat)}>
+                  {mostrarChat ? "Ocultar chat ▲" : "Ver chat ▼"}
+                </button>
+                {mostrarChat && (
+                  <div className={styles.chatPanelMobile}>
+                    {/* Copiá el contenido de tu panel de chat aquí */}
+                    <h3>Chat 💬</h3>
+                    <div className={styles.chatMessages}>
+                      {messages.map((msg, index) => (
+                        <div key={index} className={msg.sender === "yo" ? styles.messageRowRight : styles.messageRowLeft}>
+                          {msg.sender !== "yo" && (
+                            <img src={`/fotosPerfilWebp/${fotoContrincante}`} alt="Rival" className={styles.profilePicture} />
+                          )}
+                          <div className={msg.sender === "yo" ? styles.whiteMessage : styles.blackMessage}>
+                            {msg.text}
+                          </div>
+                          {msg.sender === "yo" && (
+                            <img src={`/fotosPerfilWebp/${user?.FotoPerfil}`} alt="Yo" className={styles.profilePicture} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className={styles.chatInputContainer}>
+                      <input
+                        type="text"
+                        placeholder="Escribe un mensaje..."
+                        className={styles.chatInput}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                      />
+                      <button className={styles.sendButton} onClick={handleSendMessage}>➤</button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
 
         {/* Panel de Chat */}
               <div className={styles.chatPanel}>

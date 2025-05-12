@@ -263,10 +263,9 @@ useEffect(() => {
     return (
         <div className={styles.container}>
             <div className={styles.contanierMedidas}>
-                <div className={styles.tituloPagina}>
-                    <FcConferenceCall className={styles.iconGeneral} />
-                    <h2>Social</h2>
-                </div>
+    
+                <h2 className={styles.title}><FcConferenceCall className={styles.icon} /> <strong>SOCIAL</strong></h2>
+
 
                 <div className={styles.contanierOscuro}>
                     <div className={styles.searchBar}>

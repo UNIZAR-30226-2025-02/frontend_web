@@ -170,22 +170,22 @@
   position: relative; /* Permite posicionar elementos dentro */
 }
 
-.playerInfoTop, .playerInfoBottom {
+.playerInfoTop,
+.playerInfoBottom {
   position: absolute;
   width: 95%;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 20px;
 }
 
 .playerInfoTop {
   top: 8px;
-  justify-content: space-between;
 }
 
 .playerInfoBottom {
   bottom: 8px;
-  justify-content: space-between;
 }
 
 .playerName {
@@ -470,5 +470,74 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 770px) {
+ 
+  .gameBody {
+    display: flex;            /* <--- Esto es lo que falta */
+    flex-direction: column; /* Cambia a columna en pantallas pequeñas */
+    align-items: center; /* Centra los elementos */
+    gap: 20px; /* Espacio entre elementos */
+    overflow-y: auto;
+  }
+
+  .boardContainer {
+    margin: 0 auto;
+    width: fit-content; /* o un ancho máximo adecuado */
+  }
+
+  .boardContainer{
+    display: flex;
+  }
+
+  .playerInfoTop,
+  .playerInfoBottom {
+    position: relative;
+    width: 80%;
+    padding: 2px;
+  }
+
+  .playerInfoTop{
+    margin-bottom: 15px;
+  }
+
+  .playerInfoBottom{
+    margin-top: 15px;
+  }
+
+  /* Ocultar paneles grandes */
+  .movesPanel,
+  .chatPanel {
+    display: none;
+  }
+
+  /* Mostrar paneles móviles si existen */
+  .movesPanelMobile,
+  .chatPanelMobile {
+    width: 90%;
+    background-color: #444;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+  }
+
+
+  .toggleButton {
+    background-color: #444;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 90%;
+    max-width: 500px;
+    margin-bottom: 10px;
+  }
+
+  .toggleButton:hover {
+    background-color: #666;
   }
 }
