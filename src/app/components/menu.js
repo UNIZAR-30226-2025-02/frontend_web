@@ -105,6 +105,7 @@ useEffect(() => {
         localStorage.removeItem("userData");
         localStorage.removeItem("authToken");
         localStorage.removeItem("time");
+        localStorage.clear();
         //console.log("Datos del usuario eliminados de localStorage");
         
         if (!response.ok) {

@@ -104,6 +104,7 @@ export default function Game() {
       if (socket) {
         //console.log("🚪 Salida confirmada. Enviando resign y redirigiendo...");
        // socket.emit("resign", { idPartida, idJugador: user.id });
+       localStorage.clear();
       }
     
      /* setTimeout(() => {

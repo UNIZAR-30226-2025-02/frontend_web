@@ -22,6 +22,7 @@ export default function ForceLogoutModal() {
 
   useEffect(() => {
     if (!show && redirect) {
+      localStorage.clear();
       router.push("/");
     }
   }, [show, redirect, router]);

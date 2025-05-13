@@ -55,19 +55,6 @@ export default function Profile() {
       }
     }, []);
 
-
-  // Cargar usuario desde localStorage solo una vez
-  /*useEffect(() => {
-      // Verificamos si hay datos en localStorage antes de intentar parsearlos
-      const storedUserData = localStorage.getItem("userData");
-      //console.log("El usuario del perfil es: ", storedUserData);
-      if (storedUserData) {
-          const parsedUser = JSON.parse(storedUserData);
-          setUser(parsedUser.publicUser);
-      } else {
-          //console.log("No se encontraron datos de usuario en localStorage.");
-      }
-  }, []);*/
    
   //Obtengo los datos del usuario y los actualizo en loscalStorage
   useEffect(() => {
@@ -140,6 +127,7 @@ export default function Profile() {
             localStorage.removeItem("userData");
             localStorage.removeItem("authToken");
             localStorage.removeItem("time");
+            localStorage.clear();
             //console.log("Datos del usuario eliminados de localStorage");
             
             if (!response.ok) {
@@ -419,7 +407,7 @@ export default function Profile() {
                     <p className={styles.profileCorreo}><em>({user?.Correo || "No disponible"})</em></p> 
                     <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
-                                <p><strong>Amigos:</strong> {user?.amistades?.length ?? 0}</p>
+                                <p><strong>Amigos:</strong> {user?.Amistades ?? 0}</p>
                                 <p><strong>Partidas Jugadas:</strong> {user?.totalGames ?? "No disponible"}</p>
                             </div>
                             <div className={styles.infoColumn}>
