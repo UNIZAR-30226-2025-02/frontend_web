@@ -52,7 +52,7 @@ export default function RankingPage() {
       socketInstance.connect();
 
       return () => {
-        console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+        //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
         //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
       };
     }
@@ -94,7 +94,7 @@ export default function RankingPage() {
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>
-        <IoMdTrophy style={{ color: "gold", fontSize: '45px' }} /> RANKING
+        <IoMdTrophy style={{ color: "gold", fontSize: '45px' }} /> <strong>RANKING</strong>
       </h2>
 
       {modos.map(({ nombre, id, icon }) => (
@@ -107,7 +107,10 @@ export default function RankingPage() {
                   <span className={`${styles.medal} ${styles[`medal${jugador.rank}`]}`}>
                     {jugador.rank}º
                   </span>
-                  <span className={styles.name}>{jugador.nombre}</span>
+                  <span className={`${styles.name} ${jugador.nombre === user?.NombreUser ? styles.highlightedName : ''}`}>
+                    {jugador.nombre}
+                  </span>
+
                   <span className={styles.score}>{Math.round(jugador.puntuacion)} pts</span>
                 </div>
               ))}
@@ -163,7 +166,9 @@ export default function RankingPage() {
                   <span className={`${styles.medal} ${styles[`medal${jugador.rank}`]}`}>
                     {jugador.rank}º
                   </span>
-                  <span className={styles.name}>{jugador.nombre}</span>
+                  <span className={`${styles.name} ${jugador.nombre === user?.NombreUser ? styles.highlightedName : ''}`}>
+                    {jugador.nombre}
+                  </span>
                   <span className={styles.score}>{Math.round(jugador.puntuacion)} pts</span>
                 </div>
               ))}

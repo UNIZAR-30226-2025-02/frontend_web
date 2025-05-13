@@ -238,3 +238,55 @@
 .btnCancel:hover {
     background-color: #e53935;
 }
+
+.icon {
+    font-size: 45px;
+  }
+
+.title {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    margin-left: 80px;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .icon {
+    font-size: 45px;
+  }
+
+
+
+@media (max-width: 1000px) {
+    .container {
+    margin-left: 0;
+    padding-top: 100px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente los elementos hijos */
+}
+
+.contanierMedidas {
+    width: 100%;
+    height: 100%;
+}
+
+
+.title {
+    display: flex;
+    align-items: center; /* Alinea verticalmente el icono y el texto */
+    justify-content: center; /* Centra horizontalmente el contenido */
+    font-size: 28px;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    margin-top:10px;
+    gap: 10px;
+    width: 100%;
+}
+    
+
+}

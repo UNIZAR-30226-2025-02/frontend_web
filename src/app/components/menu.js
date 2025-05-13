@@ -45,7 +45,7 @@ export default function Menu() {
       socketInstance.connect();
 
       return () => {
-        console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+        //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
         //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
       };
     }
@@ -56,12 +56,12 @@ export default function Menu() {
 useEffect(() => {
     // Verificamos si hay datos en localStorage antes de intentar parsearlos
     const storedUserData = localStorage.getItem("userData");
-    console.log("El usuario del perfil es: ", storedUserData);
+    //console.log("El usuario del perfil es: ", storedUserData);
     if (storedUserData) {
         const parsedUser = JSON.parse(storedUserData);
         setUser(parsedUser.publicUser);
     } else {
-        console.log("No se encontraron datos de usuario en localStorage.");
+        //console.log("No se encontraron datos de usuario en localStorage.");
     }
 }, []);
 
@@ -85,35 +85,35 @@ useEffect(() => {
 
   const handleLogout = async () => {
     setShowConfirm(false)
-    console.log("Ejecutando handleLogout");
+    //console.log("Ejecutando handleLogout");
     if (!user) {
-        console.log("No hay usuario para cerrar sesión");
+        //console.log("No hay usuario para cerrar sesión");
         return;
     }
 
     try {
-        console.log("Enviando solicitud de logout al backend");
-        console.log("El user es", user.NombreUser);
-       // const response = await fetch("http://localhost:3000/logout", {
+        //console.log("Enviando solicitud de logout al backend");
+        //console.log("El user es", user.NombreUser);
        const response = await fetch(`${BACKEND_URL}/logout`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ NombreUser: user.NombreUser }),
         });
 
-        console.log("Respuesta del servidor recibida:", response);
+        //console.log("Respuesta del servidor recibida:", response);
         
         localStorage.removeItem("userData");
         localStorage.removeItem("authToken");
         localStorage.removeItem("time");
-        console.log("Datos del usuario eliminados de localStorage");
+        localStorage.clear();
+        //console.log("Datos del usuario eliminados de localStorage");
         
         if (!response.ok) {
             console.error("Error al cerrar sesión en el backend");
         } else {
             socket.disconnect();
             router.replace("/");
-            console.log("Redirigiendo a la página inicial");
+            //console.log("Redirigiendo a la página inicial");
         }
     } catch (error) {
         console.error("Error en la solicitud de logout", error);

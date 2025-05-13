@@ -1,8 +1,8 @@
-import Header from "../components/header"; // Asegúrate de la ruta correcta
-import ForceLogoutScreen from "../components/ForceLogoutScreen"; // Asegúrate de la ruta correcta
-import FriendRequest from "../components/FriendRequest"; // Asegúrate de la ruta correcta
-import FriendRequestMatch from "../components/FriendRequestMatch"; // Asegúrate de la ruta correcta
-import GoGamePage from "../components/goGamePage"; // Asegúrate de la ruta correcta
+import Header from "../components/header"; 
+import ForceLogoutScreen from "../components/ForceLogoutScreen"; 
+import FriendRequest from "../components/FriendRequest"; 
+import FriendRequestMatch from "../components/FriendRequestMatch"; 
+import GoGamePage from "../components/goGamePage"; 
 
 export default function Layout({ children }) {
   return (

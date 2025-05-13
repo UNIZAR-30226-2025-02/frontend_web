@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
 
         // Leer la respuesta como texto primero
         const textResponse = await response.text();
-        console.log("RAW RESPONSE:", textResponse);
+        //console.log("RAW RESPONSE:", textResponse);
 
         // Intentar convertir la respuesta a JSON solo si es válido
         let data;

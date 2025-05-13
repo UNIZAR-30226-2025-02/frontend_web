@@ -23,7 +23,7 @@ export default function Header() {
           setUser(parsedUser.publicUser);
           setInvitado(storedInvitado);
       } else {
-          console.log("No se encontraron datos de usuario en localStorage.");
+          //console.log("No se encontraron datos de usuario en localStorage.");
       }
   }, []);
   

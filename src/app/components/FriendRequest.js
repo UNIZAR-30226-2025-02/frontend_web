@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSocket } from "../utils/sockets"; // Asegúrate de que la ruta sea correcta
+import { getSocket } from "../utils/sockets"; 
 import styles from "./FriendRequest.module.css";
 
 export default function FriendRequest() {
@@ -27,7 +27,7 @@ export default function FriendRequest() {
         socketInstance.connect();
   
         return () => {
-          console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+          //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
           //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
         };
       }
@@ -43,16 +43,16 @@ export default function FriendRequest() {
   
           setUser(currentUser);
       } else {
-          console.log("No se encontraron datos de usuario en localStorage.");
+          //console.log("No se encontraron datos de usuario en localStorage.");
       }
     }, []);
 
   useEffect(() => {
     const handleFriendRequest = (event) => {
-      console.log("🔔 Nueva solicitud de amistad:", event.detail);
+      //console.log("🔔 Nueva solicitud de amistad:", event.detail);
       const { friendId } = event.detail;
       const { nombreJugador } = event.detail;
-      console.log("🧾 ID del amigo recibido en evento:", friendId);
+      //console.log("🧾 ID del amigo recibido en evento:", friendId);
       setFriend(friendId);
       setFriendName(nombreJugador);
       setShow(true); // Mostrar el modal

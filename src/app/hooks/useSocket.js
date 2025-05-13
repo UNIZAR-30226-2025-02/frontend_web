@@ -8,7 +8,7 @@ const useSocket = () => {
     useEffect(() => {
         // Escuchar respuesta del servidor cuando se encuentra una partida
         socket.on('game-found', (data) => {
-            console.log("Partida encontrada:", data);
+            //console.log("Partida encontrada:", data);
             setGameId(data.gameId);
         });
 

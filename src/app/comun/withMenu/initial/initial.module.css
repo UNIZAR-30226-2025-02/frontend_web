@@ -94,10 +94,15 @@
 
 .checks {
   display: flex;
-  font-size: 32px;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px; /* Espacio entre los íconos */
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
+
 
 .resultIcon {
   font-size: 38px;  /* tamaño de los ticks o cruces */
@@ -242,28 +247,38 @@
   position: absolute;
 }
 
-/* Estilos para la pestaña de información */
 .infoPopup {
-  background-color: rgba(0, 0, 0, 0.9); /* Fondo negro con opacidad */
+  background-color: rgba(0, 0, 0, 0.9);
   padding: 10px;
   border: 2px solid #3E76DF;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: absolute; /* Esto asegura que el popup se posicione respecto al contenedor del icono */
+  position: absolute;
   z-index: 10;
-  width: 258px; /* El ancho será automático para adaptarse al contenido */
+  width: 258px;
+  max-width: 90vw; /* ✅ Evita desbordes en pantallas pequeñas */
   font-size: 14px;
   color: white;
-  pointer-events: none; /* Para que el clic no interfiera con otros elementos */
-  transition: opacity 0.3s ease-in-out; /* Suaviza la transición de la opacidad */
-  opacity: 0; /* Inicia con opacidad 0 */
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+  left: 0;
+  right: auto; /* Permite que el contenido se quede dentro si está cerca del borde derecho */
 }
 
-/* Mostrar la ventana emergente cuando el icono está en hover */
-.iconoInfo:hover + .infoPopup {
-  opacity: 1; /* Mostrar la ventana al pasar el ratón por encima */
-  pointer-events: all; /* Habilitar interacción cuando está visible */
+/* Mostrar la ventana emergente */
+.iconoInfo:hover .infoPopup {
+  opacity: 1;
+  pointer-events: all;
 }
+
+@media (max-width: 600px) {
+  .infoPopup {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
 
 /* Estilo del icono de información cuando se pasa el mouse */
 .iconoInfo {
@@ -369,6 +384,16 @@
     font-size: 1.5rem;
   }
 
+}
+
+@media (max-width: 1050px) {
   
+  .checks {
+    justify-content: center;
+    gap: 6px;
+  }
+  .resultIcon {
+    font-size: 24px;
+  }
 }
 

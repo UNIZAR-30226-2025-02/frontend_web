@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSocket } from "../utils/sockets"; // Asegúrate de que la ruta sea correcta
+import { getSocket } from "../utils/sockets"; 
 import styles from "./FriendRequestMatch.module.css";
 
 export default function FriendRequestMatch() {
@@ -39,7 +39,7 @@ const modoInvertido = Object.fromEntries(
         socketInstance.connect();
   
         return () => {
-          console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+          //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
           //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
         };
       }
@@ -55,19 +55,19 @@ const modoInvertido = Object.fromEntries(
   
           setUser(currentUser);
       } else {
-          console.log("No se encontraron datos de usuario en localStorage.");
+          //console.log("No se encontraron datos de usuario en localStorage.");
       }
     }, []);
 
   useEffect(() => {
     const handleFriendRequestMatch = (event) => {
-      console.log("🔔 Nueva solicitud de partida:", event.detail);
+      //console.log("🔔 Nueva solicitud de partida:", event.detail);
       const { friendId } = event.detail;
       const { mode } = event.detail;
       const { nombreAmigo } = event.detail;
       const modoLegible = modoInvertido[mode]
-      console.log("🧾 ID del amigo recibido en evento:", friendId);
-      console.log("🧾 Modo de juego recibido en evento:", mode);
+      //console.log("🧾 ID del amigo recibido en evento:", friendId);
+      //console.log("🧾 Modo de juego recibido en evento:", mode);
       setFriend(friendId);
       setModo(mode);
       setFriendName(nombreAmigo);
@@ -83,14 +83,14 @@ const modoInvertido = Object.fromEntries(
 
   const handleAceptar = () => {
     setShow(false);
-    console.log("🎮Aceptando partida con ID:", user.id, "y amigo con ID:", friend);
+    //console.log("🎮Aceptando partida con ID:", user.id, "y amigo con ID:", friend);
     localStorage.setItem("tipoPartida", modo); // Guardar el tipo de partida en localStorage
     socket.emit("accept-challenge", { idRetado : user.id , idRetador : friend , modo: modo });
   };
 
   const handleRechazar = () => {
     setShow(false);
-    console.log("🎮❌Rechazando partida con ID:", user.id, "y amigo con ID:", friend);
+    //console.log("🎮❌Rechazando partida con ID:", user.id, "y amigo con ID:", friend);
     socket.emit("reject-challenge", { idRetado : user.id , idRetador : friend , modo: modo });
   };
 

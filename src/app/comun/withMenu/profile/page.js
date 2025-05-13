@@ -10,10 +10,9 @@ import {getSocket} from "../../../utils/sockets";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-/*const token = localStorage.getItem("authToken");
-const socket = getSocket(token);*/
+
 export default function Profile() {
-    console.log("Llego a la pagina de login")
+    //console.log("Llego a la pagina de login")
     const [token, setToken] = useState(null);
     const [socket, setSocket] = useState(null);
     const [user, setUser] = useState(null);
@@ -50,25 +49,12 @@ export default function Profile() {
         socketInstance.connect();
   
         return () => {
-          console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+          //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
           //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
         };
       }
     }, []);
 
-
-  // Cargar usuario desde localStorage solo una vez
-  /*useEffect(() => {
-      // Verificamos si hay datos en localStorage antes de intentar parsearlos
-      const storedUserData = localStorage.getItem("userData");
-      console.log("El usuario del perfil es: ", storedUserData);
-      if (storedUserData) {
-          const parsedUser = JSON.parse(storedUserData);
-          setUser(parsedUser.publicUser);
-      } else {
-          console.log("No se encontraron datos de usuario en localStorage.");
-      }
-  }, []);*/
    
   //Obtengo los datos del usuario y los actualizo en loscalStorage
   useEffect(() => {
@@ -76,7 +62,7 @@ export default function Profile() {
         const storedUserData = localStorage.getItem("userData");
 
         if (!storedUserData) {
-            console.log("No hay userData en localStorage");
+            //console.log("No hay userData en localStorage");
             return;
         }
 
@@ -84,7 +70,7 @@ export default function Profile() {
         const userId = parsedUser?.publicUser?.id;
 
         if (!userId) {
-            console.log("No se encontró el id del usuario");
+            //console.log("No se encontró el id del usuario");
             return;
         }
 
@@ -120,15 +106,15 @@ export default function Profile() {
 
     const handleLogout = async () => {
         setShowConfirm(false)
-        console.log("Ejecutando handleLogout");
+        //console.log("Ejecutando handleLogout");
         if (!user) {
-            console.log("No hay usuario para cerrar sesión");
+            //console.log("No hay usuario para cerrar sesión");
             return;
         }
 
         try {
-            console.log("Enviando solicitud de logout al backend");
-            console.log("El user es", user.NombreUser);
+            //console.log("Enviando solicitud de logout al backend");
+            //console.log("El user es", user.NombreUser);
            // const response = await fetch("http://localhost:3000/logout", {
            const response = await fetch(`${BACKEND_URL}/logout`, {
                 method: "POST",
@@ -136,19 +122,20 @@ export default function Profile() {
                 body: JSON.stringify({ NombreUser: user.NombreUser }),
             });
 
-            console.log("Respuesta del servidor recibida:", response);
+            //console.log("Respuesta del servidor recibida:", response);
             
             localStorage.removeItem("userData");
             localStorage.removeItem("authToken");
             localStorage.removeItem("time");
-            console.log("Datos del usuario eliminados de localStorage");
+            localStorage.clear();
+            //console.log("Datos del usuario eliminados de localStorage");
             
             if (!response.ok) {
                 console.error("Error al cerrar sesión en el backend");
             } else {
                 socket.disconnect();
                 router.replace("/");
-                console.log("Redirigiendo a la página inicial");
+                //console.log("Redirigiendo a la página inicial");
             }
         } catch (error) {
             console.error("Error en la solicitud de logout", error);
@@ -203,7 +190,7 @@ export default function Profile() {
               return;
             }
             const data = await response.json();
-            console.log("🗳️Las ultimas partidas son: ", data);
+            //console.log("🗳️Las ultimas partidas son: ", data);
             setUltimasPartidas(data);
           } catch (error) {
             console.error("Error en fetchUltimasPartidas:", error);
@@ -321,7 +308,7 @@ export default function Profile() {
         const miElo = miEloBase + (parseFloat(variacion) || 0);
         const rivalElo = esBlancas ? blackElo : whiteElo;
       
-        console.log("Mi Elo es: ", miElo);
+        //console.log("Mi Elo es: ", miElo);
         return {
           miElo: Math.round(miElo),
           rivalElo
@@ -330,7 +317,7 @@ export default function Profile() {
       
       const extraerVariacion = (userId, match) => {
         if (!userId || !match) return 0;
-        console.log("El jugador blancas es: ", match.JugadorB);
+        //console.log("El jugador blancas es: ", match.JugadorB);
         const esBlancas = match.JugadorB === userId;
         const variacion = esBlancas ? match.Variacion_JB : match.Variacion_JW;
       
@@ -420,7 +407,7 @@ export default function Profile() {
                     <p className={styles.profileCorreo}><em>({user?.Correo || "No disponible"})</em></p> 
                     <div className={styles.profileInfo}>
                             <div className={styles.infoColumn}>
-                                <p><strong>Amigos:</strong> {user?.amistades?.length ?? 0}</p>
+                                <p><strong>Amigos:</strong> {user?.Amistades ?? 0}</p>
                                 <p><strong>Partidas Jugadas:</strong> {user?.totalGames ?? "No disponible"}</p>
                             </div>
                             <div className={styles.infoColumn}>

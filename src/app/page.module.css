@@ -166,3 +166,86 @@
   color: white;
   transform: scale(1.2);
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .btn {
+    margin: 10px 5px;
+    display: inline-block;
+  }
+
+  .hero {
+    flex-direction: column;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .heroText h1 {
+    font-size: 2.5rem;
+  }
+
+  .heroText p {
+    font-size: 1rem;
+  }
+
+  .heroImg {
+    max-width: 60%;
+    margin-top: 20px;
+  }
+
+  .features {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .feature img {
+    width: 100%;
+  }
+
+  .feature {
+    padding: 10px;
+  }
+
+  .primaryBtn {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .links {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .iconoTiktok, .iconoInsta, .iconoX {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroText h1 {
+    font-size: 2rem;
+  }
+
+  .primaryBtn {
+    padding: 12px;
+  }
+
+  .btn {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+
+  .feature h3 {
+    font-size: 1.2rem;
+  }
+
+  .feature p {
+    font-size: 0.95rem;
+  }
+}

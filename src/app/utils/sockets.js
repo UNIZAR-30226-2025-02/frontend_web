@@ -16,11 +16,11 @@ export const getSocket = () => {
       console.warn("⚠️ No se encontró token o userData en localStorage");
       return null;
     }
-    const user = JSON.parse(userData); // 👈 guardas el usuario aquí
+    const user = JSON.parse(userData);
 
     const userId = JSON.parse(userData).id;
 
-    console.log("🚀 Conectando al socket con:", { userId, token });
+    //console.log("🚀 Conectando al socket con:", { userId, token });
 
     socket = io(SOCKET_URL, {
       transports: ["websocket"],
@@ -34,11 +34,11 @@ export const getSocket = () => {
     });
 
     socket.on("connect", () => {
-      console.log("✅ Socket conectado con ID:", socket.id);
+      //console.log("✅ Socket conectado con ID:", socket.id);
     });
 
     socket.on("disconnect", (reason) => {
-      console.log(`❌ Socket desconectado. Razón: ${reason}`);
+      //console.log(`❌ Socket desconectado. Razón: ${reason}`);
     });
 
     socket.on("ping", (data) => {
@@ -46,7 +46,7 @@ export const getSocket = () => {
     });
 
     socket.on("force-logout", (data) => {
-      console.log("⚠️ Sesión abierta en otro dispositivo:", data.message);
+      //console.log("⚠️ Sesión abierta en otro dispositivo:", data.message);
       localStorage.removeItem("authToken");
       localStorage.removeItem("userData");
 
@@ -55,13 +55,13 @@ export const getSocket = () => {
       
       setTimeout(() => {
         socket.disconnect();
-        console.log("Socket desconectado tras 3 segundos");
+        //console.log("Socket desconectado tras 3 segundos");
       }, 3000);
     
     });
 
     socket.on("challengeSent", (data) => {
-      console.log("🔔 Nueva partida de amigo recibida", data);
+      //console.log("🔔 Nueva partida de amigo recibida", data);
       if (!data?.idRetador) {
         console.warn("⚠️ El campo 'idRetador' no está presente en los datos recibidos:", data);
       }
@@ -74,7 +74,7 @@ export const getSocket = () => {
 
 
     socket.on("friendRequest", (data) => {
-      console.log("🔔 Nueva solicitud de amistad:", data);
+      //console.log("🔔 Nueva solicitud de amistad:", data);
       const friendId = data.idJugador;
       const notificationEvent = new CustomEvent("newFriendRequest", {
         detail: { friendId, nombreJugador: data.nombreJugador },
@@ -89,14 +89,14 @@ export const getSocket = () => {
         console.warn("⚠️ No se encontró token o userData en localStorage");
         return null;
       }
-      console.log("🔔 En user data tenemos:", userData);
+      //console.log("🔔 En user data tenemos:", userData);
       const publicUser = JSON.parse(userData); // ✅ Aquí tienes el objeto completo del usuario
       const user = publicUser.publicUser; // ✅ Aquí tienes el objeto completo del usuario 
-      console.log("🔔 En user  tenemos:", publicUser);   
-      console.log("🔔 Recibo el game-ready:", data);
-      console.log("🟢 Partida encontrada con ID:", data.idPartida);
-      console.log("Estoy buscando partida", user);
-      console.log("he encontrado partida", user.NombreUser); 
+      //console.log("🔔 En user  tenemos:", publicUser);   
+      //console.log("🔔 Recibo el game-ready:", data);
+      //console.log("🟢 Partida encontrada con ID:", data.idPartida);
+      //console.log("Estoy buscando partida", user);
+      //console.log("he encontrado partida", user.NombreUser); 
       localStorage.setItem("tipoReto", data.tipo); // Guardar el ID de la partida en localStorage
       const idPartidaCopy = data.idPartida; 
       localStorage.setItem("idPartida", idPartidaCopy);
@@ -104,7 +104,7 @@ export const getSocket = () => {
   });
   if (!window.location.pathname.startsWith("/comun/game")) {
 
-  console.log("🎧 Ahora escuchando evento 'color'...");
+  //console.log("🎧 Ahora escuchando evento 'color'...");
   socket.on("color", (data) => {
       const userData = localStorage.getItem("userData");
 
@@ -114,23 +114,23 @@ export const getSocket = () => {
       }
       const publicUser = JSON.parse(userData); // ✅ Aquí tienes el objeto completo del usuario
       const user = publicUser.publicUser; // ✅ Aquí tienes el objeto completo del usuario
-      console.log("🔔 Recibo el color:", data);
-      console.log("🎨 Recibido evento 'color' con datos:", data);
+      //console.log("🔔 Recibo el color:", data);
+      //console.log("🎨 Recibido evento 'color' con datos:", data);
 
       if (!data || !data.jugadores) {
           console.error("❌ No se recibió información válida de colores.");
           return;
       }
 
-      console.log("Buscando color para el jugador:", user);
+      //console.log("Buscando color para el jugador:", user);
       const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
       const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
 
       if (jugadorActual && jugadorRival) {
         localStorage.setItem("colorJug",jugadorActual.color);
-        console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
+        //console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
         localStorage.setItem("colorJug",jugadorActual.color);
-        console.log("Guardo id rival: ", jugadorRival.id);
+        //console.log("Guardo id rival: ", jugadorRival.id);
         localStorage.setItem("idRival", jugadorRival.id);
         if(jugadorActual.color === "black"){
             localStorage.setItem("eloRival", jugadorRival.eloW);
@@ -155,7 +155,7 @@ export const getSocket = () => {
       //router.refresh();
   });
   } else {
-    console.log("🔔 Ignorando evento 'color' porque ya estamos en la página de juego.");
+    //console.log("🔔 Ignorando evento 'color' porque ya estamos en la página de juego.");
   }
   }
   return socket;

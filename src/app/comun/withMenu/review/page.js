@@ -30,10 +30,26 @@ export default function ReviewPage() {
   const [rivalElo, setRivalElo] = useState("");
   const [rivalFoto, setRivalFoto] = useState("");
   const [esBlancas, setEsBlancas] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mostrarMovimientos, setMostrarMovimientos] = useState(false);
+
+
 
   useEffect(() => {
     fenRef.current = fen;
   }, [fen]);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 1000);
+    };
+  
+    checkScreenSize(); // Comprobamos al montar
+  
+    window.addEventListener('resize', checkScreenSize); // Comprobamos en cada resize
+  
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
   // 1) Inicializa Stockfish y procesa info depth...score
   useEffect(() => {
     const TARGET_DEPTH = 15;
@@ -87,7 +103,7 @@ export default function ReviewPage() {
     depthRef.current = 0;
     engineRef.current.postMessage(`position fen ${fen}`);
     engineRef.current.postMessage("go depth 15");
-console.log("evalCp:", evalCp, "fen:", fen);
+//console.log("evalCp:", evalCp, "fen:", fen);
 
   }, [fen]);
 
@@ -209,26 +225,32 @@ console.log("evalCp:", evalCp, "fen:", fen);
           {/* Contenedor flex para barra de análisis y tablero */}
           {/* … dentro de .boardContainer … */}
           <div className={styles.boardAndAnalysis}>
-          <div className={styles.evalBarVertical}>
-  {(() => {
-    // 1) Calcula un ratio [0..1] desde la perspectiva de Blancas:
-    let ratio;
-    if      (evalCp >=  10000) ratio = 1;   // mate Blancas
-    else if (evalCp <= -10000) ratio = 0;   // mate Negras
-    else {
-      const cp = Math.max(-1000, Math.min(1000, evalCp));
-      ratio = (cp + 1000) / 2000;
-    }
+            <div className={styles.evalBarVertical}>
+              {(() => {
+                // 1) Calcula un ratio [0..1] desde la perspectiva de Blancas:
+                let ratio;
+                if      (evalCp >=  10000) ratio = 1;   // mate Blancas
+                else if (evalCp <= -10000) ratio = 0;   // mate Negras
+                else {
+                  const cp = Math.max(-1000, Math.min(1000, evalCp));
+                  ratio = (cp + 1000) / 2000;
+                }
 
-    // 2) Siempre pintamos primero la parte clara y luego la oscura:
-    return (
-      <>
-        <div className={styles.whiteAdv} style={{ flex: 1 - ratio     }} />
-        <div className={styles.blackAdv} style={{ flex: ratio }} />
-      </>
-    );
-  })()}
-</div>
+                // 2) Pintamos el blanco abajo o arriba dependiendo si el jugador es blancas o negras
+                return esBlancas ? (
+                  <>
+                    <div className={styles.blackAdv} style={{ flex: ratio }} />
+                    <div className={styles.whiteAdv} style={{ flex: 1 - ratio }} />
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.whiteAdv} style={{ flex: 1 - ratio }} />
+                    <div className={styles.blackAdv} style={{ flex: ratio }} />
+                  </>
+                );
+
+              })()}
+            </div>
 
             <Chessboard
               position={fen}
@@ -237,7 +259,7 @@ console.log("evalCp:", evalCp, "fen:", fen);
               arePiecesDraggable={false}
             />
           </div>
-
+          
 
           {/* Info local abajo */}
           <div className={styles.playerInfoBottom}>
@@ -258,9 +280,17 @@ console.log("evalCp:", evalCp, "fen:", fen);
             </div>
           </div>
         </div>
-
+        
+        {isMobile && (
+            <button
+                className={styles.toggleMovimientosButton}
+                onClick={() => setMostrarMovimientos(!mostrarMovimientos)}
+            >
+                {mostrarMovimientos ? "Ocultar movimientos ▲" : "Ver movimientos ▼"}
+            </button>
+            )}
         {/* Panel de jugadas y navegación */}
-        <div className={styles.movesPanel}>
+        <div className={`${styles.movesPanel} ${mostrarMovimientos ? styles.visible : ""}`}>
           <h3>Jugadas</h3>
           <div className={styles.movesList}>
             {moves.length === 0 ? (
