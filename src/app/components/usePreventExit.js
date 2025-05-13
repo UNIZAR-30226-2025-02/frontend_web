@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 export default function usePreventExit({ onConfirm }) {
   useEffect(() => {
     const handlePopState = () => {
-      const confirm = window.confirm("Estas en partida, no puedes abandonar la paágina hasta que termines la partida. ¿Quieres salir?");
+      const confirm = window.confirm("Estas en partida, no puedes abandonar la página hasta que termines la partida. ¿Quieres salir?");
       if (confirm) {
         onConfirm();
       } else {

@@ -1,4 +1,4 @@
-import Menu from "../../components/menu"; // Asegúrate de la ruta correcta
+import Menu from "../../components/menu"; // Importamos el Menu
 import Footer from "../../components/footer"; // Importamos el Footer
 
 export default function Layout({ children }) {

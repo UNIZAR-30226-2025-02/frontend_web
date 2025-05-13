@@ -10,8 +10,7 @@ import {getSocket} from "../../../utils/sockets";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-/*const token = localStorage.getItem("authToken");
-const socket = getSocket(token);*/
+
 export default function Profile() {
     //console.log("Llego a la pagina de login")
     const [token, setToken] = useState(null);

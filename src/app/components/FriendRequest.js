@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSocket } from "../utils/sockets"; // Asegúrate de que la ruta sea correcta
+import { getSocket } from "../utils/sockets"; 
 import styles from "./FriendRequest.module.css";
 
 export default function FriendRequest() {

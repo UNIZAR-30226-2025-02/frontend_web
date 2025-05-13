@@ -55,6 +55,7 @@ export default function Game() {
   const gameCopy = useRef(new Chess()); // Referencia única del juego
   const [token, setToken] = useState(null);
   const [socket, setSocket] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   // Cargar usuario desde localStorage solo una vez
   
@@ -221,15 +222,30 @@ export default function Game() {
   }, [whiteTime, blackTime, partidaAcabada]);
   
   useEffect(() => {
-    const checkMobile = () => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 1000);
       const isSmall = window.innerWidth <= 1000;
+      setMostrarJugadas(!isSmall);  // En móvil inicia oculto
+      setMostrarChat(!isSmall);
+    };
+  
+    checkScreenSize(); // Comprobamos al montar
+  
+    window.addEventListener('resize', checkScreenSize); // Comprobamos en cada resize
+  
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  /*useEffect(() => {
+    const checkMobile = () => {
+      const isSmall = window.innerWidth <= 768;
+      setIsMobile(true);
       setMostrarJugadas(!isSmall);  // En móvil inicia oculto
       setMostrarChat(!isSmall);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  }, []);*/
   
 
   colorTurn = playerColor === "black" ? "b" : "w";
@@ -343,7 +359,7 @@ export default function Game() {
       } else if (soyElGanador) {
         setWinner(true);
     
-        // Si ganaste por tiempo, pon el reloj del rival en 0
+        // Si ganas por tiempo, se pone el reloj del rival en 0
         if (porTiempo) {
           if (playerColor === "white") {
             setBlackTime(0);
@@ -370,7 +386,7 @@ export default function Game() {
       setMessages((prevMessages) => [
         ...prevMessages,
         {
-          text: data.message, // o data.text si así lo envías
+          text: data.message, 
           sender: "rival",
         },
       ]);
@@ -1007,7 +1023,7 @@ export default function Game() {
               <div className={styles.playerTime}>{"w" === colorTurn ? formatTime(whiteTime) : formatTime(blackTime)}</div>
             </div>
         </div>
-        {window.innerWidth <= 768 && (
+        {isMobile &&(
               <>
                 <div className={styles.inlineButtons}>
                 <button className={styles.iconButtonTablas} onClick={handleOfferDraw}  title="Solicitar tablas">🤝</button>

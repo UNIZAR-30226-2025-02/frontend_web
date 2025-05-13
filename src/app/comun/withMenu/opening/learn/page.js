@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
-import styles from "./learn.module.css"; // Usaremos tu mismo estilo
+import styles from "./learn.module.css"; 
 import { useRouter } from "next/navigation";
 
 export default function LearnPage() {

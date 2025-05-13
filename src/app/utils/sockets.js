@@ -16,7 +16,7 @@ export const getSocket = () => {
       console.warn("⚠️ No se encontró token o userData en localStorage");
       return null;
     }
-    const user = JSON.parse(userData); // 👈 guardas el usuario aquí
+    const user = JSON.parse(userData);
 
     const userId = JSON.parse(userData).id;
 

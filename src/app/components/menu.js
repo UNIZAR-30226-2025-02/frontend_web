@@ -94,7 +94,6 @@ useEffect(() => {
     try {
         //console.log("Enviando solicitud de logout al backend");
         //console.log("El user es", user.NombreUser);
-       // const response = await fetch("http://localhost:3000/logout", {
        const response = await fetch(`${BACKEND_URL}/logout`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
