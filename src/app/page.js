@@ -18,15 +18,15 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
           body: JSON.stringify({}),
         });
         const data = await response.json();  // Parseamos la respuesta como JSON
-        console.log("Respuesta del servidor:", data); // Debug para ver la respuesta exacta
+        //console.log("Respuesta del servidor:", data); // Debug para ver la respuesta exacta
         const token = data.accessToken;
             
         if (!response.ok) {
-            console.log("Error en el login de invitado:", data);
+            //console.log("Error en el login de invitado:", data);
             throw new Error(data.message || data.error || "Error desconocido en el login");
         }
         if (token) {
-          console.log('Login exitoso. Token recibido:', token);
+          //console.log('Login exitoso. Token recibido:', token);
           localStorage.setItem("authToken", token);
             localStorage.setItem("soyInvitado", "si");
           localStorage.setItem("userData", JSON.stringify(data));
@@ -36,7 +36,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
           throw new Error("⚠️ Respuesta inesperada del servidor");
         }
       } catch (error) {
-      console.log("Error durante el proceso de login:", error.message); // Mostramos solo el mensaje
+      //console.log("Error durante el proceso de login:", error.message); // Mostramos solo el mensaje
       }
     };
   

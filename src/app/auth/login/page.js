@@ -37,24 +37,24 @@ export default function LoginPage() {
         });
 
         const data = await response.json();  // Parseamos la respuesta como JSON
-        console.log("Respuesta del servidor:", data); // Debug para ver la respuesta exacta
+        //console.log("Respuesta del servidor:", data); // Debug para ver la respuesta exacta
         // Obtiene el token de la respuesta
       const token = data.accessToken;
     
         if (!response.ok) {
-            console.log("Error en el login:", data);
+            //console.log("Error en el login:", data);
             throw new Error(data.message || data.error || "Error desconocido en el login");
         }
         if (token) {
-          console.log('Login exitoso. Token recibido:', token);
+          //console.log('Login exitoso. Token recibido:', token);
             // Guardar el token en localStorage
           localStorage.setItem("authToken", token);
           localStorage.setItem("userData", JSON.stringify(data));
           localStorage.removeItem("soyInvitado");
-          console.log("😭Datos del usuario guardados en localStorage:", data);
+          //console.log("😭Datos del usuario guardados en localStorage:", data);
           const socket = getSocket(token);
           socket.on('existing-game', (data) => {
-            console.log('Este usuario estaba jugando una partida');
+            //console.log('Este usuario estaba jugando una partida');
             localStorage.setItem("colorJug", data.color);
             localStorage.setItem("pgn", data.pgn); // 👈 Guardamos el PGN
             localStorage.setItem("timeW",data.timeLeftW);
@@ -71,7 +71,7 @@ export default function LoginPage() {
             throw new Error("⚠️ Respuesta inesperada del servidor");
         }
     } catch (error) {
-        console.log("Error durante el proceso de login:", error.message);  // Mostramos solo el mensaje
+        //console.log("Error durante el proceso de login:", error.message);  // Mostramos solo el mensaje
         setError(error.message); // Mostramos el mensaje exacto del error en la UI
     }
 };

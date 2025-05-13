@@ -71,7 +71,7 @@ export default function Game() {
         socketInstance.connect();
   
         return () => {
-          console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+          //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
           //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
         };
       }
@@ -85,13 +85,13 @@ export default function Game() {
     if (pgn) {
       const success = gameCopy.current.loadPgn(pgn);
       if (success) {
-        console.log("♻️ PGN cargado correctamente:", gameCopy.current.fen());
+        //console.log("♻️ PGN cargado correctamente:", gameCopy.current.fen());
       } else {
         console.warn("⚠️ No se pudo cargar el PGN. Usando posición inicial.");
       }
       localStorage.removeItem("pgn");
     } else {
-      console.log("🔰 No hay PGN, usando juego nuevo.");
+      //console.log("🔰 No hay PGN, usando juego nuevo.");
     }
     setFen(gameCopy.current.fen()); // Iniciar con el FEN correcto
     setTurn(gameCopy.current.turn());
@@ -101,7 +101,7 @@ export default function Game() {
   usePreventExit({
     onConfirm: () => {
       if (socket) {
-        console.log("🚪 Salida confirmada. Enviando resign y redirigiendo...");
+        //console.log("🚪 Salida confirmada. Enviando resign y redirigiendo...");
        // socket.emit("resign", { idPartida, idJugador: user.id });
       }
     
@@ -113,11 +113,11 @@ export default function Game() {
   });
 
   useEffect(() => {
-    console.log("🔄 Buscando usuario en localStorage...");
+    //console.log("🔄 Buscando usuario en localStorage...");
     const storedUserData = localStorage.getItem("userData");
     const color = localStorage.getItem("colorJug");
     const tipoPartidaLocal = localStorage.getItem("tipoPartida");
-    console.log("El tipode partida es: ", tipoPartidaLocal);
+    //console.log("El tipode partida es: ", tipoPartidaLocal);
     const rivalID = localStorage.getItem("idRival");
     const nombreRival = localStorage.getItem("nombreRival");
     const eloRival = localStorage.getItem("eloRival");
@@ -129,7 +129,7 @@ export default function Game() {
     const tipoRetoLocal = localStorage.getItem("tipoReto");
     if (storedUserData) {
       const parsedUser = JSON.parse(storedUserData);
-      console.log("✅ Usuario encontrado:", parsedUser, "con elo: ", eloJug, "y el elo del rival:",eloRival);
+      //console.log("✅ Usuario encontrado:", parsedUser, "con elo: ", eloJug, "y el elo del rival:",eloRival);
       setIdPartida(partidaLocalSto);
       setUser(parsedUser.publicUser);
       setIdRival(rivalID);
@@ -162,18 +162,18 @@ export default function Game() {
           setIncremento(2);
         }
       } else {
-        console.log("⬜El tiempo de blancas recuperado es: ", tiempoBlancas);
+        //console.log("⬜El tiempo de blancas recuperado es: ", tiempoBlancas);
         setWhiteTime(tiempoBlancas);
         setBlackTime(tiempoNegras);
       }
     } else {
-      console.log("⚠️ No se encontraron datos de usuario en localStorage.");
+      //console.log("⚠️ No se encontraron datos de usuario en localStorage.");
     }
   }, [idPartida, nuevoInicio]);
 
   useEffect(() => {
     if (tiempoPartida !== null) {
-      console.log("⌚La partida que vamos a hacer es de: ", tiempoPartida);
+      //console.log("⌚La partida que vamos a hacer es de: ", tiempoPartida);
       setBlackTime(60 * tiempoPartida);
       setWhiteTime(60 * tiempoPartida);
     }
@@ -202,7 +202,7 @@ export default function Game() {
     const esMiTurno = (soyBlanco && gameCopy.current.turn() === "w") || (!soyBlanco && gameCopy.current.turn() === "b");
   
     if (whiteTime === 0 && soyBlanco && esMiTurno) {
-      console.log("⏰ Yo (blancas) he perdido por tiempo");
+      //console.log("⏰ Yo (blancas) he perdido por tiempo");
       setPartidaAcabada(true);
       socket.emit("game-timeout", {
         idPartida,
@@ -211,7 +211,7 @@ export default function Game() {
     }
   
     if (blackTime === 0 && !soyBlanco && esMiTurno) {
-      console.log("⏰ Yo (negras) he perdido por tiempo");
+      //console.log("⏰ Yo (negras) he perdido por tiempo");
       setPartidaAcabada(true);
       socket.emit("game-timeout", {
         idPartida,
@@ -234,32 +234,32 @@ export default function Game() {
 
   colorTurn = playerColor === "black" ? "b" : "w";
   useEffect(() => {
-      console.log("🔄 useEffect ejecutándose en pantalla de partida...");
+      //console.log("🔄 useEffect ejecutándose en pantalla de partida...");
   
       if (!user) {
-          console.log("❌ No hay usuario aún. Esperando...");
+          //console.log("❌ No hay usuario aún. Esperando...");
           return;
       }
   
-      console.log("🟢 Usuario detectado:", user);
+      //console.log("🟢 Usuario detectado:", user);
   
       if (!socket) {
           console.error("❌ ERROR: socket no está definido.");
           return;
       }
   
-      console.log("🔎 Verificando conexión del socket...");
+      //console.log("🔎 Verificando conexión del socket...");
 
       if (!socket.connected) {
-        console.log("🚀 Intentando conectar al socket en pantalla de partida...");
+        //console.log("🚀 Intentando conectar al socket en pantalla de partida...");
         socket.connect();
     } else {
-        console.log("✅ Socket ya estaba conectado con ID:", socket.id);
+        //console.log("✅ Socket ya estaba conectado con ID:", socket.id);
     }
 
     const handleBeforeUnload = (e) => {
       // Realiza la petición al servidor antes de que la página se cierre
-      console.log("🚪 Enviando datos de cierre de sesión al servidor...");
+      //console.log("🚪 Enviando datos de cierre de sesión al servidor...");
       const data = JSON.stringify({ NombreUser: user.NombreUser });
       navigator.sendBeacon("https://checkmatex-gkfda9h5bfb0gsed.spaincentral-01.azurewebsites.net/logout", data);
 
@@ -274,7 +274,7 @@ export default function Game() {
   
     // Recibir movimientos del otro jugador
     socket.on('new-move', (data) => {
-      console.log("♟️ Movimiento recibido:", data.movimiento);
+      //console.log("♟️ Movimiento recibido:", data.movimiento);
     
       const moveStr = data.movimiento;
       const isPromotionMove = moveStr.length === 5; // ej: "e7e8q"
@@ -307,13 +307,13 @@ export default function Game() {
     });
     
     socket.on('requestTie', (data) => {
-      console.log('📩 Petición de tablas recibida:', data);
+      //console.log('📩 Petición de tablas recibida:', data);
       setDrawOfferReceived(true); // Mostrar el modal al jugador
     });
 
     socket.on('player-surrendered', (data) => {
       setWinner(true)
-      console.log('Rival se ha rendido:', data);
+      //console.log('Rival se ha rendido:', data);
     });
 
     socket.on('gameOver', (data) => {
@@ -327,7 +327,7 @@ export default function Game() {
       localStorage.removeItem("colorJug");
     
       setPartidaAcabada(true);
-      console.log("Llega final de partida", data);
+      //console.log("Llega final de partida", data);
     
       const soyElGanador = data.winner === user.id;
       const soyElPerdedor = !soyElGanador && data.winner !== "draw";
@@ -338,7 +338,7 @@ export default function Game() {
         setVariacion(data.variacionB);
       }
       if (data.winner === "draw") {
-        console.log("Tablas");
+        //console.log("Tablas");
         setTablas(true);
       } else if (soyElGanador) {
         setWinner(true);
@@ -356,7 +356,7 @@ export default function Game() {
     
         // Mostrar mensaje extra si perdiste por tiempo
         if (porTiempo) {
-          console.log("Perdiste por tiempo");
+          //console.log("Perdiste por tiempo");
           setTimeOut(true);
         }
       }
@@ -364,7 +364,7 @@ export default function Game() {
     
 
     socket.on('new-message', (data)=>{
-      console.log("♟️ Mensaje recibido:", data.message);
+      //console.log("♟️ Mensaje recibido:", data.message);
 
       // Añadir el mensaje recibido al chat
       setMessages((prevMessages) => [
@@ -378,7 +378,7 @@ export default function Game() {
     })
     
     return () => {
-        console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
+        //console.log("🧹 Limpiando eventos de socket en pantalla de partida...");
         //socket.off("color");
         socket.off("new-move");
         socket.off("new-message");
@@ -391,9 +391,9 @@ export default function Game() {
   useEffect(() => {
     if (whiteTime !== null && socket) {
       socket.on('get-game-status', () => {
-        console.log('👾 Obteniendo estado de la partida...');
-        console.log('Tiempo restante blancas:', whiteTime, 'y este el de negras: ', blackTime);
-        console.log('Estado de la partida:', 'ingame');
+        //console.log('👾 Obteniendo estado de la partida...');
+        //console.log('Tiempo restante blancas:', whiteTime, 'y este el de negras: ', blackTime);
+        //console.log('Estado de la partida:', 'ingame');
         localStorage.removeItem("timeW");
         localStorage.removeItem("timeB");
         localStorage.removeItem("idPartida");
@@ -413,17 +413,17 @@ export default function Game() {
 
 
   useEffect(()=>{
-    console.log("Estos mensajes hay: ", messages);
+    //console.log("Estos mensajes hay: ", messages);
     return ()=>{};
   }, [messages]);
     
     
     const handleMove = (sourceSquare, targetSquare) => {
         
-      console.log("colorTurn es ", colorTurn);
+      //console.log("colorTurn es ", colorTurn);
       if (winner) return;
       if (colorTurn !== gameCopy.current.turn()) {
-        console.log(`❌ No es tu turno. Te toca jugar con: ${colorTurn}, turno actual: ${gameCopy.current.turn()}`);
+        //console.log(`❌ No es tu turno. Te toca jugar con: ${colorTurn}, turno actual: ${gameCopy.current.turn()}`);
         return;
       }
     
@@ -434,7 +434,7 @@ export default function Game() {
       // Verificar si el targetSquare está en los movimientos legales
       const isValidMove = legalMoves.some(move => move.to === targetSquare);
       if (!isValidMove) {
-          console.log("⚠️ Movimiento no permitido.");
+          //console.log("⚠️ Movimiento no permitido.");
           return;
       }
 
@@ -464,7 +464,7 @@ export default function Game() {
               setBlackTime((prevTime) => prevTime + incremento);
             }
           }
-          console.log("✔️ Movimiento exitoso:", move);
+          //console.log("✔️ Movimiento exitoso:", move);
           //if(tiempoPartida)
           setFen(gameCopy.current.fen());
           setTurn(gameCopy.current.turn());
@@ -479,17 +479,17 @@ export default function Game() {
             idPartida, 
             idJugador: user.id 
           });
-          console.log("✔️ Movimiento enviado:", move, "Con idPartida:", idPartida);
+          //console.log("✔️ Movimiento enviado:", move, "Con idPartida:", idPartida);
 
         }
       } catch (error) {
-        console.log("⚠️ Movimiento inválido", error);
+        //console.log("⚠️ Movimiento inválido", error);
       }
     };
   
   const handlePromotion = (promotionPiece) => {
       if (!promotionPiece) return;
-      console.log("➡️ Seleccionaste:", promotionPiece);
+      //console.log("➡️ Seleccionaste:", promotionPiece);
   
       // Normalizamos la pieza
       let pieza = "";
@@ -513,7 +513,7 @@ export default function Game() {
     
 
   const handleSendMessage = () => {
-    console.log("📤Voy a enviar un mensaje: ", message);
+    //console.log("📤Voy a enviar un mensaje: ", message);
     const newMessage = {
       text: message,
       sender: "yo", // puedes usar "Blanco"/"Negro" si prefieres
@@ -546,7 +546,7 @@ export default function Game() {
     
      // Verificar si hay una pieza en la casilla y si pertenece al jugador actual
     if (!piece || piece.color !== (playerColor === "white" ? "w" : "b")) {
-      console.log("❌ No puedes seleccionar una pieza rival.",  piece);
+      //console.log("❌ No puedes seleccionar una pieza rival.",  piece);
       return;
     }
 
@@ -603,7 +603,7 @@ export default function Game() {
         ((piece.color === "w" && targetSquare[1] === "8") || (piece.color === "b" && targetSquare[1] === "1"));
 
     if (isPawnPromotion) {
-        console.log("♟️ Se requiere promoción.");
+        //console.log("♟️ Se requiere promoción.");
         // 🔹 Simular el comportamiento de `onPromotionPieceSelect`
        // const fakePieceData = piece.color + "Q"; // Se usará la pieza correcta luego
         //handlePromotion(fakePieceData);
@@ -654,7 +654,7 @@ export default function Game() {
     return moves;
   };
   const handleGoInit = () => {
-    console.log("🧠Voy a volver a inicio");
+    //console.log("🧠Voy a volver a inicio");
     router.push(`/comun/withMenu/initial`);
   }
 
@@ -692,7 +692,7 @@ export default function Game() {
     if (!socket || !searching) return;
     socket.emit('cancel-pairing', { idJugador: user?.id });
     setSearching(false);
-    console.log("❌ Búsqueda cancelada por el usuario");
+    //console.log("❌ Búsqueda cancelada por el usuario");
   };
   // Función para buscar partida
   const handleSearchOtherGame = async (tipoPartida) => {
@@ -703,19 +703,19 @@ export default function Game() {
         mode: tipoPartida
     };
     
-    console.log("🔍 Enviando datos:", dataToSend); // Verificar datos antes de enviar
-    console.log("Voy a buscar partida del tipo: ", tipoPartida);
-    console.log("👤 Usuario antes de enviar:", user);
-    console.log("🔍 Enviando datos:", dataToSend);
+    //console.log("🔍 Enviando datos:", dataToSend); // Verificar datos antes de enviar
+    //console.log("Voy a buscar partida del tipo: ", tipoPartida);
+    //console.log("👤 Usuario antes de enviar:", user);
+    //console.log("🔍 Enviando datos:", dataToSend);
     socket.emit("find-game", dataToSend);
-    console.log("✅ Lo he lanzado");
+    //console.log("✅ Lo he lanzado");
     let idPartidaCopy;
     // Escuchar la respuesta del servidor
     socket.on('game-ready', (data) => {
-        console.log("🟢 Partida encontrada con ID:", data.idPartida);
+        //console.log("🟢 Partida encontrada con ID:", data.idPartida);
         setSearching(false);
-        console.log("Estoy buscando partida", user.NombreUser);
-        console.log("he encontrado partida", user.NombreUser); 
+        //console.log("Estoy buscando partida", user.NombreUser);
+        //console.log("he encontrado partida", user.NombreUser); 
         //localStorage.setItem("tipoPartida",tipoPartida);
         setWinner(false);
         setLoser(false);
@@ -723,9 +723,9 @@ export default function Game() {
         resetGame(10);
         idPartidaCopy = data.idPartida; 
     });
-    console.log("🎧 Ahora escuchando evento 'color'...");
+    //console.log("🎧 Ahora escuchando evento 'color'...");
     socket.on("color", (data) => {
-        console.log("🎨 Recibido evento 'color' con datos:", data);
+        //console.log("🎨 Recibido evento 'color' con datos:", data);
 
         if (!data || !data.jugadores) {
             console.error("❌ No se recibió información válida de colores.");
@@ -733,18 +733,18 @@ export default function Game() {
         }
 
         const jugadorActual = data.jugadores.find(jugador => jugador.id === user.id);
-        console.log("Mi ide es: ",user.id, "y jugador.id es: ", jugadorActual.id);
+        //console.log("Mi ide es: ",user.id, "y jugador.id es: ", jugadorActual.id);
         const jugadorRival = data.jugadores.find(jugador => jugador.id !== user.id);
-        console.log("Mi ide es: ",user.id, "y mi rival es: ", jugadorRival);
+        //console.log("Mi ide es: ",user.id, "y mi rival es: ", jugadorRival);
         if (!jugadorActual) {
             console.error("❌ No se encontró al usuario en la lista de jugadores.");
             return;
         }
 
         setPlayerColor(jugadorActual.color);
-        console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
+        //console.log(`✅ Color asignado a ${user.NombreUser}: ${jugadorActual.color}`);
         localStorage.setItem("colorJug",jugadorActual.color);
-        console.log("Guardo id rival: ", jugadorRival.id);
+        //console.log("Guardo id rival: ", jugadorRival.id);
         if(jugadorActual.color === "black"){
             localStorage.setItem("eloRival", jugadorRival.eloW);
             localStorage.setItem("nombreRival", jugadorRival.nombreW);

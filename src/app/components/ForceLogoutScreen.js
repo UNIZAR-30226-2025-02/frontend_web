@@ -10,7 +10,7 @@ export default function ForceLogoutModal() {
 
   useEffect(() => {
     const handleForceLogout = (data) => {
-      console.log("⚠️ Evento force-logout recibido", data);
+      //console.log("⚠️ Evento force-logout recibido", data);
       setShow(true);
     };
 

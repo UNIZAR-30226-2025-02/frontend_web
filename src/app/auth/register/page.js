@@ -43,7 +43,7 @@ export default function RegisterPage() {
       });
       
       const data = await response.json();
-      console.log("Respuesta del servidor:", data);
+      //console.log("Respuesta del servidor:", data);
       
       if (response.ok) {
         setMessage("¡Ya casi esa! Comprueba tu correo electronico y verificalo");

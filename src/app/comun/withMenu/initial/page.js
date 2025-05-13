@@ -37,7 +37,7 @@ export default function InitialPage() {
           socketInstance.connect();
     
           return () => {
-            console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+            //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
             //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
           };
         }
@@ -58,7 +58,7 @@ export default function InitialPage() {
             const fetchUserInfo = async () => {
                 const storedUserData = localStorage.getItem("userData");
                 if (!storedUserData) {
-                    console.log("No hay userData en localStorage");
+                    //console.log("No hay userData en localStorage");
                     return;
                 }
 
@@ -66,12 +66,12 @@ export default function InitialPage() {
                 const userId = parsedUser?.publicUser?.id;
                 const soyInvitado = localStorage.getItem("soyInvitado");
                 if (!userId) {
-                    console.log("No se encontró el id del usuario");
+                    //console.log("No se encontró el id del usuario");
                     return;
                 }
 
                 try {
-                    //console.log("Voy a buscar info del usuario con id: ", userId);
+                    ////console.log("Voy a buscar info del usuario con id: ", userId);
                     const response = await fetch(`${BACKEND_URL}/getUserInfo?id=${userId}`, {
                         method: "GET",
                         headers: {
@@ -101,7 +101,6 @@ export default function InitialPage() {
         useEffect(() => {
             const fetchUltimasPartidas = async () => {
               if (!user?.id) return;
-          
               try {
                 const response = await fetch(`${BACKEND_URL}/buscarUlt5PartidasDeUsuario?id=${user.id}`);
                 if (!response.ok) {
@@ -122,18 +121,18 @@ export default function InitialPage() {
     const handleSearchGame = async (tipoPartida) => {
         if (!socket) return; // Asegurarse de que el socket esté conectado
         setSearching(true);
-        console.log("🔍 Buscando partida cuando el usuario es: ", user);
+        //console.log("🔍 Buscando partida cuando el usuario es: ", user);
         const dataToSend = { 
             idJugador: user?.id, 
             mode: tipoPartida
         };
         
-        console.log("🔍 Enviando datos:", dataToSend); // Verificar datos antes de enviar
-        console.log("Voy a buscar partida del tipo: ", tipoPartida);
-        console.log("👤 Usuario antes de enviar:", user);
-        console.log("🔍 Enviando datos:", dataToSend);
+        //console.log("🔍 Enviando datos:", dataToSend); // Verificar datos antes de enviar
+        //console.log("Voy a buscar partida del tipo: ", tipoPartida);
+        //console.log("👤 Usuario antes de enviar:", user);
+        //console.log("🔍 Enviando datos:", dataToSend);
         socket.emit("find-game", dataToSend);
-        console.log("✅ Lo he lanzado");
+        //console.log("✅ Lo he lanzado");
         let idPartidaCopy;
         localStorage.setItem("tipoPartida", tipoPartida); // Guardar el tipo de partida en localStorage
         // Escuchar errores del backend
@@ -149,7 +148,7 @@ export default function InitialPage() {
         socket.emit('cancel-pairing', { idJugador: user?.id });
         setSearching(false);
         localStorage.removeItem("tipoPartida"); // Limpiar el tipo de partida en localStorage
-        console.log("❌ Búsqueda cancelada por el usuario");
+        //console.log("❌ Búsqueda cancelada por el usuario");
     };
     
 

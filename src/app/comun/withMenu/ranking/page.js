@@ -52,7 +52,7 @@ export default function RankingPage() {
       socketInstance.connect();
 
       return () => {
-        console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+        //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
         //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
       };
     }

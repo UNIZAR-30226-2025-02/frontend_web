@@ -45,7 +45,7 @@ export default function FriendPage() {
       socketInstance.connect();
 
       return () => {
-        console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
+        //console.log("🔕 Manteniendo el socket activo al cambiar de pantalla...");
         //socketInstance.disconnect(); // Cerrar la conexión solo si el usuario sale completamente de la aplicación
       };
     }
@@ -55,7 +55,7 @@ export default function FriendPage() {
   useEffect(() => {
     // Verificamos si hay datos en localStorage antes de intentar parsearlos
     const storedUserData = localStorage.getItem("userData");
-    console.log("El usuario del perfil es: ", storedUserData);
+    //console.log("El usuario del perfil es: ", storedUserData);
     if (storedUserData) {
         const parsedUser = JSON.parse(storedUserData);
         const currentUser = parsedUser.publicUser;
@@ -64,7 +64,7 @@ export default function FriendPage() {
 
         const fetchFriends = async () => {
             const userId = parsedUser?.publicUser?.id;
-            console.log("Mi id es: ", userId);
+            //console.log("Mi id es: ", userId);
             try {
                 const response = await fetch(`${BACKEND_URL}/buscarAmigos?id=${userId}`, {
                     method: "GET",
@@ -83,35 +83,35 @@ export default function FriendPage() {
         };
         fetchFriends();
     } else {
-        console.log("No se encontraron datos de usuario en localStorage.");
+        //console.log("No se encontraron datos de usuario en localStorage.");
     }
   }, []);
 
   useEffect(() => {
     if (user) {
         if (!user) {
-          console.log("❌ No hay usuario aún. Esperando...");
+          //console.log("❌ No hay usuario aún. Esperando...");
           return;
         }
     
-        console.log("🟢 Usuario detectado:", user);
+        //console.log("🟢 Usuario detectado:", user);
     
         if (!socket) {
             console.error("❌ ERROR: socket no está definido.");
             return;
         }
         socket.on("friendRequestAccepted", (data) => {
-            console.log("Solicitud de amistad aceptada:", data);
+            //console.log("Solicitud de amistad aceptada:", data);
             window.location.reload();
         });
 
         socket.on("friendRemoved", (data) => {
-            console.log("Amigo eliminado:", data);
+            //console.log("Amigo eliminado:", data);
             window.location.reload();
         });
 
         socket.on("errorMessage", (data) => {
-            console.log("❌❌Error: ", data);
+            //console.log("❌❌Error: ", data);
         });
 
         return () => {
@@ -166,7 +166,7 @@ useEffect(() => {
 
 
     const handleAddFriend = () => {
-        console.log("💩 Voy a agregar al amigo", selectedFriend.id);
+        //console.log("💩 Voy a agregar al amigo", selectedFriend.id);
         if (socket && user) {
             socket.emit("add-friend", {
                 idJugador: user.id,
@@ -178,7 +178,7 @@ useEffect(() => {
     };
 
     const handleRemoveFriend = () => {
-        console.log("💩 Voy a eliminar al amigo", selectedFriend.amigoId);
+        //console.log("💩 Voy a eliminar al amigo", selectedFriend.amigoId);
         if (socket && user) {
             socket.emit("remove-friend", {
                 idJugador: user.id,
@@ -193,13 +193,13 @@ useEffect(() => {
     };
 
     const handleRemoveFriendPreview = (rival) => {
-        console.log("🧙‍♂️ El amigo seleccionado para eliminar es: ", rival);
+        //console.log("🧙‍♂️ El amigo seleccionado para eliminar es: ", rival);
         setSelectedFriend(rival);
         setShowPreview(true);
     };
 
     const handleAddFriendPreview = (rival) => {
-        console.log("🧙‍♂️ El usuario seleccionado para añadir es: ", rival);
+        //console.log("🧙‍♂️ El usuario seleccionado para añadir es: ", rival);
         setSelectedFriend(rival);
         setShowPreviewAdd(true);
     };
@@ -210,7 +210,7 @@ useEffect(() => {
     };
 
     const confirmChallenge = () => {
-        console.log("🧙‍♂️ El rival seleccionado para una partida es: ", selectedRival, "de: ", modoMapeado[selectedMode]);
+        //console.log("🧙‍♂️ El rival seleccionado para una partida es: ", selectedRival, "de: ", modoMapeado[selectedMode]);
         if (socket && user && selectedRival) {
             socket.emit("challenge-friend", {
                 idRetador: user.id,

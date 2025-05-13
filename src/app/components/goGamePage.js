@@ -7,10 +7,10 @@ export default function EscuchadorNavegacion() {
 
   useEffect(() => {
     const handleNavigate = (e) => {
-      console.log("🔔 Vamos a cambiar de pantallas");
+      //console.log("🔔 Vamos a cambiar de pantallas");
       const idPartida = e.detail.idPartida;
       if (idPartida) {
-        console.log("🔔 Navegando a la partida con ID:", idPartida);
+        //console.log("🔔 Navegando a la partida con ID:", idPartida);
         router.push(`/comun/game?id=${idPartida}`);
       }
     };

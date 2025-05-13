@@ -103,7 +103,7 @@ export default function ReviewPage() {
     depthRef.current = 0;
     engineRef.current.postMessage(`position fen ${fen}`);
     engineRef.current.postMessage("go depth 15");
-console.log("evalCp:", evalCp, "fen:", fen);
+//console.log("evalCp:", evalCp, "fen:", fen);
 
   }, [fen]);
 
@@ -236,13 +236,19 @@ console.log("evalCp:", evalCp, "fen:", fen);
                   ratio = (cp + 1000) / 2000;
                 }
 
-                // 2) Siempre pintamos primero la parte clara y luego la oscura:
-                return (
+                // 2) Pintamos el blanco abajo o arriba dependiendo si el jugador es blancas o negras
+                return esBlancas ? (
                   <>
-                    <div className={styles.whiteAdv} style={{ flex: 1 - ratio     }} />
+                    <div className={styles.blackAdv} style={{ flex: ratio }} />
+                    <div className={styles.whiteAdv} style={{ flex: 1 - ratio }} />
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.whiteAdv} style={{ flex: 1 - ratio }} />
                     <div className={styles.blackAdv} style={{ flex: ratio }} />
                   </>
                 );
+
               })()}
             </div>
 
