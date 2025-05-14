@@ -46,7 +46,7 @@ export default function RegisterPage() {
       //console.log("Respuesta del servidor:", data);
       
       if (response.ok) {
-        setMessage("¡Ya casi esa! Comprueba tu correo electronico y verificalo");
+        setMessage("¡Ya casi está! Comprueba tu correo electrónico y verifícalo");
         setForm({ NombreUser: "", Correo: "", Contrasena: "" });
       } else {
         setError(data.message || data.error || "Error en el registro.");
