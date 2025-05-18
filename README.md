@@ -6,6 +6,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 The source code is organized based on recommended Next.js practices, with a focus on separation of concerns:
 
+```
 src/
 ├── app/                         # Main entry and routing structure (App Router)
 │   ├── auth/                    # Authentication flow: login, register, reset password, forgot password
@@ -19,6 +20,7 @@ src/
 │   └── page.js                  # Landing page
 public/                          # Static public assets (e.g., images, favicon)
 .github/workflows/               # CI/CD configuration
+```
 
 ## 🧾 Naming and Style Conventions
 
@@ -48,6 +50,7 @@ Then open your browser at: http://localhost:3000
 ## 🚀 Deployment on Vercel
 
 This project is automatically deployed using Vercel, which provides zero-configuration deployment for Next.js apps.
+
 🔗 Live App: https://frontendweb-danielsalas-projects.vercel.app/
 
 ## 🌐 Environment Configuration
